@@ -3,5 +3,3 @@ dist
 coverage
 *.log
 .DS_Store
-.changeset/*.md
-!.changeset/README.md

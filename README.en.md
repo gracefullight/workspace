@@ -36,7 +36,7 @@ pnpm add @gracefullight/saju luxon @types/luxon
 ```typescript
 import { DateTime } from "luxon";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { getSaju, STANDARD_PRESET } from "@gracefullight/saju";
+import { getSaju } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
@@ -44,9 +44,7 @@ const result = getSaju(adapter, DateTime.fromObject(
   { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
   { zone: "Asia/Seoul" }
 ), {
-  longitudeDeg: 126.9778,
   gender: "male",
-  preset: STANDARD_PRESET,
 });
 
 console.log(result.pillars);      // Four Pillars

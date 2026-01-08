@@ -339,18 +339,20 @@ describe("Four Pillars Core", () => {
       expect(resultA.meta.effectiveDayDate.day).toBe(1);
     });
 
-    it("should require longitudeDeg parameter", () => {
+    it("should use default longitude from timezone offset when longitudeDeg is omitted", () => {
       const dt = DateTime.fromObject(
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
 
-      expect(() => {
-        getFourPillars(adapter, dt, {
-          longitudeDeg: undefined as unknown as number,
-          preset: presetA,
-        });
-      }).toThrow("longitudeDeg is required");
+      const result = getFourPillars(adapter, dt, {
+        preset: presetA,
+      });
+
+      expect(result.year).toBeDefined();
+      expect(result.month).toBeDefined();
+      expect(result.day).toBeDefined();
+      expect(result.hour).toBeDefined();
     });
 
     it("should handle leap year dates", () => {

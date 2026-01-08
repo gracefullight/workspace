@@ -65,7 +65,7 @@ pnpm add date-fns date-fns-tz
 ```typescript
 import { DateTime } from "luxon";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { getSaju, STANDARD_PRESET } from "@gracefullight/saju";
+import { getSaju } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
@@ -76,11 +76,10 @@ const birthDateTime = DateTime.fromObject(
 
 // getSaju: Calculate pillars, ten gods, strength, relations, yongshen, solar terms, major luck, yearly luck all at once
 const result = getSaju(adapter, birthDateTime, {
-  longitudeDeg: 126.9778,
   gender: "male",  // Required: needed for major luck calculation
-  preset: STANDARD_PRESET,
-  currentYear: 2024,  // For default yearly luck range (optional)
-  yearlyLuckRange: { from: 2024, to: 2030 },  // Specify yearly luck range directly (optional)
+  // longitudeDeg: 126.9778,  // Optional: uses timezone-based longitude if omitted
+  // preset: STANDARD_PRESET, // Optional: defaults to STANDARD_PRESET
+  // yearlyLuckRange: { from: 2024, to: 2030 },  // Optional: specify yearly luck range
 });
 
 console.log(result.pillars);     // { year: "己卯", month: "丙子", ... }
@@ -98,7 +97,7 @@ console.log(result.yearlyLuck);  // Yearly luck info
 ```typescript
 import { DateTime } from "luxon";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { getFourPillars, STANDARD_PRESET } from "@gracefullight/saju";
+import { getFourPillars } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
@@ -107,10 +106,7 @@ const birthDateTime = DateTime.fromObject(
   { zone: "Asia/Seoul" }
 );
 
-const result = getFourPillars(adapter, birthDateTime, {
-  longitudeDeg: 126.9778, // Seoul longitude
-  preset: STANDARD_PRESET,
-});
+const result = getFourPillars(adapter, birthDateTime);
 
 console.log(result);
 ```

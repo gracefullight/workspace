@@ -164,7 +164,7 @@ export interface SajuResult {
 }
 
 export interface GetSajuOptions {
-  longitudeDeg: number;
+  longitudeDeg?: number;
   gender: Gender;
   tzOffsetHours?: number;
   preset?: typeof presetA;

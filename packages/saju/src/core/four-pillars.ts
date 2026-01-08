@@ -278,10 +278,10 @@ export function getFourPillars<T>(
     tzOffsetHours = 9,
     preset = presetA,
   }: {
-    longitudeDeg: number;
+    longitudeDeg?: number;
     tzOffsetHours?: number;
     preset?: typeof presetA | typeof presetB;
-  },
+  } = {},
 ): {
   year: string;
   month: string;
@@ -296,7 +296,7 @@ export function getFourPillars<T>(
     preset: typeof preset;
   };
 } {
-  if (typeof longitudeDeg !== "number") throw new Error("longitudeDeg is required");
+  const effectiveLongitude = longitudeDeg ?? tzOffsetHours * 15;
 
   const dayBoundary = preset.dayBoundary ?? "midnight";
   const useMeanSolarTimeForHour = preset.useMeanSolarTimeForHour ?? false;
@@ -307,14 +307,14 @@ export function getFourPillars<T>(
 
   const effDate = effectiveDayDate(adapter, dtLocal, {
     dayBoundary,
-    longitudeDeg,
+    longitudeDeg: effectiveLongitude,
     tzOffsetHours,
     useMeanSolarTimeForBoundary,
   });
   const d = dayPillarFromDate(effDate);
 
   const h = hourPillar(adapter, dtLocal, {
-    longitudeDeg,
+    longitudeDeg: effectiveLongitude,
     tzOffsetHours,
     useMeanSolarTimeForHour,
     dayBoundary,

@@ -65,7 +65,7 @@ pnpm add date-fns date-fns-tz
 ```typescript
 import { DateTime } from "luxon";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { getSaju, STANDARD_PRESET } from "@gracefullight/saju";
+import { getSaju } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
@@ -76,11 +76,10 @@ const birthDateTime = DateTime.fromObject(
 
 // getSaju: 사주 팔자, 십신, 신강약, 합충, 용신, 절기, 대운, 세운을 한 번에 계산
 const result = getSaju(adapter, birthDateTime, {
-  longitudeDeg: 126.9778,
   gender: "male",  // 필수: 대운 계산에 필요
-  preset: STANDARD_PRESET,
-  currentYear: 2024,  // 세운 기본 범위 계산용 (선택)
-  yearlyLuckRange: { from: 2024, to: 2030 },  // 세운 범위 직접 지정 (선택)
+  // longitudeDeg: 126.9778,  // 선택: 생략 시 타임존 기준 경도 사용
+  // preset: STANDARD_PRESET, // 선택: 기본값은 STANDARD_PRESET
+  // yearlyLuckRange: { from: 2024, to: 2030 },  // 선택: 세운 범위 지정
 });
 
 console.log(result.pillars);     // { year: "己卯", month: "丙子", ... }
@@ -98,7 +97,7 @@ console.log(result.yearlyLuck);  // 세운 정보
 ```typescript
 import { DateTime } from "luxon";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { getFourPillars, STANDARD_PRESET } from "@gracefullight/saju";
+import { getFourPillars } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
@@ -107,10 +106,7 @@ const birthDateTime = DateTime.fromObject(
   { zone: "Asia/Seoul" }
 );
 
-const result = getFourPillars(adapter, birthDateTime, {
-  longitudeDeg: 126.9778, // 서울 경도
-  preset: STANDARD_PRESET,
-});
+const result = getFourPillars(adapter, birthDateTime);
 
 console.log(result);
 ```

@@ -1,8 +1,9 @@
 import type { DateAdapter } from "@/adapters/date-adapter";
-import { STEMS, BRANCHES } from "./four-pillars";
-import { getStemPolarity, type Polarity } from "./ten-gods";
+import { getStemPolarity } from "@/core/ten-gods";
+import type { Gender, Polarity } from "@/types";
+import { BRANCHES, getPillarIndex, jdnFromDate, pillarFromIndex, STEMS } from "@/utils";
 
-export type Gender = "male" | "female";
+export type { Gender };
 
 export interface LuckPillar {
   index: number;
@@ -27,25 +28,6 @@ export interface MajorLuckResult {
   startAgeDetail: StartAgeDetail;
   daysToTerm: number;
   pillars: LuckPillar[];
-}
-
-function getMonthPillarIndex(monthPillar: string): number {
-  const stem = monthPillar[0];
-  const branch = monthPillar[1];
-  const stemIdx = STEMS.indexOf(stem);
-  const branchIdx = BRANCHES.indexOf(branch);
-
-  for (let i = 0; i < 60; i++) {
-    if (i % 10 === stemIdx && i % 12 === branchIdx) {
-      return i;
-    }
-  }
-  return 0;
-}
-
-function pillarFromIndex(idx60: number): string {
-  const normalized = ((idx60 % 60) + 60) % 60;
-  return STEMS[normalized % 10] + BRANCHES[normalized % 12];
 }
 
 export function calculateMajorLuck<T>(
@@ -92,7 +74,7 @@ export function calculateMajorLuck<T>(
   const startAge = years;
   const startAgeDetail: StartAgeDetail = { years, months, days: Math.abs(days) };
 
-  const monthIdx60 = getMonthPillarIndex(monthPillar);
+  const monthIdx60 = getPillarIndex(monthPillar);
   const pillars: LuckPillar[] = [];
 
   for (let i = 1; i <= count; i++) {
@@ -164,4 +146,102 @@ export function getCurrentMajorLuck(majorLuck: MajorLuckResult, age: number): Lu
     }
   }
   return null;
+}
+
+export interface MonthlyLuckResult {
+  year: number;
+  month: number;
+  stem: string;
+  branch: string;
+  pillar: string;
+}
+
+export function calculateMonthlyLuck(
+  year: number,
+  fromMonth: number,
+  toMonth: number,
+): MonthlyLuckResult[] {
+  const results: MonthlyLuckResult[] = [];
+
+  const yearIdx60 = (((year - 1984) % 60) + 60) % 60;
+  const yearStem = STEMS[yearIdx60 % 10];
+  const yearStemIdx = STEMS.indexOf(yearStem);
+
+  const baseMonthStemIdx = (yearStemIdx * 2 + 2) % 10;
+
+  for (let month = fromMonth; month <= toMonth; month++) {
+    const monthOffset = month - 1;
+    const stemIdx = (baseMonthStemIdx + monthOffset) % 10;
+    const branchIdx = (monthOffset + 2) % 12;
+
+    const stem = STEMS[stemIdx];
+    const branch = BRANCHES[branchIdx];
+    const pillar = stem + branch;
+
+    results.push({
+      year,
+      month,
+      stem,
+      branch,
+      pillar,
+    });
+  }
+
+  return results;
+}
+
+export interface DailyLuckResult {
+  year: number;
+  month: number;
+  day: number;
+  stem: string;
+  branch: string;
+  pillar: string;
+}
+
+export function calculateDailyLuck(
+  year: number,
+  month: number,
+  fromDay: number,
+  toDay: number,
+): DailyLuckResult[] {
+  const results: DailyLuckResult[] = [];
+
+  for (let day = fromDay; day <= toDay; day++) {
+    const jdn = jdnFromDate(year, month, day);
+    const idx60 = (((jdn + 49) % 60) + 60) % 60;
+    const stem = STEMS[idx60 % 10];
+    const branch = BRANCHES[idx60 % 12];
+    const pillar = stem + branch;
+
+    results.push({
+      year,
+      month,
+      day,
+      stem,
+      branch,
+      pillar,
+    });
+  }
+
+  return results;
+}
+
+export function getDayPillar(year: number, month: number, day: number): string {
+  const jdn = jdnFromDate(year, month, day);
+  const idx60 = (((jdn + 49) % 60) + 60) % 60;
+  return STEMS[idx60 % 10] + BRANCHES[idx60 % 12];
+}
+
+export function getMonthPillar(year: number, month: number): string {
+  const yearIdx60 = (((year - 1984) % 60) + 60) % 60;
+  const yearStem = STEMS[yearIdx60 % 10];
+  const yearStemIdx = STEMS.indexOf(yearStem);
+
+  const baseMonthStemIdx = (yearStemIdx * 2 + 2) % 10;
+  const monthOffset = month - 1;
+  const stemIdx = (baseMonthStemIdx + monthOffset) % 10;
+  const branchIdx = (monthOffset + 2) % 12;
+
+  return STEMS[stemIdx] + BRANCHES[branchIdx];
 }

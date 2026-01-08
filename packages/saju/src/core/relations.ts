@@ -1,5 +1,5 @@
 import type { Element } from "./ten-gods";
-import { getStemElement, getBranchElement } from "./ten-gods";
+import { getBranchElement, getStemElement } from "./ten-gods";
 
 export type TransformationStatus = "합" | "반합" | "화" | "불화";
 
@@ -371,6 +371,7 @@ export function analyzeRelations(
   for (const combo of BRANCH_TRIPLE_COMBINATIONS) {
     const matched = combo.branches.filter((b) => branchChars.includes(b));
     if (matched.length >= 2) {
+      // biome-ignore lint/style/noNonNullAssertion: matched is filtered from branchChars, find is guaranteed
       const positions = matched.map((m) => branches.find((b) => b.char === m)!.position);
       const isComplete = matched.length === 3;
       const transform = checkTransformationCondition(
@@ -394,6 +395,7 @@ export function analyzeRelations(
   for (const combo of BRANCH_DIRECTIONAL_COMBINATIONS) {
     const matched = combo.branches.filter((b) => branchChars.includes(b));
     if (matched.length >= 2) {
+      // biome-ignore lint/style/noNonNullAssertion: matched is filtered from branchChars, find is guaranteed
       const positions = matched.map((m) => branches.find((b) => b.char === m)!.position);
       const isComplete = matched.length === 3;
       const transform = checkTransformationCondition(
@@ -432,6 +434,7 @@ export function analyzeRelations(
         });
       }
     } else if (isTriple && matched.length >= 2) {
+      // biome-ignore lint/style/noNonNullAssertion: matched is filtered from branchChars, find is guaranteed
       const positions = matched.map((m) => branches.find((b) => b.char === m)!.position);
       punishments.push({
         type: "형",
@@ -440,6 +443,7 @@ export function analyzeRelations(
         punishmentType: punishment.type,
       });
     } else if (!isTriple && matched.length === 2) {
+      // biome-ignore lint/style/noNonNullAssertion: matched is filtered from branchChars, find is guaranteed
       const positions = matched.map((m) => branches.find((b) => b.char === m)!.position);
       punishments.push({
         type: "형",

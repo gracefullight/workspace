@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  getTenGod,
-  getStemElement,
-  getStemPolarity,
+  analyzeTenGods,
+  countElements,
+  countTenGods,
   getBranchElement,
   getHiddenStems,
-  analyzeTenGods,
-  countTenGods,
-  countElements,
+  getStemElement,
+  getStemPolarity,
+  getTenGod,
 } from "@/core/ten-gods";
 
 describe("ten-gods", () => {
@@ -133,8 +133,8 @@ describe("ten-gods", () => {
       const analysis = analyzeTenGods("甲子", "丙寅", "甲辰", "乙亥");
       const counts = countTenGods(analysis);
 
-      expect(counts["비견"]).toBeGreaterThanOrEqual(1);
-      expect(counts["식신"]).toBeGreaterThanOrEqual(1);
+      expect(counts.비견).toBeGreaterThanOrEqual(1);
+      expect(counts.식신).toBeGreaterThanOrEqual(1);
     });
   });
 

@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   analyzeRelations,
-  findStemCombination,
   findBranchClash,
   findBranchSixCombination,
+  findStemCombination,
 } from "@/core/relations";
 
 describe("relations", () => {

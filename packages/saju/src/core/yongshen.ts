@@ -1,11 +1,5 @@
-import {
-  type Element,
-  getStemElement,
-  getBranchElement,
-  getHiddenStems,
-  ELEMENTS,
-} from "./ten-gods";
-import { type StrengthLevel, analyzeStrength } from "./strength";
+import { analyzeStrength, type StrengthLevel } from "./strength";
+import { ELEMENTS, type Element, getBranchElement, getStemElement } from "./ten-gods";
 
 export type YongShenMethod = "격국" | "억부" | "조후" | "통관" | "병약";
 
@@ -118,7 +112,7 @@ function hasSpecialFormation(
   strengthLevel: StrengthLevel,
   allElements: Element[],
 ): { isSpecial: boolean; type: string | null; followElement: Element | null } {
-  const isExtreme = ["극약", "극왕"].includes(strengthLevel);
+  const _isExtreme = ["극약", "극왕"].includes(strengthLevel);
 
   if (strengthLevel === "극약") {
     const elementCounts: Record<Element, number> = {

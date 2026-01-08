@@ -1,7 +1,4 @@
 export type { DateAdapter } from "@/adapters/date-adapter";
-
-export { getLunarDate, getSolarDate, type LunarDate } from "@/core/lunar";
-
 export {
   applyMeanSolarTime,
   BRANCHES,
@@ -17,109 +14,129 @@ export {
   TRADITIONAL_PRESET,
   yearPillar,
 } from "@/core/four-pillars";
-
 export {
-  type Element,
-  type Polarity,
-  type TenGod,
+  calculateDailyLuck,
+  calculateMajorLuck,
+  calculateMonthlyLuck,
+  calculateYearlyLuck,
+  type DailyLuckResult,
+  type Gender,
+  getCurrentMajorLuck,
+  getDayPillar,
+  getMonthPillar,
+  getYearPillar,
+  type LuckPillar,
+  type MajorLuckResult,
+  type MonthlyLuckResult,
+  type StartAgeDetail,
+  type YearlyLuckResult,
+} from "@/core/luck";
+export { getLunarDate, getSolarDate, type LunarDate } from "@/core/lunar";
+export {
+  analyzeRelations,
+  BRANCH_CLASHES,
+  BRANCH_DESTRUCTIONS,
+  BRANCH_DIRECTIONAL_COMBINATIONS,
+  BRANCH_HARMS,
+  BRANCH_PUNISHMENTS,
+  BRANCH_SIX_COMBINATIONS,
+  BRANCH_TRIPLE_COMBINATIONS,
+  type BranchClash,
+  type BranchDestruction,
+  type BranchDirectionalCombination,
+  type BranchHarm,
+  type BranchPunishment,
+  type BranchSixCombination,
+  type BranchTripleCombination,
+  findBranchClash,
+  findBranchSixCombination,
+  findStemCombination,
+  type Relation,
+  type RelationsResult,
+  STEM_COMBINATIONS,
+  type StemCombination,
+} from "@/core/relations";
+export {
+  analyzeSinsals,
+  SINSAL_INFO,
+  SINSALS,
+  type Sinsal,
+  type SinsalMatch,
+  type SinsalResult,
+} from "@/core/sinsals";
+export {
+  analyzeSolarTerms,
+  getSolarTermsForYear,
+  SOLAR_TERMS,
+  type SolarTerm,
+  type SolarTermDateInfo,
+  type SolarTermHanja,
+  type SolarTermInfo,
+  type SolarTermName,
+} from "@/core/solar-terms";
+export {
+  analyzeStrength,
+  STRENGTH_LEVELS,
+  type StrengthFactors,
+  type StrengthLevel,
+  type StrengthResult,
+} from "@/core/strength";
+export {
+  analyzeTenGods,
+  countElements,
+  countTenGods,
   ELEMENTS,
-  TEN_GODS,
-  TEN_GOD_HANJA,
-  TEN_GOD_ENGLISH,
-  HIDDEN_STEMS,
-  getStemElement,
-  getStemPolarity,
+  type Element,
+  type FourPillarsTenGods,
   getBranchElement,
   getBranchPolarity,
   getHiddenStems,
+  getStemElement,
+  getStemPolarity,
   getTenGod,
   getTenGodForBranch,
   getTenGodsForBranch,
-  analyzeTenGods,
-  countTenGods,
-  countElements,
-  type FourPillarsTenGods,
+  HIDDEN_STEMS,
+  type Polarity,
+  TEN_GOD_ENGLISH,
+  TEN_GOD_HANJA,
+  TEN_GODS,
+  type TenGod,
 } from "@/core/ten-gods";
+export {
+  analyzeTwelveStages,
+  getTwelveStage,
+  STAGE_INFO,
+  TWELVE_STAGES,
+  type TwelveStage,
+  type TwelveStagesResult,
+} from "@/core/twelve-stages";
 
 export {
-  type StrengthLevel,
-  STRENGTH_LEVELS,
-  analyzeStrength,
-  type StrengthFactors,
-  type StrengthResult,
-} from "@/core/strength";
-
-export {
-  STEM_COMBINATIONS,
-  BRANCH_SIX_COMBINATIONS,
-  BRANCH_TRIPLE_COMBINATIONS,
-  BRANCH_DIRECTIONAL_COMBINATIONS,
-  BRANCH_CLASHES,
-  BRANCH_HARMS,
-  BRANCH_PUNISHMENTS,
-  BRANCH_DESTRUCTIONS,
-  analyzeRelations,
-  findStemCombination,
-  findBranchClash,
-  findBranchSixCombination,
-  type StemCombination,
-  type BranchSixCombination,
-  type BranchTripleCombination,
-  type BranchDirectionalCombination,
-  type BranchClash,
-  type BranchHarm,
-  type BranchPunishment,
-  type BranchDestruction,
-  type Relation,
-  type RelationsResult,
-} from "@/core/relations";
-
-export {
-  type Gender,
-  type LuckPillar,
-  type MajorLuckResult,
-  type YearlyLuckResult,
-  type StartAgeDetail,
-  calculateMajorLuck,
-  calculateYearlyLuck,
-  getYearPillar,
-  getCurrentMajorLuck,
-} from "@/core/luck";
-
-export {
-  type YongShenMethod,
-  type YongShenResult,
   analyzeYongShen,
   getElementRecommendations,
+  type YongShenMethod,
+  type YongShenResult,
 } from "@/core/yongshen";
-
-export {
-  SOLAR_TERMS,
-  type SolarTerm,
-  type SolarTermName,
-  type SolarTermHanja,
-  type SolarTermInfo,
-  type SolarTermDateInfo,
-  analyzeSolarTerms,
-  getSolarTermsForYear,
-} from "@/core/solar-terms";
+export type { Branch, Pillar, PillarPosition, Stem } from "@/types";
 
 import type { DateAdapter } from "@/adapters/date-adapter";
 import { getFourPillars, type presetA } from "@/core/four-pillars";
-import { analyzeTenGods, type FourPillarsTenGods } from "@/core/ten-gods";
-import { analyzeStrength, type StrengthResult } from "@/core/strength";
-import { analyzeRelations, type RelationsResult } from "@/core/relations";
-import { analyzeYongShen, type YongShenResult } from "@/core/yongshen";
 import {
   calculateMajorLuck,
   calculateYearlyLuck,
   type Gender,
   type MajorLuckResult,
   type YearlyLuckResult,
-  type StartAgeDetail,
 } from "@/core/luck";
 import type { LunarDate } from "@/core/lunar";
+import { analyzeRelations, type RelationsResult } from "@/core/relations";
+import { analyzeSinsals, type SinsalResult } from "@/core/sinsals";
 import { analyzeSolarTerms, type SolarTermInfo } from "@/core/solar-terms";
+import { analyzeStrength, type StrengthResult } from "@/core/strength";
+import { analyzeTenGods, type FourPillarsTenGods } from "@/core/ten-gods";
+import { analyzeTwelveStages, type TwelveStagesResult } from "@/core/twelve-stages";
+import { analyzeYongShen, type YongShenResult } from "@/core/yongshen";
 
 export interface SajuResult {
   pillars: {
@@ -136,6 +153,8 @@ export interface SajuResult {
   solarTerms: SolarTermInfo;
   majorLuck: MajorLuckResult;
   yearlyLuck: YearlyLuckResult[];
+  twelveStages: TwelveStagesResult;
+  sinsals: SinsalResult;
   meta: {
     solarYearUsed: number;
     sunLonDeg: number;
@@ -171,6 +190,8 @@ export function getSaju<T>(
   const relations = analyzeRelations(year, month, day, hour);
   const yongShen = analyzeYongShen(year, month, day, hour);
   const solarTerms = analyzeSolarTerms(adapter, dtLocal);
+  const twelveStages = analyzeTwelveStages(year, month, day, hour);
+  const sinsals = analyzeSinsals(year, month, day, hour);
 
   const result: SajuResult = {
     pillars: { year, month, day, hour },
@@ -189,6 +210,8 @@ export function getSaju<T>(
       options.yearlyLuckRange?.from ?? (options.currentYear ?? new Date().getFullYear()) - 5,
       options.yearlyLuckRange?.to ?? (options.currentYear ?? new Date().getFullYear()) + 10,
     ),
+    twelveStages,
+    sinsals,
     meta: {
       solarYearUsed: fourPillars.meta.solarYearUsed,
       sunLonDeg: fourPillars.meta.sunLonDeg,

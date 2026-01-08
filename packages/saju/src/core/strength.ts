@@ -1,13 +1,4 @@
-import {
-  type Element,
-  type TenGod,
-  getStemElement,
-  getBranchElement,
-  getHiddenStems,
-  getTenGod,
-  getStemPolarity,
-  type FourPillarsTenGods,
-} from "./ten-gods";
+import { type Element, getStemElement, getStemPolarity, getTenGod, type TenGod } from "./ten-gods";
 
 export type StrengthLevel =
   | "극약"

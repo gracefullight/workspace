@@ -1,29 +1,20 @@
-/**
- * 십신(十神) 분석 모듈
- * Ten Gods analysis based on the relationship between Day Master and other elements
- */
+import type { Element, Polarity } from "@/types";
+import { ELEMENTS } from "@/utils";
 
-import { STEMS, BRANCHES } from "./four-pillars";
+export type { Element, Polarity };
+export { ELEMENTS };
 
-// 오행 (Five Elements)
-export type Element = "wood" | "fire" | "earth" | "metal" | "water";
-export const ELEMENTS: Element[] = ["wood", "fire", "earth", "metal", "water"];
-
-// 음양 (Yin-Yang)
-export type Polarity = "yang" | "yin";
-
-// 십신 (Ten Gods)
 export type TenGod =
-  | "비견" // 比肩 Bijian - Companion
-  | "겁재" // 劫財 Jiecai - Rob Wealth
-  | "식신" // 食神 Shishen - Eating God
-  | "상관" // 傷官 Shangguan - Hurting Officer
-  | "편재" // 偏財 Piancai - Indirect Wealth
-  | "정재" // 正財 Zhengcai - Direct Wealth
-  | "편관" // 偏官 Pianguan - Indirect Officer (Seven Killings)
-  | "정관" // 正官 Zhengguan - Direct Officer
-  | "편인" // 偏印 Pianyin - Indirect Seal
-  | "정인"; // 正印 Zhengyin - Direct Seal
+  | "비견"
+  | "겁재"
+  | "식신"
+  | "상관"
+  | "편재"
+  | "정재"
+  | "편관"
+  | "정관"
+  | "편인"
+  | "정인";
 
 export const TEN_GODS: TenGod[] = [
   "비견",

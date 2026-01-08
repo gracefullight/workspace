@@ -1,8 +1,8 @@
 import type { DateAdapter } from "@/adapters/date-adapter";
 import { getLunarDate, type LunarDate } from "@/core/lunar";
+import { BRANCHES, jdnFromDate, pillarFromIndex, STEMS } from "@/utils";
 
-export const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-export const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+export { STEMS, BRANCHES };
 
 export const STANDARD_PRESET = {
   dayBoundary: "midnight" as const,
@@ -24,25 +24,6 @@ function normDeg(x: number): number {
   return x < 0 ? x + 360 : x;
 }
 
-function pillarFrom60(idx60: number): string {
-  return STEMS[idx60 % 10] + BRANCHES[idx60 % 12];
-}
-
-function jdnFromDate(y: number, m: number, d: number): number {
-  const a = Math.floor((14 - m) / 12);
-  const y2 = y + 4800 - a;
-  const m2 = m + 12 * a - 3;
-  return (
-    d +
-    Math.floor((153 * m2 + 2) / 5) +
-    365 * y2 +
-    Math.floor(y2 / 4) -
-    Math.floor(y2 / 100) +
-    Math.floor(y2 / 400) -
-    32045
-  );
-}
-
 export function dayPillarFromDate({
   year,
   month,
@@ -57,7 +38,7 @@ export function dayPillarFromDate({
 } {
   const jdn = jdnFromDate(year, month, day);
   const idx60 = (((jdn - 11) % 60) + 60) % 60;
-  return { idx60, pillar: pillarFrom60(idx60) };
+  return { idx60, pillar: pillarFromIndex(idx60) };
 }
 
 export function applyMeanSolarTime<T>(
@@ -162,7 +143,7 @@ export function yearPillar<T>(
   const solarYear = adapter.isGreaterThanOrEqual(dtLocal, lichunLocal) ? y : y - 1;
 
   const idx60 = (((solarYear - 1984) % 60) + 60) % 60;
-  return { idx60, pillar: pillarFrom60(idx60), solarYear };
+  return { idx60, pillar: pillarFromIndex(idx60), solarYear };
 }
 
 function monthBranchIndexFromSunLon(lon: number): number {

@@ -1,5 +1,14 @@
 # @gracefullight/saju
 
+## 0.4.0
+
+### Minor Changes
+
+- **BREAKING**: Enable mean solar time correction by default in STANDARD_PRESET
+  - `useMeanSolarTimeForHour` is now `true` by default
+  - This matches the behavior of popular Korean fortune-telling services like 포스텔러
+  - If you need the old behavior, create a custom preset with `useMeanSolarTimeForHour: false`
+
 ## 0.3.0
 
 ### Minor Changes

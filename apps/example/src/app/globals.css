@@ -31,6 +31,10 @@
   --color-input: oklch(0.88 0.01 260);
   --color-ring: oklch(0.55 0.2 260);
   
+  /* Popover */
+  --color-popover: oklch(0.99 0.003 80);
+  --color-popover-foreground: oklch(0.15 0.02 260);
+  
   /* Semantic colors */
   --color-destructive: oklch(0.55 0.2 25);
   --color-destructive-foreground: oklch(0.99 0 0);

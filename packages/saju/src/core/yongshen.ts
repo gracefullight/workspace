@@ -32,10 +32,12 @@ export interface YongShenResult {
   reasoning: string;
   allElements: Record<Element, { isYongShen: boolean; isKiShen: boolean }>;
   johuAdjustment: ElementLabel | null;
+  /** 종격 성립 시 억부 기준 용신도 함께 제공 */
+  alternativeBalance?: {
+    primary: ElementLabel;
+    secondary: ElementLabel | null;
+  };
 }
-
-/** @deprecated Use YongShenMethodKey instead */
-export type YongShenMethod = "격국" | "억부" | "조후" | "통관" | "병약";
 
 import type { Label } from "@/types";
 
@@ -134,7 +136,7 @@ function getYokbuYongShen(
   level: StrengthLevelLabel,
 ): { primary: Element; secondary: Element | null } {
   if (isStrongLevel(level)) {
-    const primary = CONTROLS[dayMasterElement];
+    const primary = CONTROLLED_BY[dayMasterElement];
     const secondary = GENERATES[dayMasterElement];
     return { primary, secondary };
   }
@@ -214,12 +216,16 @@ export function analyzeYongShen(
   let methodKey: YongShenMethodKey;
   let reasoning: string;
   let johuAdjustmentKey: Element | null = null;
+  let alternativeBalance: { primary: Element; secondary: Element | null } | undefined;
 
   if (specialFormation.isSpecial && specialFormation.followElement) {
     primaryKey = specialFormation.followElement;
     secondaryKey = GENERATES[specialFormation.followElement];
     methodKey = "formation";
     reasoning = `종격 성립. ${getElementLabel(specialFormation.followElement).korean} 세력을 따름`;
+
+    const yokbu = getYokbuYongShen(dayMasterElement, strength.level);
+    alternativeBalance = { primary: yokbu.primary, secondary: yokbu.secondary };
   } else {
     const yokbu = getYokbuYongShen(dayMasterElement, strength.level);
     primaryKey = yokbu.primary;
@@ -274,6 +280,14 @@ export function analyzeYongShen(
     reasoning,
     allElements,
     johuAdjustment: johuAdjustmentKey ? getElementLabel(johuAdjustmentKey) : null,
+    alternativeBalance: alternativeBalance
+      ? {
+          primary: getElementLabel(alternativeBalance.primary),
+          secondary: alternativeBalance.secondary
+            ? getElementLabel(alternativeBalance.secondary)
+            : null,
+        }
+      : undefined,
   };
 }
 

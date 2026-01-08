@@ -1,5 +1,11 @@
 import type { Label } from "@/types";
-import { type Element, getStemElement, getStemPolarity, getTenGod, type TenGod } from "./ten-gods";
+import {
+  type Element,
+  getStemElement,
+  getStemPolarity,
+  getTenGodKey,
+  type TenGodKey,
+} from "./ten-gods";
 
 export const STRENGTH_LEVEL_KEYS = [
   "extremelyWeak",
@@ -33,31 +39,6 @@ export function getStrengthLevelLabel(key: StrengthLevelKey): StrengthLevelLabel
   const data = STRENGTH_LEVEL_DATA[key];
   return { key, ...data };
 }
-
-/** @deprecated Use StrengthLevelKey instead */
-export type StrengthLevel =
-  | "극약"
-  | "태약"
-  | "신약"
-  | "중화신약"
-  | "중화"
-  | "중화신강"
-  | "신강"
-  | "태강"
-  | "극왕";
-
-/** @deprecated Use STRENGTH_LEVEL_KEYS instead */
-export const STRENGTH_LEVELS: StrengthLevel[] = [
-  "극약",
-  "태약",
-  "신약",
-  "중화신약",
-  "중화",
-  "중화신강",
-  "신강",
-  "태강",
-  "극왕",
-];
 
 interface HiddenStemWeight {
   stem: string;
@@ -215,12 +196,22 @@ function isTransparent(stem: string, allStems: string[]): boolean {
   return allStems.includes(stem);
 }
 
-function isHelpfulTenGod(tenGod: TenGod): boolean {
-  return ["비견", "겁재", "정인", "편인"].includes(tenGod);
+const HELPFUL_TEN_GODS: TenGodKey[] = ["companion", "robWealth", "directSeal", "indirectSeal"];
+const WEAKENING_TEN_GODS: TenGodKey[] = [
+  "eatingGod",
+  "hurtingOfficer",
+  "indirectWealth",
+  "directWealth",
+  "sevenKillings",
+  "directOfficer",
+];
+
+function isHelpfulTenGod(tenGod: TenGodKey): boolean {
+  return HELPFUL_TEN_GODS.includes(tenGod);
 }
 
-function isWeakeningTenGod(tenGod: TenGod): boolean {
-  return ["식신", "상관", "편재", "정재", "편관", "정관"].includes(tenGod);
+function isWeakeningTenGod(tenGod: TenGodKey): boolean {
+  return WEAKENING_TEN_GODS.includes(tenGod);
 }
 
 export interface StrengthFactors {
@@ -263,7 +254,7 @@ export function analyzeStrength(
   let transparentBonus = 0;
   for (const hs of monthHiddenStems) {
     if (isTransparent(hs.stem, allStems)) {
-      const tenGod = getTenGod(dayMaster, hs.stem);
+      const tenGod = getTenGodKey(dayMaster, hs.stem);
       if (isHelpfulTenGod(tenGod)) {
         transparentBonus += hs.weight * 0.3;
       }
@@ -279,7 +270,7 @@ export function analyzeStrength(
   let deukse = 0;
   const otherStems = [yearPillar[0], monthPillar[0], hourPillar[0]];
   for (const stem of otherStems) {
-    const tenGod = getTenGod(dayMaster, stem);
+    const tenGod = getTenGodKey(dayMaster, stem);
     if (isHelpfulTenGod(tenGod)) {
       deukse += 1;
     }
@@ -289,7 +280,7 @@ export function analyzeStrength(
   let weakenCount = 0;
 
   for (const stem of otherStems) {
-    const tenGod = getTenGod(dayMaster, stem);
+    const tenGod = getTenGodKey(dayMaster, stem);
     if (isHelpfulTenGod(tenGod)) helpCount++;
     if (isWeakeningTenGod(tenGod)) weakenCount++;
   }
@@ -298,7 +289,7 @@ export function analyzeStrength(
     const hiddenStems = HIDDEN_STEM_WEIGHTS[branch] || [];
     const mainStem = hiddenStems[0]?.stem;
     if (mainStem) {
-      const tenGod = getTenGod(dayMaster, mainStem);
+      const tenGod = getTenGodKey(dayMaster, mainStem);
       if (isHelpfulTenGod(tenGod)) helpCount++;
       if (isWeakeningTenGod(tenGod)) weakenCount++;
     }

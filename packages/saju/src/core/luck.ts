@@ -71,7 +71,8 @@ export function calculateMajorLuck<T>(
   const months = totalMonths % 12;
   const days = Math.round(((daysToTerm / 3) * 12 - totalMonths) * 30);
 
-  const startAge = years;
+  // 전통적으로 6개월 이상이면 반올림하여 1년 추가
+  const startAge = months >= 6 ? years + 1 : years;
   const startAgeDetail: StartAgeDetail = { years, months, days: Math.abs(days) };
 
   const monthIdx60 = getPillarIndex(monthPillar);

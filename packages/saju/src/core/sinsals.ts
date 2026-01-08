@@ -21,11 +21,6 @@ export const SINSALS = [
 
 export type SinsalKey = (typeof SINSALS)[number];
 
-/**
- * @deprecated Use SinsalKey instead
- */
-export type Sinsal = SinsalKey;
-
 export type SinsalType = "auspicious" | "inauspicious" | "neutral";
 
 export interface SinsalLabel extends Label<SinsalKey> {

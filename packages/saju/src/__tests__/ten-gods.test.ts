@@ -7,7 +7,8 @@ import {
   getHiddenStems,
   getStemElement,
   getStemPolarity,
-  getTenGod,
+  getTenGodKey,
+  getTenGodLabel,
 } from "@/core/ten-gods";
 
 describe("ten-gods", () => {
@@ -56,55 +57,70 @@ describe("ten-gods", () => {
     });
   });
 
-  describe("getTenGod", () => {
-    it("correctly identifies 비견 (same element, same polarity)", () => {
-      expect(getTenGod("甲", "甲")).toBe("비견");
-      expect(getTenGod("乙", "乙")).toBe("비견");
+  describe("getTenGodKey", () => {
+    it("correctly identifies companion (same element, same polarity)", () => {
+      expect(getTenGodKey("甲", "甲")).toBe("companion");
+      expect(getTenGodKey("乙", "乙")).toBe("companion");
     });
 
-    it("correctly identifies 겁재 (same element, different polarity)", () => {
-      expect(getTenGod("甲", "乙")).toBe("겁재");
-      expect(getTenGod("乙", "甲")).toBe("겁재");
+    it("correctly identifies robWealth (same element, different polarity)", () => {
+      expect(getTenGodKey("甲", "乙")).toBe("robWealth");
+      expect(getTenGodKey("乙", "甲")).toBe("robWealth");
     });
 
-    it("correctly identifies 식신 (I generate, same polarity)", () => {
-      expect(getTenGod("甲", "丙")).toBe("식신");
-      expect(getTenGod("丙", "戊")).toBe("식신");
+    it("correctly identifies eatingGod (I generate, same polarity)", () => {
+      expect(getTenGodKey("甲", "丙")).toBe("eatingGod");
+      expect(getTenGodKey("丙", "戊")).toBe("eatingGod");
     });
 
-    it("correctly identifies 상관 (I generate, different polarity)", () => {
-      expect(getTenGod("甲", "丁")).toBe("상관");
-      expect(getTenGod("丙", "己")).toBe("상관");
+    it("correctly identifies hurtingOfficer (I generate, different polarity)", () => {
+      expect(getTenGodKey("甲", "丁")).toBe("hurtingOfficer");
+      expect(getTenGodKey("丙", "己")).toBe("hurtingOfficer");
     });
 
-    it("correctly identifies 편재 (I control, same polarity)", () => {
-      expect(getTenGod("甲", "戊")).toBe("편재");
-      expect(getTenGod("丙", "庚")).toBe("편재");
+    it("correctly identifies indirectWealth (I control, same polarity)", () => {
+      expect(getTenGodKey("甲", "戊")).toBe("indirectWealth");
+      expect(getTenGodKey("丙", "庚")).toBe("indirectWealth");
     });
 
-    it("correctly identifies 정재 (I control, different polarity)", () => {
-      expect(getTenGod("甲", "己")).toBe("정재");
-      expect(getTenGod("丙", "辛")).toBe("정재");
+    it("correctly identifies directWealth (I control, different polarity)", () => {
+      expect(getTenGodKey("甲", "己")).toBe("directWealth");
+      expect(getTenGodKey("丙", "辛")).toBe("directWealth");
     });
 
-    it("correctly identifies 편관 (controls me, same polarity)", () => {
-      expect(getTenGod("甲", "庚")).toBe("편관");
-      expect(getTenGod("丙", "壬")).toBe("편관");
+    it("correctly identifies sevenKillings (controls me, same polarity)", () => {
+      expect(getTenGodKey("甲", "庚")).toBe("sevenKillings");
+      expect(getTenGodKey("丙", "壬")).toBe("sevenKillings");
     });
 
-    it("correctly identifies 정관 (controls me, different polarity)", () => {
-      expect(getTenGod("甲", "辛")).toBe("정관");
-      expect(getTenGod("丙", "癸")).toBe("정관");
+    it("correctly identifies directOfficer (controls me, different polarity)", () => {
+      expect(getTenGodKey("甲", "辛")).toBe("directOfficer");
+      expect(getTenGodKey("丙", "癸")).toBe("directOfficer");
     });
 
-    it("correctly identifies 편인 (generates me, same polarity)", () => {
-      expect(getTenGod("甲", "壬")).toBe("편인");
-      expect(getTenGod("丙", "甲")).toBe("편인");
+    it("correctly identifies indirectSeal (generates me, same polarity)", () => {
+      expect(getTenGodKey("甲", "壬")).toBe("indirectSeal");
+      expect(getTenGodKey("丙", "甲")).toBe("indirectSeal");
     });
 
-    it("correctly identifies 정인 (generates me, different polarity)", () => {
-      expect(getTenGod("甲", "癸")).toBe("정인");
-      expect(getTenGod("丙", "乙")).toBe("정인");
+    it("correctly identifies directSeal (generates me, different polarity)", () => {
+      expect(getTenGodKey("甲", "癸")).toBe("directSeal");
+      expect(getTenGodKey("丙", "乙")).toBe("directSeal");
+    });
+  });
+
+  describe("getTenGodLabel", () => {
+    it("returns correct Korean labels", () => {
+      expect(getTenGodLabel("companion").korean).toBe("비견");
+      expect(getTenGodLabel("robWealth").korean).toBe("겁재");
+      expect(getTenGodLabel("eatingGod").korean).toBe("식신");
+      expect(getTenGodLabel("hurtingOfficer").korean).toBe("상관");
+      expect(getTenGodLabel("indirectWealth").korean).toBe("편재");
+      expect(getTenGodLabel("directWealth").korean).toBe("정재");
+      expect(getTenGodLabel("sevenKillings").korean).toBe("편관");
+      expect(getTenGodLabel("directOfficer").korean).toBe("정관");
+      expect(getTenGodLabel("indirectSeal").korean).toBe("편인");
+      expect(getTenGodLabel("directSeal").korean).toBe("정인");
     });
   });
 

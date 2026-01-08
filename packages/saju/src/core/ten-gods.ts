@@ -171,7 +171,7 @@ export function getHiddenStems(branch: string): string[] {
   return [...hidden];
 }
 
-function getTenGodKey(dayMaster: string, targetStem: string): TenGodKey {
+export function getTenGodKey(dayMaster: string, targetStem: string): TenGodKey {
   const dmElement = getStemElement(dayMaster);
   const dmPolarity = getStemPolarity(dayMaster);
   const targetElement = getStemElement(targetStem);
@@ -365,65 +365,4 @@ export function countElements(analysis: FourPillarsTenGods): Record<Element, num
   }
 
   return counts;
-}
-
-/** @deprecated Use TenGodKey instead */
-export type TenGod =
-  | "비견"
-  | "겁재"
-  | "식신"
-  | "상관"
-  | "편재"
-  | "정재"
-  | "편관"
-  | "정관"
-  | "편인"
-  | "정인";
-
-/** @deprecated Use TEN_GOD_KEYS instead */
-export const TEN_GODS: TenGod[] = [
-  "비견",
-  "겁재",
-  "식신",
-  "상관",
-  "편재",
-  "정재",
-  "편관",
-  "정관",
-  "편인",
-  "정인",
-];
-
-/** @deprecated Use TEN_GOD_DATA instead */
-export const TEN_GOD_HANJA: Record<TenGod, string> = {
-  비견: "比肩",
-  겁재: "劫財",
-  식신: "食神",
-  상관: "傷官",
-  편재: "偏財",
-  정재: "正財",
-  편관: "偏官",
-  정관: "正官",
-  편인: "偏印",
-  정인: "正印",
-};
-
-/** @deprecated Use TEN_GOD_DATA instead */
-export const TEN_GOD_ENGLISH: Record<TenGod, string> = {
-  비견: "Companion",
-  겁재: "Rob Wealth",
-  식신: "Eating God",
-  상관: "Hurting Officer",
-  편재: "Indirect Wealth",
-  정재: "Direct Wealth",
-  편관: "Seven Killings",
-  정관: "Direct Officer",
-  편인: "Indirect Seal",
-  정인: "Direct Seal",
-};
-
-/** @deprecated Use getTenGodLabel(getTenGodKey(...)) instead */
-export function getTenGod(dayMaster: string, targetStem: string): TenGod {
-  const key = getTenGodKey(dayMaster, targetStem);
-  return TEN_GOD_DATA[key].korean as TenGod;
 }

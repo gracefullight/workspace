@@ -117,14 +117,3 @@ export function analyzeTwelveStages(
     hour: getTwelveStageLabel(getTwelveStageKey(dayMaster, hourPillar[1])),
   };
 }
-
-/** @deprecated Use getTwelveStageLabel instead */
-export const STAGE_INFO = STAGE_DATA;
-
-/** @deprecated Use TwelveStageKey instead */
-export type TwelveStage = TwelveStageKey;
-
-/** @deprecated Use getTwelveStageKey and getTwelveStageLabel instead */
-export function getTwelveStage(stem: string, branch: string): TwelveStageKey {
-  return getTwelveStageKey(stem, branch);
-}

@@ -79,9 +79,6 @@ export function getPunishmentTypeLabel(key: PunishmentTypeKey): PunishmentTypeLa
   return { key, ...data };
 }
 
-/** @deprecated Use TransformationStatusKey instead */
-export type TransformationStatus = "합" | "반합" | "화" | "불화";
-
 export type StemCombinationResult = {
   stems: [string, string];
   resultElement: Element;

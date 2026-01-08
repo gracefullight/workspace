@@ -8,15 +8,18 @@ import {
   type SajuResult,
   type StemCombination,
 } from "@gracefullight/saju";
-import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
-import { DateTime } from "luxon";
-import { useTranslations } from "next-intl";
+import { createDateFnsAdapter } from "@gracefullight/saju/adapters/date-fns";
+import { fromZonedTime } from "date-fns-tz";
+import { useAtom, useSetAtom } from "jotai";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { TimePicker } from "@/components/ui/time-picker";
+import { sajuFormAtom, syncFormToUrlAtom } from "@/store/saju-form";
 
 const SEOUL_LONGITUDE = 126.9778;
 
@@ -78,46 +81,51 @@ function getPillarKorean(pillar: string): string {
   return `${STEM_KOREAN[stem] || stem}${BRANCH_KOREAN[branch] || branch}`;
 }
 
-interface FormData {
-  year: string;
-  month: string;
-  day: string;
-  hour: string;
-  minute: string;
-  gender: Gender;
-}
-
 export default function HomePage() {
   const t = useTranslations("HomePage");
-  const [formData, setFormData] = useState<FormData>({
-    year: "1990",
-    month: "1",
-    day: "1",
-    hour: "12",
-    minute: "0",
-    gender: "male",
-  });
+  const locale = useLocale();
+  const [formData, setFormData] = useAtom(sajuFormAtom);
+  const syncToUrl = useSetAtom(syncFormToUrlAtom);
   const [result, setResult] = useState<SajuResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const birthDate = new Date(formData.year, formData.month - 1, formData.day);
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setFormData({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+      });
+    }
+  };
+
+  const handleTimeChange = (hour: number, minute: number) => {
+    setFormData({ hour, minute });
+  };
+
+  const handleGenderChange = (gender: Gender) => {
+    setFormData({ gender });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    syncToUrl();
+
     try {
-      const adapter = await createLuxonAdapter();
-      const birthDateTime = DateTime.fromObject(
-        {
-          year: Number.parseInt(formData.year),
-          month: Number.parseInt(formData.month),
-          day: Number.parseInt(formData.day),
-          hour: Number.parseInt(formData.hour),
-          minute: Number.parseInt(formData.minute),
-        },
-        { zone: "Asia/Seoul" },
-      );
+      const adapter = await createDateFnsAdapter();
+      const birthDateTime = {
+        date: fromZonedTime(
+          new Date(formData.year, formData.month - 1, formData.day, formData.hour, formData.minute),
+          "Asia/Seoul",
+        ),
+        timeZone: "Asia/Seoul",
+      };
 
       const sajuResult = getSaju(adapter, birthDateTime, {
         gender: formData.gender,
@@ -131,12 +139,6 @@ export default function HomePage() {
       setLoading(false);
     }
   };
-
-  const years = Array.from({ length: 100 }, (_, i) => 2025 - i);
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = Array.from({ length: 60 }, (_, i) => i);
 
   return (
     <main className="min-h-screen bg-background py-12 px-4">
@@ -156,76 +158,26 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="year">{t("form.year")}</Label>
-                  <Select
-                    id="year"
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  >
-                    {years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </Select>
+                  <Label>{t("form.birthdate")}</Label>
+                  <DatePicker
+                    date={birthDate}
+                    onSelect={handleDateChange}
+                    placeholder={t("form.select_date")}
+                    fromYear={1920}
+                    toYear={2025}
+                    locale={locale}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="month">{t("form.month")}</Label>
-                  <Select
-                    id="month"
-                    value={formData.month}
-                    onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-                  >
-                    {months.map((month) => (
-                      <option key={month} value={month}>
-                        {month}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="day">{t("form.day")}</Label>
-                  <Select
-                    id="day"
-                    value={formData.day}
-                    onChange={(e) => setFormData({ ...formData, day: e.target.value })}
-                  >
-                    {days.map((day) => (
-                      <option key={day} value={day}>
-                        {day}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="hour">{t("form.hour")}</Label>
-                  <Select
-                    id="hour"
-                    value={formData.hour}
-                    onChange={(e) => setFormData({ ...formData, hour: e.target.value })}
-                  >
-                    {hours.map((hour) => (
-                      <option key={hour} value={hour}>
-                        {hour}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minute">{t("form.minute")}</Label>
-                  <Select
-                    id="minute"
-                    value={formData.minute}
-                    onChange={(e) => setFormData({ ...formData, minute: e.target.value })}
-                  >
-                    {minutes.map((minute) => (
-                      <option key={minute} value={minute}>
-                        {minute}
-                      </option>
-                    ))}
-                  </Select>
+                  <Label>{t("form.birthtime")}</Label>
+                  <TimePicker
+                    hour={formData.hour}
+                    minute={formData.minute}
+                    onTimeChange={handleTimeChange}
+                    placeholder={t("form.select_time")}
+                  />
                 </div>
               </div>
 
@@ -238,12 +190,7 @@ export default function HomePage() {
                       name="gender"
                       value="male"
                       checked={formData.gender === "male"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          gender: e.target.value as Gender,
-                        })
-                      }
+                      onChange={() => handleGenderChange("male")}
                       className="w-4 h-4 accent-primary"
                     />
                     <span>{t("form.male")}</span>
@@ -254,12 +201,7 @@ export default function HomePage() {
                       name="gender"
                       value="female"
                       checked={formData.gender === "female"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          gender: e.target.value as Gender,
-                        })
-                      }
+                      onChange={() => handleGenderChange("female")}
                       className="w-4 h-4 accent-primary"
                     />
                     <span>{t("form.female")}</span>
@@ -578,17 +520,27 @@ function SajuResultDisplay({ result }: { result: SajuResult }) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {result.sinsals.matches.map((sinsal, index) => (
                 <div
-                  key={`${sinsal.sinsal.key}-${index}`}
-                  className={`p-3 rounded-lg text-center ${sinsal.sinsal.type === "auspicious"
-                    ? "bg-green-100 dark:bg-green-900/30"
-                    : sinsal.sinsal.type === "inauspicious"
-                      ? "bg-red-100 dark:bg-red-900/30"
-                      : "bg-muted"
-                    }`}
+                  key={`${sinsal.sinsal.key}-${sinsal.position}-${index}`}
+                  className={`p-3 rounded-lg text-center ${
+                    sinsal.sinsal.type === "auspicious"
+                      ? "bg-green-100 dark:bg-green-900/30"
+                      : sinsal.sinsal.type === "inauspicious"
+                        ? "bg-red-100 dark:bg-red-900/30"
+                        : "bg-muted"
+                  }`}
                 >
                   <p className="text-xl font-bold mb-1">{sinsal.sinsal.hanja}</p>
                   <p className="text-sm text-primary font-medium">{sinsal.sinsal.korean}</p>
                   <p className="text-xs text-muted-foreground mt-1">{sinsal.sinsal.meaning}</p>
+                  <p className="text-xs text-muted-foreground mt-1 border-t pt-1">
+                    {sinsal.position === "year"
+                      ? t("result.year_pillar")
+                      : sinsal.position === "month"
+                        ? t("result.month_pillar")
+                        : sinsal.position === "day"
+                          ? t("result.day_pillar")
+                          : t("result.hour_pillar")}
+                  </p>
                 </div>
               ))}
             </div>
@@ -597,8 +549,8 @@ function SajuResultDisplay({ result }: { result: SajuResult }) {
       )}
 
       {stemCombinations.length > 0 ||
-        branchSixCombinations.length > 0 ||
-        result.relations.clashes.length > 0 ? (
+      branchSixCombinations.length > 0 ||
+      result.relations.clashes.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>{t("result.relations")}</CardTitle>

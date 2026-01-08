@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* 60:30:10 Design Principle */
+  /* 60% - Primary/Dominant (Background, large areas) */
+  /* 30% - Secondary (Supporting elements) */
+  /* 10% - Accent (CTAs, highlights) */
+
+  /* Light Mode - Warm neutral base */
+  --color-background: oklch(0.98 0.005 80);
+  --color-foreground: oklch(0.15 0.02 260);
+  
+  /* 60% - Primary surfaces */
+  --color-card: oklch(0.99 0.003 80);
+  --color-card-foreground: oklch(0.15 0.02 260);
+  
+  /* 30% - Secondary elements */
+  --color-secondary: oklch(0.94 0.01 260);
+  --color-secondary-foreground: oklch(0.25 0.02 260);
+  --color-muted: oklch(0.92 0.008 260);
+  --color-muted-foreground: oklch(0.45 0.015 260);
+  
+  /* 10% - Accent/Primary action */
+  --color-primary: oklch(0.55 0.2 260);
+  --color-primary-foreground: oklch(0.99 0 0);
+  --color-accent: oklch(0.65 0.18 280);
+  --color-accent-foreground: oklch(0.15 0.02 260);
+  
+  /* Borders and inputs */
+  --color-border: oklch(0.88 0.01 260);
+  --color-input: oklch(0.88 0.01 260);
+  --color-ring: oklch(0.55 0.2 260);
+  
+  /* Semantic colors */
+  --color-destructive: oklch(0.55 0.2 25);
+  --color-destructive-foreground: oklch(0.99 0 0);
+  
+  /* Saju element colors */
+  --color-wood: oklch(0.55 0.15 145);
+  --color-fire: oklch(0.55 0.2 25);
+  --color-earth: oklch(0.6 0.12 75);
+  --color-metal: oklch(0.7 0.02 260);
+  --color-water: oklch(0.45 0.15 260);
+  
+  /* Spacing and radius */
+  --radius: 0.625rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

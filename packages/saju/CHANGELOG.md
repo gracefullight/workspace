@@ -1,5 +1,11 @@
 # @gracefullight/saju
 
+## 0.7.0
+
+### Minor Changes
+
+- 78264c2: feat: add Gongmang, Wonjin and activate Mangshin, Geopsal, Jaesal, Hongran, Cheonhui, Jangseong, Banan sinsals
+
 ## 0.6.0
 
 ### Minor Changes

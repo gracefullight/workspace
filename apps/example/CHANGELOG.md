@@ -1,5 +1,12 @@
 # @gracefullight/saju-example
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [78264c2]
+  - @gracefullight/saju@0.7.0
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @gracefullight/saju
 
+## 1.0.0
+
+### Major Changes
+
+- c849df2: Move adapter from first argument to options object
+
+  BREAKING CHANGE: All public API functions now take datetime as the first argument and adapter as part of the options object.
+
+  Before: `getSaju(adapter, datetime, options)`
+  After: `getSaju(datetime, { adapter, ...options })`
+
+  Affected functions:
+
+  - getSaju, getFourPillars
+  - yearPillar, monthPillar, hourPillar, effectiveDayDate
+  - analyzeSolarTerms, getSolarTermsForYear
+  - calculateMajorLuck
+
 ## 0.7.0
 
 ### Minor Changes

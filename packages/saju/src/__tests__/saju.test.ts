@@ -11,7 +11,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "male",
       preset: STANDARD_PRESET,
@@ -38,7 +39,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "female",
       preset: STANDARD_PRESET,
@@ -59,7 +61,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "male",
       preset: STANDARD_PRESET,
@@ -77,7 +80,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "female",
       preset: STANDARD_PRESET,
@@ -97,10 +101,11 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "male",
-      currentYear: 2024,
+      preset: STANDARD_PRESET,
     });
 
     expect(result.yearlyLuck.length).toBe(16);
@@ -115,7 +120,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "male",
       preset: STANDARD_PRESET,
@@ -134,7 +140,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "female",
       preset: STANDARD_PRESET,
@@ -151,7 +158,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "male",
       preset: STANDARD_PRESET,
@@ -171,7 +179,8 @@ describe("getSaju integration", () => {
       { zone: "Asia/Seoul" },
     );
 
-    const result = getSaju(adapter, dt, {
+    const result = getSaju(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       gender: "female",
       preset: STANDARD_PRESET,

@@ -177,7 +177,8 @@ export interface SajuResult {
   };
 }
 
-export interface GetSajuOptions {
+export interface GetSajuOptions<T> {
+  adapter: DateAdapter<T>;
   longitudeDeg?: number;
   gender: Gender;
   tzOffsetHours?: number;
@@ -186,12 +187,10 @@ export interface GetSajuOptions {
   yearlyLuckRange?: { from: number; to: number };
 }
 
-export function getSaju<T>(
-  adapter: DateAdapter<T>,
-  dtLocal: T,
-  options: GetSajuOptions,
-): SajuResult {
-  const fourPillars = getFourPillars(adapter, dtLocal, {
+export function getSaju<T>(dtLocal: T, options: GetSajuOptions<T>): SajuResult {
+  const { adapter } = options;
+  const fourPillars = getFourPillars(dtLocal, {
+    adapter,
     longitudeDeg: options.longitudeDeg,
     tzOffsetHours: options.tzOffsetHours,
     preset: options.preset,
@@ -203,7 +202,7 @@ export function getSaju<T>(
   const strength = analyzeStrength(year, month, day, hour);
   const relations = analyzeRelations(year, month, day, hour);
   const yongShen = analyzeYongShen(year, month, day, hour);
-  const solarTerms = analyzeSolarTerms(adapter, dtLocal);
+  const solarTerms = analyzeSolarTerms(dtLocal, { adapter });
   const twelveStages = analyzeTwelveStages(year, month, day, hour);
   const sinsals = analyzeSinsals(year, month, day, hour);
 
@@ -215,7 +214,8 @@ export function getSaju<T>(
     relations,
     yongShen,
     solarTerms,
-    majorLuck: calculateMajorLuck(adapter, dtLocal, options.gender, year, month, {
+    majorLuck: calculateMajorLuck(dtLocal, options.gender, year, month, {
+      adapter,
       nextJieMillis: solarTerms.nextJieMillis,
       prevJieMillis: solarTerms.prevJieMillis,
     }),

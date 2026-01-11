@@ -75,7 +75,8 @@ const birthDateTime = DateTime.fromObject(
 );
 
 // getSaju: 사주 팔자, 십신, 신강약, 합충, 용신, 절기, 대운, 세운을 한 번에 계산
-const result = getSaju(adapter, birthDateTime, {
+const result = getSaju(birthDateTime, {
+  adapter,
   gender: "male",  // 필수: 대운 계산에 필요
   // longitudeDeg: 126.9778,  // 선택: 생략 시 타임존 기준 경도 사용
   // preset: STANDARD_PRESET, // 선택: 기본값은 STANDARD_PRESET
@@ -106,7 +107,7 @@ const birthDateTime = DateTime.fromObject(
   { zone: "Asia/Seoul" }
 );
 
-const result = getFourPillars(adapter, birthDateTime);
+const result = getFourPillars(birthDateTime, { adapter });
 
 console.log(result);
 ```
@@ -128,13 +129,15 @@ const dt = DateTime.fromObject(
 );
 
 // 표준 프리셋: 자정(00:00) 날짜 경계, 태양시 보정 없음
-const resultStandard = getFourPillars(adapter, dt, {
+const resultStandard = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: STANDARD_PRESET,
 });
 
 // 전통 프리셋: 자시(23:00) 날짜 경계, 태양시 보정 사용
-const resultTraditional = getFourPillars(adapter, dt, {
+const resultTraditional = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: TRADITIONAL_PRESET,
 });
@@ -153,7 +156,8 @@ const dt = {
   timeZone: "Asia/Seoul",
 };
 
-const result = getFourPillars(adapter, dt, {
+const result = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: STANDARD_PRESET,
 });
@@ -225,16 +229,16 @@ const myAdapter: DateAdapter<MyDateType> = {
 
 ### 핵심 함수
 
-#### `getSaju(adapter, datetime, options)`
+#### `getSaju(datetime, options)`
 
 사주 분석의 모든 결과(팔자, 십신, 신강약, 합충, 용신, 대운)를 한 번에 계산합니다.
 
 ```typescript
 function getSaju<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   options: {
-    longitudeDeg: number;
+    adapter: DateAdapter<T>;
+    longitudeDeg?: number;
     gender: "male" | "female";  // 필수
     tzOffsetHours?: number;
     preset?: typeof STANDARD_PRESET;
@@ -244,16 +248,16 @@ function getSaju<T>(
 ): SajuResult;
 ```
 
-#### `getFourPillars(adapter, datetime, options)`
+#### `getFourPillars(datetime, options)`
 
 네 기둥(연주, 월주, 일주, 시주) 모두 계산
 
 ```typescript
 function getFourPillars<T>(
-  adapter: DateAdapter<T>,
   datetime: T,
   options: {
-    longitudeDeg: number;
+    adapter: DateAdapter<T>;
+    longitudeDeg?: number;
     preset?: {
       dayBoundary: "midnight" | "zi23";
       useMeanSolarTimeForHour: boolean;
@@ -282,23 +286,23 @@ function getFourPillars<T>(
 ```
 
 **매개변수:**
-- `adapter`: DateAdapter 인스턴스
 - `datetime`: 어댑터 형식의 날짜/시간 객체
 - `options`:
-  - `longitudeDeg`: 지리적 경도(도 단위) (예: 서울 126.9778)
+  - `adapter`: DateAdapter 인스턴스
+  - `longitudeDeg`: 지리적 경도(도 단위) (예: 서울 126.9778), 선택사항
   - `preset`: 설정 프리셋 (`STANDARD_PRESET` 또는 `TRADITIONAL_PRESET` 사용)
   - `tzOffsetHours`: 타임존 오프셋(시간 단위), 선택사항 (기본값: 9, KST)
 
 **반환값:** 연월일시 기둥, 음력 날짜, 메타데이터를 포함한 객체
 
-#### `yearPillar(adapter, datetime)`
+#### `yearPillar(datetime, options)`
 
 입춘(立春, 봄의 시작) 기준으로 연주만 계산
 
 ```typescript
 function yearPillar<T>(
-  adapter: DateAdapter<T>,
-  datetime: T
+  datetime: T,
+  options: { adapter: DateAdapter<T> }
 ): {
   idx60: number;
   pillar: string;
@@ -306,14 +310,14 @@ function yearPillar<T>(
 }
 ```
 
-#### `monthPillar(adapter, datetime)`
+#### `monthPillar(datetime, options)`
 
 태양 황경 기준으로 월주만 계산
 
 ```typescript
 function monthPillar<T>(
-  adapter: DateAdapter<T>,
-  datetime: T
+  datetime: T,
+  options: { adapter: DateAdapter<T> }
 ): {
   pillar: string;
   sunLonDeg: number;
@@ -387,15 +391,15 @@ const solar = getSolarDate(1999, 11, 25, false);
 // { year: 2000, month: 1, day: 1 }
 ```
 
-#### `hourPillar(adapter, datetime, options)`
+#### `hourPillar(datetime, options)`
 
 태양시 보정 옵션과 함께 시주만 계산
 
 ```typescript
 function hourPillar<T>(
-  adapter: DateAdapter<T>,
   datetime: T,
-  options?: {
+  options: {
+    adapter: DateAdapter<T>;
     longitudeDeg?: number;
     tzOffsetHours?: number;
     useMeanSolarTimeForHour?: boolean;
@@ -436,15 +440,15 @@ function applyMeanSolarTime<T>(
 ): T
 ```
 
-#### `effectiveDayDate(adapter, dtLocal, options)`
+#### `effectiveDayDate(dtLocal, options)`
 
 날짜 경계 규칙을 고려한 유효 날짜 계산
 
 ```typescript
 function effectiveDayDate<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   options: {
+    adapter: DateAdapter<T>;
     dayBoundary?: "midnight" | "zi23";
     longitudeDeg?: number;
     tzOffsetHours?: number;
@@ -498,17 +502,17 @@ function analyzeRelations(
 ): RelationsResult;
 ```
 
-#### `calculateMajorLuck(adapter, datetime, gender, year, month)`
+#### `calculateMajorLuck(birthDateTime, gender, yearPillar, monthPillar, options)`
 
 대운의 흐름과 시작 연령을 계산합니다.
 
 ```typescript
 function calculateMajorLuck<T>(
-  adapter: DateAdapter<T>,
   birthDateTime: T,
   gender: "male" | "female",
   yearPillar: string,
-  monthPillar: string
+  monthPillar: string,
+  options: { adapter: DateAdapter<T>; longitudeDeg?: number; tzOffsetHours?: number }
 ): MajorLuckResult;
 ```
 
@@ -525,14 +529,14 @@ function analyzeYongShen(
 ): YongShenResult;
 ```
 
-#### `analyzeSolarTerms(adapter, datetime)`
+#### `analyzeSolarTerms(datetime, options)`
 
 현재 및 다음 절기 정보와 경과일을 계산합니다.
 
 ```typescript
 function analyzeSolarTerms<T>(
-  adapter: DateAdapter<T>,
-  dtLocal: T
+  dtLocal: T,
+  options: { adapter: DateAdapter<T> }
 ): SolarTermInfo;
 ```
 
@@ -548,15 +552,14 @@ function analyzeSolarTerms<T>(
 }
 ```
 
-#### `getSolarTermsForYear(adapter, year, timezone)`
+#### `getSolarTermsForYear(year, options)`
 
 특정 연도의 24절기 날짜를 모두 계산합니다.
 
 ```typescript
 function getSolarTermsForYear<T>(
-  adapter: DateAdapter<T>,
   year: number,
-  timezone: string
+  options: { adapter: DateAdapter<T>; timezone: string }
 ): Array<{ term: SolarTerm; date: {...} }>;
 ```
 
@@ -592,12 +595,14 @@ console.log(solarTime.hour); // ~11.47 (11:28)
 - 자시(子時)가 자정을 걸침 (23:00-01:00)
 
 ```typescript
-const result1 = getFourPillars(adapter, dt, {
+const result1 = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: { ...STANDARD_PRESET, dayBoundary: "midnight" },
 });
 
-const result2 = getFourPillars(adapter, dt, {
+const result2 = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: { ...STANDARD_PRESET, dayBoundary: "zi23" },
 });
@@ -614,7 +619,8 @@ const customConfig = {
   useMeanSolarTimeForBoundary: false,    // 날짜 경계는 현지 시간 사용
 };
 
-const result = getFourPillars(adapter, dt, {
+const result = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: customConfig,
 });
@@ -637,7 +643,8 @@ const result = getFourPillars(adapter, dt, {
 ### 대운과 세운 계산
 
 ```typescript
-const saju = getSaju(adapter, dt, {
+const saju = getSaju(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   gender: "female",
   yearlyLuckRange: { from: 2024, to: 2030 }
@@ -656,7 +663,8 @@ saju.yearlyLuck.forEach(luck => {
 ### 절기 정보 확인
 
 ```typescript
-const saju = getSaju(adapter, dt, {
+const saju = getSaju(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   gender: "male",
 });
@@ -727,7 +735,8 @@ const nyTime = DateTime.fromObject(
   { zone: "America/New_York" }
 );
 
-const result = getFourPillars(adapter, nyTime, {
+const result = getFourPillars(nyTime, {
+  adapter,
   longitudeDeg: -74.0060, // 뉴욕 경도
   tzOffsetHours: -5,      // EST 오프셋
   preset: TRADITIONAL_PRESET,
@@ -740,11 +749,11 @@ const result = getFourPillars(adapter, nyTime, {
 import { yearPillar, monthPillar, dayPillarFromDate, hourPillar } from "@gracefullight/saju";
 
 // 연주
-const year = yearPillar(adapter, dt);
+const year = yearPillar(dt, { adapter });
 console.log(year.pillar, year.solarYear);
 
 // 월주
-const month = monthPillar(adapter, dt);
+const month = monthPillar(dt, { adapter });
 console.log(month.pillar, month.sunLonDeg);
 
 // 일주 (어댑터 불필요)
@@ -752,7 +761,8 @@ const day = dayPillarFromDate({ year: 1985, month: 5, day: 15 });
 console.log(day.pillar);
 
 // 태양시를 사용한 시주
-const hour = hourPillar(adapter, dt, {
+const hour = hourPillar(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   useMeanSolarTimeForHour: true,
 });
@@ -774,7 +784,8 @@ const results = birthDates.map((birth) => {
   const dt = DateTime.fromObject(birth, { zone: "Asia/Seoul" });
   return {
     birth,
-    pillars: getFourPillars(adapter, dt, {
+    pillars: getFourPillars(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       preset: STANDARD_PRESET,
     }),

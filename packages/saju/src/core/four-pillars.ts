@@ -131,8 +131,8 @@ function lichunUtc<T>(adapter: DateAdapter<T>, year: number): T {
 }
 
 export function yearPillar<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
+  { adapter }: { adapter: DateAdapter<T> },
 ): {
   idx60: number;
   pillar: string;
@@ -167,13 +167,13 @@ function firstMonthStemIndex(yearStemIdx: number): number {
 }
 
 export function monthPillar<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
+  { adapter }: { adapter: DateAdapter<T> },
 ): {
   pillar: string;
   sunLonDeg: number;
 } {
-  const { idx60: yIdx60 } = yearPillar(adapter, dtLocal);
+  const { idx60: yIdx60 } = yearPillar(dtLocal, { adapter });
   const yearStemIdx = yIdx60 % 10;
 
   const lon = sunApparentLongitude(adapter, adapter.toUTC(dtLocal));
@@ -186,19 +186,20 @@ export function monthPillar<T>(
 }
 
 export function effectiveDayDate<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   {
+    adapter,
     dayBoundary = "midnight",
     longitudeDeg,
     tzOffsetHours = 9,
     useMeanSolarTimeForBoundary = false,
   }: {
+    adapter: DateAdapter<T>;
     dayBoundary?: "midnight" | "zi23";
     longitudeDeg?: number;
     tzOffsetHours?: number;
     useMeanSolarTimeForBoundary?: boolean;
-  } = {},
+  },
 ): { year: number; month: number; day: number } {
   let dtChk = dtLocal;
   if (useMeanSolarTimeForBoundary) {
@@ -227,21 +228,22 @@ function hourBranchIndexFromHour(h: number): number {
 }
 
 export function hourPillar<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   {
+    adapter,
     longitudeDeg,
     tzOffsetHours = 9,
     useMeanSolarTimeForHour = false,
     dayBoundary = "midnight",
     useMeanSolarTimeForBoundary = false,
   }: {
+    adapter: DateAdapter<T>;
     longitudeDeg?: number;
     tzOffsetHours?: number;
     useMeanSolarTimeForHour?: boolean;
     dayBoundary?: "midnight" | "zi23";
     useMeanSolarTimeForBoundary?: boolean;
-  } = {},
+  },
 ): {
   pillar: string;
   adjustedDt: T;
@@ -254,7 +256,8 @@ export function hourPillar<T>(
     dtUsed = applyMeanSolarTime(adapter, dtLocal, longitudeDeg, tzOffsetHours);
   }
 
-  const effDate = effectiveDayDate(adapter, dtLocal, {
+  const effDate = effectiveDayDate(dtLocal, {
+    adapter,
     dayBoundary,
     longitudeDeg,
     tzOffsetHours,
@@ -271,17 +274,18 @@ export function hourPillar<T>(
 }
 
 export function getFourPillars<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   {
+    adapter,
     longitudeDeg,
     tzOffsetHours = 9,
     preset = presetA,
   }: {
+    adapter: DateAdapter<T>;
     longitudeDeg?: number;
     tzOffsetHours?: number;
     preset?: typeof presetA | typeof presetB;
-  } = {},
+  },
 ): {
   year: string;
   month: string;
@@ -302,10 +306,11 @@ export function getFourPillars<T>(
   const useMeanSolarTimeForHour = preset.useMeanSolarTimeForHour ?? false;
   const useMeanSolarTimeForBoundary = preset.useMeanSolarTimeForBoundary ?? false;
 
-  const y = yearPillar(adapter, dtLocal);
-  const m = monthPillar(adapter, dtLocal);
+  const y = yearPillar(dtLocal, { adapter });
+  const m = monthPillar(dtLocal, { adapter });
 
-  const effDate = effectiveDayDate(adapter, dtLocal, {
+  const effDate = effectiveDayDate(dtLocal, {
+    adapter,
     dayBoundary,
     longitudeDeg: effectiveLongitude,
     tzOffsetHours,
@@ -313,7 +318,8 @@ export function getFourPillars<T>(
   });
   const d = dayPillarFromDate(effDate);
 
-  const h = hourPillar(adapter, dtLocal, {
+  const h = hourPillar(dtLocal, {
+    adapter,
     longitudeDeg: effectiveLongitude,
     tzOffsetHours,
     useMeanSolarTimeForHour,

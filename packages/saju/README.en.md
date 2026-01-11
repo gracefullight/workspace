@@ -75,7 +75,8 @@ const birthDateTime = DateTime.fromObject(
 );
 
 // getSaju: Calculate pillars, ten gods, strength, relations, yongshen, solar terms, major luck, yearly luck all at once
-const result = getSaju(adapter, birthDateTime, {
+const result = getSaju(birthDateTime, {
+  adapter,
   gender: "male",  // Required: needed for major luck calculation
   // longitudeDeg: 126.9778,  // Optional: uses timezone-based longitude if omitted
   // preset: STANDARD_PRESET, // Optional: defaults to STANDARD_PRESET
@@ -106,7 +107,7 @@ const birthDateTime = DateTime.fromObject(
   { zone: "Asia/Seoul" }
 );
 
-const result = getFourPillars(adapter, birthDateTime);
+const result = getFourPillars(birthDateTime, { adapter });
 
 console.log(result);
 ```
@@ -128,13 +129,15 @@ const dt = DateTime.fromObject(
 );
 
 // Standard Preset: Midnight (00:00) day boundary, no solar time correction
-const resultStandard = getFourPillars(adapter, dt, {
+const resultStandard = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: STANDARD_PRESET,
 });
 
 // Traditional Preset: Zi hour (23:00) day boundary, with solar time correction
-const resultTraditional = getFourPillars(adapter, dt, {
+const resultTraditional = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: TRADITIONAL_PRESET,
 });
@@ -153,7 +156,8 @@ const dt = {
   timeZone: "Asia/Seoul",
 };
 
-const result = getFourPillars(adapter, dt, {
+const result = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: STANDARD_PRESET,
 });
@@ -225,16 +229,16 @@ Traditional interpretation with Zi hour (23:00) day boundary and solar time corr
 
 ### Core Functions
 
-#### `getSaju(adapter, datetime, options)`
+#### `getSaju(datetime, options)`
 
 Calculate all saju analysis results (pillars, ten gods, strength, relations, yongshen, solar terms, major luck, yearly luck) at once.
 
 ```typescript
 function getSaju<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   options: {
-    longitudeDeg: number;
+    adapter: DateAdapter<T>;
+    longitudeDeg?: number;
     gender: "male" | "female";  // Required
     tzOffsetHours?: number;
     preset?: typeof STANDARD_PRESET;
@@ -244,16 +248,16 @@ function getSaju<T>(
 ): SajuResult;
 ```
 
-#### `getFourPillars(adapter, datetime, options)`
+#### `getFourPillars(datetime, options)`
 
 Calculate all four pillars (year, month, day, hour).
 
 ```typescript
 function getFourPillars<T>(
-  adapter: DateAdapter<T>,
   datetime: T,
   options: {
-    longitudeDeg: number;
+    adapter: DateAdapter<T>;
+    longitudeDeg?: number;
     preset?: {
       dayBoundary: "midnight" | "zi23";
       useMeanSolarTimeForHour: boolean;
@@ -282,23 +286,23 @@ function getFourPillars<T>(
 ```
 
 **Parameters:**
-- `adapter`: DateAdapter instance
 - `datetime`: Date/time object in the adapter's format
 - `options`:
-  - `longitudeDeg`: Geographic longitude in degrees (e.g., Seoul: 126.9778)
+  - `adapter`: DateAdapter instance
+  - `longitudeDeg`: Geographic longitude in degrees (e.g., Seoul: 126.9778), optional
   - `preset`: Configuration preset (use `STANDARD_PRESET` or `TRADITIONAL_PRESET`)
   - `tzOffsetHours`: Optional timezone offset in hours (default: 9 for KST)
 
 **Returns:** Object with year, month, day, hour pillars, lunar date, and metadata
 
-#### `yearPillar(adapter, datetime)`
+#### `yearPillar(datetime, options)`
 
 Calculate only the year pillar based on Lichun (立春, Start of Spring).
 
 ```typescript
 function yearPillar<T>(
-  adapter: DateAdapter<T>,
-  datetime: T
+  datetime: T,
+  options: { adapter: DateAdapter<T> }
 ): {
   idx60: number;
   pillar: string;
@@ -306,14 +310,14 @@ function yearPillar<T>(
 }
 ```
 
-#### `monthPillar(adapter, datetime)`
+#### `monthPillar(datetime, options)`
 
 Calculate only the month pillar based on solar longitude.
 
 ```typescript
 function monthPillar<T>(
-  adapter: DateAdapter<T>,
-  datetime: T
+  datetime: T,
+  options: { adapter: DateAdapter<T> }
 ): {
   pillar: string;
   sunLonDeg: number;
@@ -387,15 +391,15 @@ const solar = getSolarDate(1999, 11, 25, false);
 // { year: 2000, month: 1, day: 1 }
 ```
 
-#### `hourPillar(adapter, datetime, options)`
+#### `hourPillar(datetime, options)`
 
 Calculate only the hour pillar with optional solar time correction.
 
 ```typescript
 function hourPillar<T>(
-  adapter: DateAdapter<T>,
   datetime: T,
-  options?: {
+  options: {
+    adapter: DateAdapter<T>;
     longitudeDeg?: number;
     tzOffsetHours?: number;
     useMeanSolarTimeForHour?: boolean;
@@ -436,15 +440,15 @@ function applyMeanSolarTime<T>(
 ): T
 ```
 
-#### `effectiveDayDate(adapter, dtLocal, options)`
+#### `effectiveDayDate(dtLocal, options)`
 
 Calculate the effective date considering day boundary rules.
 
 ```typescript
 function effectiveDayDate<T>(
-  adapter: DateAdapter<T>,
   dtLocal: T,
   options: {
+    adapter: DateAdapter<T>;
     dayBoundary?: "midnight" | "zi23";
     longitudeDeg?: number;
     tzOffsetHours?: number;
@@ -498,17 +502,17 @@ function analyzeRelations(
 ): RelationsResult;
 ```
 
-#### `calculateMajorLuck(adapter, datetime, gender, year, month)`
+#### `calculateMajorLuck(birthDateTime, gender, yearPillar, monthPillar, options)`
 
 Calculates major luck periods and starting age.
 
 ```typescript
 function calculateMajorLuck<T>(
-  adapter: DateAdapter<T>,
   birthDateTime: T,
   gender: "male" | "female",
   yearPillar: string,
-  monthPillar: string
+  monthPillar: string,
+  options: { adapter: DateAdapter<T>; longitudeDeg?: number; tzOffsetHours?: number }
 ): MajorLuckResult;
 ```
 
@@ -525,14 +529,14 @@ function analyzeYongShen(
 ): YongShenResult;
 ```
 
-#### `analyzeSolarTerms(adapter, datetime)`
+#### `analyzeSolarTerms(datetime, options)`
 
 Calculates current and next solar term info with elapsed days.
 
 ```typescript
 function analyzeSolarTerms<T>(
-  adapter: DateAdapter<T>,
-  dtLocal: T
+  dtLocal: T,
+  options: { adapter: DateAdapter<T> }
 ): SolarTermInfo;
 ```
 
@@ -548,15 +552,14 @@ function analyzeSolarTerms<T>(
 }
 ```
 
-#### `getSolarTermsForYear(adapter, year, timezone)`
+#### `getSolarTermsForYear(year, options)`
 
 Calculates all 24 solar terms for a specific year.
 
 ```typescript
 function getSolarTermsForYear<T>(
-  adapter: DateAdapter<T>,
   year: number,
-  timezone: string
+  options: { adapter: DateAdapter<T>; timezone: string }
 ): Array<{ term: SolarTerm; date: {...} }>;
 ```
 
@@ -592,12 +595,14 @@ console.log(solarTime.hour); // ~11.47 (11:28)
 - Zi hour (子時) straddles midnight (23:00-01:00)
 
 ```typescript
-const result1 = getFourPillars(adapter, dt, {
+const result1 = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: { ...STANDARD_PRESET, dayBoundary: "midnight" },
 });
 
-const result2 = getFourPillars(adapter, dt, {
+const result2 = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: { ...STANDARD_PRESET, dayBoundary: "zi23" },
 });
@@ -614,7 +619,8 @@ const customConfig = {
   useMeanSolarTimeForBoundary: false,    // Local time for day boundary
 };
 
-const result = getFourPillars(adapter, dt, {
+const result = getFourPillars(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   preset: customConfig,
 });
@@ -637,7 +643,8 @@ Common city longitudes for reference:
 ### Major and Yearly Luck Calculation
 
 ```typescript
-const saju = getSaju(adapter, dt, {
+const saju = getSaju(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   gender: "female",
   yearlyLuckRange: { from: 2024, to: 2030 }
@@ -656,7 +663,8 @@ saju.yearlyLuck.forEach(luck => {
 ### Solar Terms Info
 
 ```typescript
-const saju = getSaju(adapter, dt, {
+const saju = getSaju(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   gender: "male",
 });
@@ -727,7 +735,8 @@ const nyTime = DateTime.fromObject(
   { zone: "America/New_York" }
 );
 
-const result = getFourPillars(adapter, nyTime, {
+const result = getFourPillars(nyTime, {
+  adapter,
   longitudeDeg: -74.0060, // NYC longitude
   tzOffsetHours: -5,      // EST offset
   preset: TRADITIONAL_PRESET,
@@ -740,11 +749,11 @@ const result = getFourPillars(adapter, nyTime, {
 import { yearPillar, monthPillar, dayPillarFromDate, hourPillar } from "@gracefullight/saju";
 
 // Year pillar
-const year = yearPillar(adapter, dt);
+const year = yearPillar(dt, { adapter });
 console.log(year.pillar, year.solarYear);
 
 // Month pillar
-const month = monthPillar(adapter, dt);
+const month = monthPillar(dt, { adapter });
 console.log(month.pillar, month.sunLonDeg);
 
 // Day pillar (no adapter needed)
@@ -752,7 +761,8 @@ const day = dayPillarFromDate({ year: 1985, month: 5, day: 15 });
 console.log(day.pillar);
 
 // Hour pillar with solar time
-const hour = hourPillar(adapter, dt, {
+const hour = hourPillar(dt, {
+  adapter,
   longitudeDeg: 126.9778,
   useMeanSolarTimeForHour: true,
 });
@@ -774,7 +784,8 @@ const results = birthDates.map((birth) => {
   const dt = DateTime.fromObject(birth, { zone: "Asia/Seoul" });
   return {
     birth,
-    pillars: getFourPillars(adapter, dt, {
+    pillars: getFourPillars(dt, {
+      adapter,
       longitudeDeg: 126.9778,
       preset: STANDARD_PRESET,
     }),

@@ -31,18 +31,18 @@ export interface MajorLuckResult {
 }
 
 export function calculateMajorLuck<T>(
-  adapter: DateAdapter<T>,
   birthDateTime: T,
   gender: Gender,
   yearPillar: string,
   monthPillar: string,
   options: {
+    adapter: DateAdapter<T>;
     count?: number;
     nextJieMillis?: number;
     prevJieMillis?: number;
-  } = {},
+  },
 ): MajorLuckResult {
-  const { count = 8 } = options;
+  const { adapter, count = 8 } = options;
 
   const yearStem = yearPillar[0];
   const yearStemPolarity = getStemPolarity(yearStem);

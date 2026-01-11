@@ -40,10 +40,11 @@ import { getSaju } from "@gracefullight/saju";
 
 const adapter = await createLuxonAdapter();
 
-const result = getSaju(adapter, DateTime.fromObject(
+const result = getSaju(DateTime.fromObject(
   { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
   { zone: "Asia/Seoul" }
 ), {
+  adapter,
   gender: "male",
 });
 

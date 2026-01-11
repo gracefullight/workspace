@@ -315,7 +315,10 @@ function toDateInfo<T>(adapter: DateAdapter<T>, dt: T): SolarTermDateInfo {
   };
 }
 
-export function analyzeSolarTerms<T>(adapter: DateAdapter<T>, dtLocal: T): SolarTermInfo {
+export function analyzeSolarTerms<T>(
+  dtLocal: T,
+  { adapter }: { adapter: DateAdapter<T> },
+): SolarTermInfo {
   const dtUtc = adapter.toUTC(dtLocal);
   const currentLongitude = sunApparentLongitude(adapter, dtUtc);
 
@@ -395,9 +398,8 @@ export function analyzeSolarTerms<T>(adapter: DateAdapter<T>, dtLocal: T): Solar
  * Get all solar term dates for a given year
  */
 export function getSolarTermsForYear<T>(
-  adapter: DateAdapter<T>,
   year: number,
-  timezone: string,
+  { adapter, timezone }: { adapter: DateAdapter<T>; timezone: string },
 ): Array<{
   term: SolarTerm;
   date: SolarTermDateInfo;

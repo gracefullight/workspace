@@ -64,35 +64,35 @@ describe("Four Pillars Core", () => {
   describe("yearPillar", () => {
     it("should calculate year pillar for 1984 (甲子)", () => {
       const dt = DateTime.fromObject({ year: 1984, month: 3, day: 1 }, { zone: "Asia/Seoul" });
-      const result = yearPillar(adapter, dt);
+      const result = yearPillar(dt, { adapter });
       expect(result.pillar).toBe("甲子");
       expect(result.solarYear).toBe(1984);
     });
 
     it("should calculate year pillar for 1985 (乙丑)", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 5, day: 15 }, { zone: "Asia/Seoul" });
-      const result = yearPillar(adapter, dt);
+      const result = yearPillar(dt, { adapter });
       expect(result.pillar).toBe("乙丑");
       expect(result.solarYear).toBe(1985);
     });
 
     it("should handle date before Lichun (立春)", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 1, day: 15 }, { zone: "Asia/Seoul" });
-      const result = yearPillar(adapter, dt);
+      const result = yearPillar(dt, { adapter });
       expect(result.solarYear).toBe(1984);
     });
 
     it("should handle date after Lichun", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 3, day: 1 }, { zone: "Asia/Seoul" });
-      const result = yearPillar(adapter, dt);
+      const result = yearPillar(dt, { adapter });
       expect(result.solarYear).toBe(1985);
     });
 
     it("should follow 60-year cycle", () => {
       const dt1 = DateTime.fromObject({ year: 1984, month: 3, day: 1 }, { zone: "Asia/Seoul" });
       const dt2 = DateTime.fromObject({ year: 2044, month: 3, day: 1 }, { zone: "Asia/Seoul" });
-      const result1 = yearPillar(adapter, dt1);
-      const result2 = yearPillar(adapter, dt2);
+      const result1 = yearPillar(dt1, { adapter });
+      const result2 = yearPillar(dt2, { adapter });
       expect(result1.pillar).toBe(result2.pillar);
     });
   });
@@ -100,19 +100,19 @@ describe("Four Pillars Core", () => {
   describe("monthPillar", () => {
     it("should calculate month pillar for test case (1985-05-15)", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 5, day: 15 }, { zone: "Asia/Seoul" });
-      const result = monthPillar(adapter, dt);
+      const result = monthPillar(dt, { adapter });
       expect(result.pillar).toBe("辛巳");
     });
 
     it("should return valid stem-branch combination", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 5, day: 15 }, { zone: "Asia/Seoul" });
-      const result = monthPillar(adapter, dt);
+      const result = monthPillar(dt, { adapter });
       expect(result.pillar).toMatch(/^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]$/);
     });
 
     it("should include sun longitude in result", () => {
       const dt = DateTime.fromObject({ year: 1985, month: 5, day: 15 }, { zone: "Asia/Seoul" });
-      const result = monthPillar(adapter, dt);
+      const result = monthPillar(dt, { adapter });
       expect(result.sunLonDeg).toBeGreaterThanOrEqual(0);
       expect(result.sunLonDeg).toBeLessThan(360);
     });
@@ -120,8 +120,8 @@ describe("Four Pillars Core", () => {
     it("should calculate different months correctly", () => {
       const jan = DateTime.fromObject({ year: 1985, month: 1, day: 15 }, { zone: "Asia/Seoul" });
       const jul = DateTime.fromObject({ year: 1985, month: 7, day: 15 }, { zone: "Asia/Seoul" });
-      const result1 = monthPillar(adapter, jan);
-      const result2 = monthPillar(adapter, jul);
+      const result1 = monthPillar(jan, { adapter });
+      const result2 = monthPillar(jul, { adapter });
       expect(result1.pillar).not.toBe(result2.pillar);
     });
   });
@@ -132,7 +132,7 @@ describe("Four Pillars Core", () => {
         { year: 1985, month: 5, day: 15, hour: 22, minute: 30 },
         { zone: "Asia/Seoul" },
       );
-      const result = effectiveDayDate(adapter, dt, { dayBoundary: "midnight" });
+      const result = effectiveDayDate(dt, { adapter, dayBoundary: "midnight" });
       expect(result.year).toBe(1985);
       expect(result.month).toBe(5);
       expect(result.day).toBe(15);
@@ -143,7 +143,7 @@ describe("Four Pillars Core", () => {
         { year: 1985, month: 5, day: 15, hour: 23, minute: 30 },
         { zone: "Asia/Seoul" },
       );
-      const result = effectiveDayDate(adapter, dt, { dayBoundary: "zi23" });
+      const result = effectiveDayDate(dt, { adapter, dayBoundary: "zi23" });
       expect(result.year).toBe(1985);
       expect(result.month).toBe(5);
       expect(result.day).toBe(16);
@@ -154,7 +154,7 @@ describe("Four Pillars Core", () => {
         { year: 1985, month: 5, day: 15, hour: 22, minute: 59 },
         { zone: "Asia/Seoul" },
       );
-      const result = effectiveDayDate(adapter, dt, { dayBoundary: "zi23" });
+      const result = effectiveDayDate(dt, { adapter, dayBoundary: "zi23" });
       expect(result.year).toBe(1985);
       expect(result.month).toBe(5);
       expect(result.day).toBe(15);
@@ -165,7 +165,7 @@ describe("Four Pillars Core", () => {
         { year: 1985, month: 5, day: 31, hour: 23, minute: 30 },
         { zone: "Asia/Seoul" },
       );
-      const result = effectiveDayDate(adapter, dt, { dayBoundary: "zi23" });
+      const result = effectiveDayDate(dt, { adapter, dayBoundary: "zi23" });
       expect(result.year).toBe(1985);
       expect(result.month).toBe(6);
       expect(result.day).toBe(1);
@@ -176,7 +176,8 @@ describe("Four Pillars Core", () => {
         { year: 1985, month: 5, day: 15, hour: 23, minute: 50 },
         { zone: "Asia/Seoul" },
       );
-      const result = effectiveDayDate(adapter, dt, {
+      const result = effectiveDayDate(dt, {
+        adapter,
         dayBoundary: "zi23",
         longitudeDeg: 126.9,
         useMeanSolarTimeForBoundary: true,
@@ -191,7 +192,7 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = hourPillar(adapter, dt);
+      const result = hourPillar(dt, { adapter });
       expect(result.pillar).toBe("辛酉");
     });
 
@@ -200,7 +201,7 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = hourPillar(adapter, dt);
+      const result = hourPillar(dt, { adapter });
       expect(result.pillar).toMatch(/^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]$/);
     });
 
@@ -213,8 +214,8 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 20, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result1 = hourPillar(adapter, morning);
-      const result2 = hourPillar(adapter, evening);
+      const result1 = hourPillar(morning, { adapter });
+      const result2 = hourPillar(evening, { adapter });
       expect(result1.pillar).not.toBe(result2.pillar);
     });
 
@@ -223,11 +224,13 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const withCorrection = hourPillar(adapter, dt, {
+      const withCorrection = hourPillar(dt, {
+        adapter,
         longitudeDeg: 126.9,
         useMeanSolarTimeForHour: true,
       });
-      const withoutCorrection = hourPillar(adapter, dt, {
+      const withoutCorrection = hourPillar(dt, {
+        adapter,
         longitudeDeg: 126.9,
         useMeanSolarTimeForHour: false,
       });
@@ -241,7 +244,8 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
@@ -257,7 +261,8 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
@@ -273,7 +278,8 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
@@ -292,7 +298,8 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetB,
       });
@@ -308,11 +315,13 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 18, minute: 0 },
         { zone: "Asia/Seoul" },
       );
-      const resultA = getFourPillars(adapter, dt, {
+      const resultA = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
-      const resultB = getFourPillars(adapter, dt, {
+      const resultB = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetB,
       });
@@ -327,11 +336,13 @@ describe("Four Pillars Core", () => {
         { year: 2000, month: 1, day: 1, hour: 23, minute: 30 },
         { zone: "Asia/Seoul" },
       );
-      const resultA = getFourPillars(adapter, dt, {
+      const resultA = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
-      const _resultB = getFourPillars(adapter, dt, {
+      const _resultB = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetB,
       });
@@ -345,7 +356,8 @@ describe("Four Pillars Core", () => {
         { zone: "Asia/Seoul" },
       );
 
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         preset: presetA,
       });
 
@@ -357,7 +369,8 @@ describe("Four Pillars Core", () => {
 
     it("should handle leap year dates", () => {
       const dt = DateTime.fromObject({ year: 2000, month: 2, day: 29 }, { zone: "UTC" });
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 0,
         preset: presetA,
       });
@@ -373,7 +386,8 @@ describe("Four Pillars Core", () => {
         { year: 1999, month: 12, day: 31, hour: 23, minute: 59 },
         { zone: "UTC" },
       );
-      const result = getFourPillars(adapter, dt, {
+      const result = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 0,
         preset: presetA,
       });
@@ -393,11 +407,13 @@ describe("Four Pillars Core", () => {
         { zone: "Asia/Tokyo" },
       );
 
-      const resultSeoul = getFourPillars(adapter, seoul, {
+      const resultSeoul = getFourPillars(seoul, {
+        adapter,
         longitudeDeg: 126.9,
         preset: presetA,
       });
-      const resultTokyo = getFourPillars(adapter, tokyo, {
+      const resultTokyo = getFourPillars(tokyo, {
+        adapter,
         longitudeDeg: 139.7,
         preset: presetA,
       });
@@ -413,11 +429,13 @@ describe("Four Pillars Core", () => {
         { zone: "UTC" },
       );
 
-      const westLong = getFourPillars(adapter, dt, {
+      const westLong = getFourPillars(dt, {
+        adapter,
         longitudeDeg: -120,
         preset: presetB,
       });
-      const eastLong = getFourPillars(adapter, dt, {
+      const eastLong = getFourPillars(dt, {
+        adapter,
         longitudeDeg: 120,
         preset: presetB,
       });

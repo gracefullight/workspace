@@ -127,7 +127,8 @@ export default function HomePage() {
         timeZone: "Asia/Seoul",
       };
 
-      const sajuResult = getSaju(adapter, birthDateTime, {
+      const sajuResult = getSaju(birthDateTime, {
+        adapter,
         gender: formData.gender,
         longitudeDeg: SEOUL_LONGITUDE,
       });

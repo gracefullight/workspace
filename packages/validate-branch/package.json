@@ -1,6 +1,6 @@
 {
   "name": "@gracefullight/validate-branch",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Git branch name validation tool with custom regexp support",
   "type": "module",
   "main": "./dist/index.js",

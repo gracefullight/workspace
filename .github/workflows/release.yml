@@ -17,7 +17,6 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
-      saju-dart-release-created: ${{ steps.release.outputs['packages/saju-dart--release_created'] }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,10 +37,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check for npm packages
+        id: check-npm
+        run: |
+          PATHS='${{ needs.release-please.outputs.paths_released }}'
+          HAS_NPM=$(echo "$PATHS" | jq -r '[.[] | select(endswith("-dart") | not)] | length > 0')
+          echo "has_npm_packages=$HAS_NPM" >> $GITHUB_OUTPUT
+
       - name: Setup pnpm
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -49,48 +57,62 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build all packages
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
         run: pnpm -r --filter './packages/*' build
 
       - name: Test all packages
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
         run: pnpm -r --filter './packages/*' test
 
       - name: Publish changed packages
-        run: pnpm -r publish --access public --no-git-checks --filter './packages/*' --filter '!./packages/saju-dart'
+        if: steps.check-npm.outputs.has_npm_packages == 'true'
+        run: pnpm -r publish --access public --no-git-checks --filter './packages/*' --filter '!./packages/*-dart'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-dart:
     needs: release-please
-    if: needs.release-please.outputs.saju-dart-release-created == 'true'
+    if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/saju-dart
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get Dart packages to publish
+        id: dart-packages
+        run: |
+          PATHS='${{ needs.release-please.outputs.paths_released }}'
+          DART_PACKAGES=$(echo "$PATHS" | jq -c '[.[] | select(endswith("-dart"))]')
+          COUNT=$(echo "$DART_PACKAGES" | jq 'length')
+          echo "packages=$DART_PACKAGES" >> $GITHUB_OUTPUT
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
       - name: Setup Dart
+        if: steps.dart-packages.outputs.count != '0'
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
 
-      - name: Install dependencies
-        run: dart pub get
-
-      - name: Analyze
-        run: dart analyze
-
-      - name: Run tests
-        run: dart test
-
       - name: Setup pub.dev credentials
+        if: steps.dart-packages.outputs.count != '0'
         run: |
           mkdir -p $XDG_CONFIG_HOME/dart
           echo '${{ secrets.PUB_CREDENTIALS }}' > "$XDG_CONFIG_HOME/dart/pub-credentials.json"
 
-      - name: Publish to pub.dev
-        run: dart pub publish --force
+      - name: Publish Dart packages
+        if: steps.dart-packages.outputs.count != '0'
+        run: |
+          PACKAGES='${{ steps.dart-packages.outputs.packages }}'
+          for pkg in $(echo "$PACKAGES" | jq -r '.[]'); do
+            echo "Publishing $pkg..."
+            cd "$pkg"
+            dart pub get
+            dart analyze
+            dart test
+            dart pub publish --force
+            cd -
+          done

@@ -1,3 +1,9 @@
+experimental_monorepo_root = true
+
+[settings]
+experimental = true
+
 [tools]
 node = "24"
 pnpm = "10"
+dart = "3"

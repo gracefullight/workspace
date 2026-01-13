@@ -1,25 +1,24 @@
-# Gracefullight TypeScript Monorepo
-
-> Gracefullight의 TypeScript 패키지 모노레포
+# Gracefullight Monorepo
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**한국어** | [English](./README.en.md)
+**English** | [한국어](./README.ko.md)
 
-## 패키지
+## Packages
 
-| 패키지 | 설명 | 버전 |
-|--------|------|------|
-| [@gracefullight/saju](./packages/saju) | 사주명리 계산 라이브러리 | [![npm](https://img.shields.io/npm/v/@gracefullight/saju.svg)](https://www.npmjs.org/package/@gracefullight/saju) |
-| [@gracefullight/validate-branch](./packages/validate-branch) | Git 브랜치 이름 유효성 검사 도구 | [![npm](https://img.shields.io/npm/v/@gracefullight/validate-branch.svg)](https://www.npmjs.org/package/@gracefullight/validate-branch) |
-| [create-fullstack-starter](./packages/create-fullstack-starter) | Fullstack Starter 템플릿 CLI | [![npm](https://img.shields.io/npm/v/create-fullstack-starter.svg)](https://www.npmjs.org/package/create-fullstack-starter) |
+| Package | Description | Version |
+|---------|-------------|---------|
+| [@gracefullight/saju](./packages/saju) | Korean/Chinese Four Pillars (Saju) calculation library | [![npm](https://img.shields.io/npm/v/@gracefullight/saju.svg)](https://www.npmjs.org/package/@gracefullight/saju) |
+| [saju](./packages/saju-dart) | Dart/Flutter Four Pillars (Saju) calculation library | [![pub](https://img.shields.io/pub/v/saju.svg)](https://pub.dev/packages/saju) |
+| [@gracefullight/validate-branch](./packages/validate-branch) | Git branch name validation tool with custom regexp support | [![npm](https://img.shields.io/npm/v/@gracefullight/validate-branch.svg)](https://www.npmjs.org/package/@gracefullight/validate-branch) |
+| [create-fullstack-starter](./packages/create-fullstack-starter) | Fullstack Starter template CLI | [![npm](https://img.shields.io/npm/v/create-fullstack-starter.svg)](https://www.npmjs.org/package/create-fullstack-starter) |
 
-## 데모
+## Demo
 
-- **[Saju Example](https://gracefullight.dev/ts-workspace/saju-example/)** - Next.js 예제 앱
+- **[Saju Example](https://gracefullight.dev/ts-workspace/saju-example/)** - Next.js example app
 
 
 
-## 라이선스
+## License
 
 MIT

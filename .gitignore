@@ -3,3 +3,8 @@ dist
 coverage
 *.log
 .DS_Store
+
+# Dart
+.dart_tool/
+.packages
+pubspec.lock

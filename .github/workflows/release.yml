@@ -12,7 +12,27 @@ permissions:
   id-token: write
 
 jobs:
-  release:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+      saju-dart-release-created: ${{ steps.release.outputs['packages/saju-dart--release_created'] }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-npm:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,12 +57,40 @@ jobs:
       - name: Test all packages
         run: pnpm -r --filter './packages/*' test
 
-      - name: Create Release PR or Publish
-        uses: changesets/action@v1
-        with:
-          publish: pnpm release
-          title: "chore: release packages"
-          commit: "chore: release packages"
+      - name: Publish changed packages
+        run: pnpm -r publish --access public --no-git-checks --filter './packages/*' --filter '!./packages/saju-dart'
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-dart:
+    needs: release-please
+    if: needs.release-please.outputs.saju-dart-release-created == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/saju-dart
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze
+        run: dart analyze
+
+      - name: Run tests
+        run: dart test
+
+      - name: Setup pub.dev credentials
+        run: |
+          mkdir -p $XDG_CONFIG_HOME/dart
+          echo '${{ secrets.PUB_CREDENTIALS }}' > "$XDG_CONFIG_HOME/dart/pub-credentials.json"
+
+      - name: Publish to pub.dev
+        run: dart pub publish --force

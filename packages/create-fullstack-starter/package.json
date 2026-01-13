@@ -1,12 +1,11 @@
 {
-  "name": "@gracefullight/validate-branch",
-  "version": "1.0.1",
-  "description": "Git branch name validation tool with custom regexp support",
+  "name": "create-fullstack-starter",
+  "version": "0.1.0",
+  "description": "CLI to scaffold fullstack-starter template from GitHub",
   "type": "module",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "bin": {
-    "validate-branch": "./dist/cli.js"
+    "create-fullstack-starter": "./dist/index.js"
   },
   "exports": {
     ".": {
@@ -21,16 +20,17 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsx src/cli.ts",
-    "test": "vitest",
+    "dev": "tsx src/index.ts",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
     "format": "biome format --write src"
   },
   "keywords": [
-    "git",
-    "branch",
-    "validation",
+    "create",
+    "fullstack",
+    "starter",
+    "template",
+    "scaffold",
     "cli"
   ],
   "author": {
@@ -40,9 +40,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/gracefullight/ts-workspace.git",
-    "directory": "packages/validate-branch"
+    "directory": "packages/create-fullstack-starter"
   },
-  "homepage": "https://github.com/gracefullight/ts-workspace/tree/main/packages/validate-branch#readme",
+  "homepage": "https://github.com/gracefullight/ts-workspace/tree/main/packages/create-fullstack-starter#readme",
   "bugs": {
     "url": "https://github.com/gracefullight/ts-workspace/issues"
   },
@@ -54,12 +54,12 @@
     "@types/node": "^24.10.4",
     "tsup": "^8.5.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
-    "vitest": "^4.0.7"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@inquirer/prompts": "^8.2.0",
     "chalk": "^5.4.1",
-    "commander": "^12.1.0",
-    "isomorphic-git": "^1.30.1"
+    "commander": "^14.0.2",
+    "tiged": "^2.12.7"
   }
 }

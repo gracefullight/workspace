@@ -50,6 +50,10 @@
     "directory": "packages/saju"
   },
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/gracefullight"
+  },
   "publishConfig": {
     "access": "public"
   },

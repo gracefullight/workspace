@@ -47,6 +47,10 @@
     "url": "https://github.com/gracefullight/ts-workspace/issues"
   },
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/gracefullight"
+  },
   "publishConfig": {
     "access": "public"
   },

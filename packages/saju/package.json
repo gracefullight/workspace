@@ -1,6 +1,6 @@
 {
   "name": "@gracefullight/saju",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Four Pillars (四柱) calculator with flexible date adapter support",
   "type": "module",
   "main": "./dist/index.js",

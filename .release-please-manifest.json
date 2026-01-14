@@ -1,6 +1,6 @@
 {
-  "packages/saju": "1.0.1",
-  "packages/validate-branch": "1.0.1",
-  "packages/create-fullstack-starter": "0.2.0",
-  "packages/saju-dart": "0.1.0"
+  "packages/saju": "1.1.0",
+  "packages/validate-branch": "1.1.0",
+  "packages/create-fullstack-starter": "0.2.1",
+  "packages/saju-dart": "0.1.1"
 }

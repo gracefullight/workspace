@@ -1,6 +1,6 @@
 name: saju
 description: Four Pillars of Destiny (四柱命理) calculator - Calculate and analyze Saju/BaZi based on traditional Chinese/Korean astrology.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/gracefullight/ts-workspace/tree/main/packages/saju-dart
 repository: https://github.com/gracefullight/ts-workspace
 issue_tracker: https://github.com/gracefullight/ts-workspace/issues

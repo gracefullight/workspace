@@ -1,5 +1,12 @@
 # @gracefullight/saju
 
+## [1.1.0](https://github.com/gracefullight/ts-workspace/compare/@gracefullight/saju@1.0.1...@gracefullight/saju@1.1.0) (2026-01-14)
+
+
+### Features
+
+* add GitHub Sponsors funding link to npm packages ([c68dfee](https://github.com/gracefullight/ts-workspace/commit/c68dfeebe02e4b3e2cc2aaaaec525b8037edb6d1))
+
 ## 1.0.1
 
 ### Patch Changes

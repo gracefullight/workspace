@@ -1,6 +1,6 @@
 {
   "name": "create-fullstack-starter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI to scaffold fullstack-starter template from GitHub",
   "type": "module",
   "main": "./dist/index.js",

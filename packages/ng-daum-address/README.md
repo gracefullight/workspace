@@ -5,7 +5,7 @@ Angular 21+를 위한 다음(카카오) 주소 검색 컴포넌트
 ## 설치
 
 ```bash
-pnpm add ng-daum-address
+pnpm add @gracefullight/ng-daum-address
 ```
 
 ## 사용법
@@ -13,7 +13,7 @@ pnpm add ng-daum-address
 ### Standalone Component 임포트
 
 ```typescript
-import { NgDaumAddressComponent } from 'ng-daum-address';
+import { NgDaumAddressComponent } from '@gracefullight/ng-daum-address';
 
 @Component({
   imports: [NgDaumAddressComponent],
@@ -71,7 +71,7 @@ export class YourComponent {}
 ### 컴포넌트에서 처리
 
 ```typescript
-import type { DaumAddressResult } from 'ng-daum-address';
+import type { DaumAddressResult } from '@gracefullight/ng-daum-address';
 
 export class YourComponent {
   onAddressSelected(result: DaumAddressResult): void {

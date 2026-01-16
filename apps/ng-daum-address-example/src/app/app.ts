@@ -1,6 +1,6 @@
 import { Component, signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { type DaumAddressResult, NgDaumAddressComponent } from "ng-daum-address";
+import { type DaumAddressResult, NgDaumAddressComponent } from "@gracefullight/ng-daum-address";
 
 @Component({
   selector: "app-root",

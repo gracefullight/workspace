@@ -21,7 +21,7 @@
     ],
     "useDefineForClassFields": false,
     "paths": {
-      "ng-daum-address": [
+      "@gracefullight/ng-daum-address": [
         "../../packages/ng-daum-address/src/index.ts"
       ]
     },

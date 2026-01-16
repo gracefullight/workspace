@@ -12,6 +12,7 @@
 | [saju](./packages/saju-dart) | Dart/Flutter Four Pillars (Saju) calculation library | [![pub](https://img.shields.io/pub/v/saju.svg)](https://pub.dev/packages/saju) |
 | [@gracefullight/validate-branch](./packages/validate-branch) | Git branch name validation tool with custom regexp support | [![npm](https://img.shields.io/npm/v/@gracefullight/validate-branch.svg)](https://www.npmjs.org/package/@gracefullight/validate-branch) |
 | [create-fullstack-starter](./packages/create-fullstack-starter) | Fullstack Starter template CLI | [![npm](https://img.shields.io/npm/v/create-fullstack-starter.svg)](https://www.npmjs.org/package/create-fullstack-starter) |
+| [@gracefullight/ng-daum-address](./packages/ng-daum-address) | Angular 21+ Daum (Kakao) Address Search Component | [![npm](https://img.shields.io/npm/v/@gracefullight/ng-daum-address.svg)](https://www.npmjs.org/package/@gracefullight/ng-daum-address) |
 
 ## Demo
 

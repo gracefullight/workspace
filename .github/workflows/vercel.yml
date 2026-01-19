@@ -8,12 +8,14 @@ on:
       - "packages/**"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
+      - ".github/workflows/vercel.yml"
   pull_request:
     paths:
       - "apps/mcp-cafe24-admin-example/**"
       - "packages/**"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
+      - ".github/workflows/vercel.yml"
 
 concurrency:
   group: vercel-cafe24-admin-${{ github.ref }}

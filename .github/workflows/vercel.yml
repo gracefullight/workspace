@@ -34,10 +34,10 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Vercel environment
-        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN --cwd=apps/mcp-cafe24-admin-example
 
       - name: Build Vercel project
-        run: vercel build --prod --token=$VERCEL_TOKEN
+        run: vercel build --prod --token=$VERCEL_TOKEN --cwd=apps/mcp-cafe24-admin-example
 
       - name: Deploy to Vercel
-        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --cwd=apps/mcp-cafe24-admin-example

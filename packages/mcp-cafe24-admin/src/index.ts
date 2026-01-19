@@ -15,7 +15,7 @@ async function run() {
   await server.connect(transport);
 
   // Startup banner
-  console.error("\n" + "=".repeat(60));
+  console.error(`\n${"=".repeat(60)}`);
   console.error("  🛒 Cafe24 Admin MCP Server is running");
   console.error("=".repeat(60));
   console.error("");
@@ -28,7 +28,7 @@ async function run() {
   console.error("  Sponsor: https://github.com/sponsors/gracefullight");
   console.error("  Buy Me a Coffee: https://www.buymeacoffee.com/gracefullight");
   console.error("");
-  console.error("=".repeat(60) + "\n");
+  console.error(`${"=".repeat(60)}\n`);
 }
 
 run().catch((error) => {

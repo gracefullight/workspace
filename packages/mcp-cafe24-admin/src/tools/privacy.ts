@@ -173,7 +173,7 @@ async function cafe24_list_privacy_boards(params: z.infer<typeof PrivacyBoardsPa
                   `## ${b.name} (No: ${b.no})\n` +
                   `- **Use**: ${b.use === "T" ? "Yes" : "No"}\n` +
                   `- **Content**: ${
-                    b.content ? b.content.substring(0, 100) + "..." : "No content"
+                    b.content ? `${b.content.substring(0, 100)}...` : "No content"
                   }\n`,
               )
               .join(""),
@@ -275,7 +275,7 @@ async function cafe24_list_privacy_orders(params: z.infer<typeof PrivacyOrdersPa
                     ? `- **Non-Member Use**: ${o.use_non_member === "T" ? "Yes" : "No"}\n`
                     : "") +
                   `- **Content**: ${
-                    o.content ? o.content.substring(0, 100) + "..." : "No content"
+                    o.content ? `${o.content.substring(0, 100)}...` : "No content"
                   }\n`,
               )
               .join(""),

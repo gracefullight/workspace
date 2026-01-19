@@ -44,7 +44,7 @@ async function cafe24_get_policy(params: z.infer<typeof PolicyParamsSchema>) {
 
     const truncate = (str: string | undefined | null) => {
       if (!str) return "N/A";
-      return str.length > 50 ? str.substring(0, 50) + "..." : str;
+      return str.length > 50 ? `${str.substring(0, 50)}...` : str;
     };
 
     return {

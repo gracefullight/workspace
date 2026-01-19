@@ -67,7 +67,7 @@ async function cafe24_update_currency(params: z.infer<typeof CurrencyUpdateParam
       content: [
         {
           type: "text" as const,
-          text: `## Currency Updated\n\n` + `- **Exchange Rate**: ${currency.exchange_rate}\n`,
+          text: `## Currency Updated\n\n- **Exchange Rate**: ${currency.exchange_rate}\n`,
         },
       ],
       structuredContent: {

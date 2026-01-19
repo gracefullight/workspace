@@ -4,7 +4,7 @@ import { handleApiError, makeApiRequest } from "../services/api-client.js";
 
 const TaxManagerParamsSchema = z.object({}).strict();
 
-async function cafe24_get_tax_manager_setting(params: z.infer<typeof TaxManagerParamsSchema>) {
+async function cafe24_get_tax_manager_setting(_params: z.infer<typeof TaxManagerParamsSchema>) {
   try {
     const data = await makeApiRequest("/admin/taxmanager", "GET");
     const taxmanager = data.taxmanager || data;

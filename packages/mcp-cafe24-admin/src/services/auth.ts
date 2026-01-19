@@ -1,11 +1,11 @@
-import http from "node:http";
-import { URL } from "node:url";
 import { exec } from "node:child_process";
 import fs from "node:fs";
-import path from "node:path";
+import http from "node:http";
 import os from "node:os";
+import path from "node:path";
+import { URL } from "node:url";
 import axios, { type AxiosError } from "axios";
-import { parseISO, isAfter, subMinutes } from "date-fns";
+import { isAfter, parseISO, subMinutes } from "date-fns";
 
 /**
  * All available Cafe24 OAuth scopes
@@ -331,8 +331,8 @@ function getErrorHtml(errorMessage: string): string {
 }
 
 async function waitForAuthorizationCode(
-  mallId: string,
-  clientId: string,
+  _mallId: string,
+  _clientId: string,
   redirectPath: string,
   expectedState?: string,
 ): Promise<string> {

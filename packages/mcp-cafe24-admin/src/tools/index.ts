@@ -32,6 +32,7 @@ import { registerTools as registerProductCategoryTools } from "./product-categor
 import { registerTools as registerProductDisplayTools } from "./product-display.js";
 import { registerTools as registerProductImagesTools } from "./product-images.js";
 import { registerTools as registerProductIconsTools } from "./product-marketing.js";
+import { registerTools as registerProductMemosTools } from "./product-memos.js";
 import { registerTools as registerProductPropertiesTools } from "./product-properties.js";
 import { registerTools as registerProductSettingTools } from "./product-setting.js";
 import { registerTools as registerPromotionTools } from "./promotion.js";
@@ -88,6 +89,7 @@ export function registerAllTools(server: McpServer): void {
   registerProductDisplayTools(server);
   registerProductPropertiesTools(server);
   registerProductSettingTools(server);
+  registerProductMemosTools(server);
   registerPromotionTools(server);
   registerRedirectTools(server);
   registerRestockTools(server);

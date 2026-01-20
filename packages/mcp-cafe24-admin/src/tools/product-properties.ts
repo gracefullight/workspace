@@ -1,11 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
+  type ProductFieldPropertiesParams,
+  ProductFieldPropertiesParamsSchema,
   type ProductPropertiesParams,
   ProductPropertiesParamsSchema,
   type ProductPropertiesUpdateParams,
   ProductPropertiesUpdateParamsSchema,
   type TextStyle,
-} from "@/schemas/productproperties.js";
+} from "@/schemas/product-properties.js";
 import type { DisplaySetting } from "@/types/index.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
 
@@ -96,6 +98,55 @@ async function cafe24_update_product_properties_setting(params: ProductPropertie
   }
 }
 
+interface FieldProperty {
+  key: string;
+  name: string;
+  display: string;
+  font_type: string;
+  font_size: number;
+  font_color: string;
+}
+
+interface ProductFieldPropertiesResponse {
+  product: {
+    shop_no: number;
+    properties: FieldProperty[];
+  };
+}
+
+async function cafe24_list_product_field_properties(params: ProductFieldPropertiesParams) {
+  try {
+    const queryParams: Record<string, unknown> = {};
+    if (params.shop_no) {
+      queryParams.shop_no = params.shop_no;
+    }
+
+    const data = await makeApiRequest<ProductFieldPropertiesResponse>(
+      "/admin/products/properties",
+      "GET",
+      undefined,
+      queryParams,
+    );
+
+    const product = data.product;
+    const properties = product?.properties || [];
+
+    let content = `**Product Field Properties (Shop #${product?.shop_no || 1}):**\n\n`;
+    content += `| Key | Name | Display | Font Type | Size | Color |\n`;
+    content += `|-----|------|---------|-----------|------|-------|\n`;
+    for (const prop of properties) {
+      content += `| ${prop.key} | ${prop.name} | ${prop.display === "T" ? "Yes" : "No"} | ${prop.font_type} | ${prop.font_size} | ${prop.font_color} |\n`;
+    }
+
+    return {
+      content: [{ type: "text" as const, text: content }],
+      structuredContent: { product } as unknown as Record<string, unknown>,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
 export function registerTools(server: McpServer): void {
   server.registerTool(
     "cafe24_get_product_properties_setting",
@@ -129,5 +180,22 @@ export function registerTools(server: McpServer): void {
       },
     },
     cafe24_update_product_properties_setting,
+  );
+
+  server.registerTool(
+    "cafe24_list_product_field_properties",
+    {
+      title: "List Product Field Properties",
+      description:
+        "Retrieve product field display properties including field key, name, display status, font type, size, and color settings.",
+      inputSchema: ProductFieldPropertiesParamsSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    cafe24_list_product_field_properties,
   );
 }

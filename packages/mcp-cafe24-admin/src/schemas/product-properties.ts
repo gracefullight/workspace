@@ -40,3 +40,14 @@ export const ProductPropertiesUpdateParamsSchema = z
 export type ProductPropertiesParams = z.infer<typeof ProductPropertiesParamsSchema>;
 export type TextStyle = z.infer<typeof TextStyleSchema>;
 export type ProductPropertiesUpdateParams = z.infer<typeof ProductPropertiesUpdateParamsSchema>;
+
+/**
+ * Schema for listing product field properties
+ */
+export const ProductFieldPropertiesParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().describe("Shop number (default: 1)"),
+  })
+  .strict();
+
+export type ProductFieldPropertiesParams = z.infer<typeof ProductFieldPropertiesParamsSchema>;

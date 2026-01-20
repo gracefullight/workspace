@@ -27,6 +27,7 @@ import { registerTools as registerPointsTools } from "./points.js";
 import { registerTools as registerPolicyTools } from "./policy.js";
 import { registerTools as registerPrivacyTools } from "./privacy.js";
 import { registerTools as registerProductAdminTools } from "./product-admin.js";
+import { registerTools as registerProductAssetsTools } from "./product-assets.js";
 import { registerTools as registerProductBasicsTools } from "./product-basics.js";
 import { registerTools as registerProductCategoryTools } from "./product-category.js";
 import { registerTools as registerProductCustomPropertiesTools } from "./product-customproperties.js";
@@ -90,6 +91,7 @@ export function registerAllTools(server: McpServer): void {
   registerProductBasicsTools(server);
   registerProductImagesTools(server);
   registerProductAdminTools(server);
+  registerProductAssetsTools(server);
   registerProductCategoryTools(server);
   registerProductCustomPropertiesTools(server);
   registerProductIconsTools(server);

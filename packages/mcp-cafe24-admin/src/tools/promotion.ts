@@ -1,48 +1,19 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import {
+  type PromotionCreateParams,
+  PromotionCreateParamsSchema,
+  type PromotionDetailParams,
+  PromotionDetailParamsSchema,
+  type PromotionSearchParams,
+  PromotionSearchParamsSchema,
+} from "@/schemas/promotion.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
-import type { Benefit, Coupon } from "../types.js";
+import type { Promotion } from "../types.js";
 
-const CouponsSearchParamsSchema = z
-  .object({
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(100)
-      .default(20)
-      .describe("Maximum results to return (1-100)"),
-    offset: z.number().int().min(0).default(0).describe("Number of results to skip"),
-    benefit_no: z.number().optional().describe("Filter by benefit number"),
-  })
-  .strict();
-
-const CouponDetailParamsSchema = z
-  .object({
-    coupon_no: z.string().describe("Coupon number"),
-  })
-  .strict();
-
-const CouponCreateParamsSchema = z
-  .object({
-    benefit_no: z.number().describe("Benefit number"),
-    coupon_no: z.string().describe("Coupon number"),
-    coupon_type: z
-      .enum(["D", "P", "B", "C", "E", "F", "G"])
-      .describe("Coupon type: D=Discount, P=Percent, etc."),
-    coupon_name: z.string().describe("Coupon name"),
-    apply_method: z.string().describe("Application method"),
-    valid_start_date: z.string().describe("Validity start date (YYYY-MM-DD)"),
-    valid_end_date: z.string().describe("Validity end date (YYYY-MM-DD)"),
-    discount_value: z.number().describe("Discount value"),
-    issue_limit: z.number().optional().describe("Maximum issuance count"),
-  })
-  .strict();
-
-async function cafe24_list_coupons(params: z.infer<typeof CouponsSearchParamsSchema>) {
+async function cafe24_list_promotions(params: PromotionSearchParams) {
   try {
-    const data = await makeApiRequest<{ benefits: Benefit[]; total: number }>(
-      "/admin/benefits",
+    const data = await makeApiRequest<{ promotions: Promotion[]; total: number }>(
+      "/admin/promotions",
       "GET",
       undefined,
       {
@@ -52,7 +23,7 @@ async function cafe24_list_coupons(params: z.infer<typeof CouponsSearchParamsSch
       },
     );
 
-    const benefits = data.benefits || [];
+    const promotions = data.promotions || [];
     const total = data.total || 0;
 
     return {
@@ -60,23 +31,23 @@ async function cafe24_list_coupons(params: z.infer<typeof CouponsSearchParamsSch
         {
           type: "text" as const,
           text:
-            `Found ${total} benefits/coupons (showing ${benefits.length})\n\n` +
-            benefits
-              .map((b) => `## ${b.benefit_name || "Benefit"}\n- **Benefit No**: ${b.benefit_no}\n`)
+            `Found ${total} promotions (showing ${promotions.length})\n\n` +
+            promotions
+              .map((p) => `## ${p.promotion_name || "Promotion"} (No: ${p.promotion_no})\n`)
               .join(""),
         },
       ],
       structuredContent: {
         total,
-        count: benefits.length,
+        count: promotions.length,
         offset: params.offset,
-        benefits: benefits.map((b) => ({
-          id: b.benefit_no.toString(),
-          name: b.benefit_name,
+        promotions: promotions.map((p) => ({
+          id: p.promotion_no.toString(),
+          name: p.promotion_name,
         })),
-        has_more: total > params.offset + benefits.length,
-        ...(total > params.offset + benefits.length
-          ? { next_offset: params.offset + benefits.length }
+        has_more: total > params.offset + promotions.length,
+        ...(total > params.offset + promotions.length
+          ? { next_offset: params.offset + promotions.length }
           : {}),
       },
     };
@@ -85,24 +56,24 @@ async function cafe24_list_coupons(params: z.infer<typeof CouponsSearchParamsSch
   }
 }
 
-async function cafe24_get_coupon(params: z.infer<typeof CouponDetailParamsSchema>) {
+async function cafe24_get_promotion(params: PromotionDetailParams) {
   try {
-    const data = await makeApiRequest<{ coupon: Coupon }>(
-      `/admin/coupons/${params.coupon_no}`,
+    const data = await makeApiRequest<{ promotion: Promotion }>(
+      `/admin/promotions/${params.promotion_no}`,
       "GET",
     );
-    const coupon = data.coupon || {};
+    const promotion = data.promotion || {};
 
     return {
       content: [
         {
           type: "text" as const,
-          text: `Coupon Details\n\n- **Coupon No**: ${coupon.coupon_no}\n- **Coupon Name**: ${coupon.coupon_name}\n`,
+          text: `Promotion Details\n\n- **Promotion No**: ${promotion.promotion_no}\n- **Name**: ${promotion.promotion_name}\n`,
         },
       ],
       structuredContent: {
-        id: coupon.coupon_no,
-        name: coupon.coupon_name,
+        id: promotion.promotion_no.toString(),
+        name: promotion.promotion_name,
       },
     };
   } catch (error) {
@@ -110,21 +81,25 @@ async function cafe24_get_coupon(params: z.infer<typeof CouponDetailParamsSchema
   }
 }
 
-async function cafe24_create_coupon(params: z.infer<typeof CouponCreateParamsSchema>) {
+async function cafe24_create_promotion(params: PromotionCreateParams) {
   try {
-    const data = await makeApiRequest<{ coupon: Coupon }>("/admin/coupons", "POST", params);
-    const coupon = data.coupon || {};
+    const data = await makeApiRequest<{ promotion: Promotion }>(
+      "/admin/promotions",
+      "POST",
+      params,
+    );
+    const promotion = data.promotion || {};
 
     return {
       content: [
         {
           type: "text" as const,
-          text: `Coupon created successfully\n\n- **Coupon No**: ${coupon.coupon_no}\n- **Coupon Name**: ${coupon.coupon_name}\n`,
+          text: `Promotion created successfully\n\n- **Promotion No**: ${promotion.promotion_no}\n- **Name**: ${promotion.promotion_name}\n`,
         },
       ],
       structuredContent: {
-        id: coupon.coupon_no,
-        name: coupon.coupon_name,
+        id: promotion.promotion_no.toString(),
+        name: promotion.promotion_name,
       },
     };
   } catch (error) {
@@ -134,12 +109,12 @@ async function cafe24_create_coupon(params: z.infer<typeof CouponCreateParamsSch
 
 export function registerTools(server: McpServer): void {
   server.registerTool(
-    "cafe24_list_coupons",
+    "cafe24_list_promotions",
     {
-      title: "List Cafe24 Benefits/Coupons",
+      title: "List Cafe24 Promotions",
       description:
-        "Retrieve a list of benefits/coupons from Cafe24. Returns benefit/coupon details including number, name, and validity period. Supports pagination and filtering by benefit number.",
-      inputSchema: CouponsSearchParamsSchema,
+        "Retrieve a list of promotions from Cafe24. Returns promotion details including number and name. Supports pagination and filtering by benefit number.",
+      inputSchema: PromotionSearchParamsSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -147,16 +122,16 @@ export function registerTools(server: McpServer): void {
         openWorldHint: true,
       },
     },
-    cafe24_list_coupons,
+    cafe24_list_promotions,
   );
 
   server.registerTool(
-    "cafe24_get_coupon",
+    "cafe24_get_promotion",
     {
-      title: "Get Cafe24 Coupon Details",
+      title: " Get Cafe24 Promotion Details",
       description:
-        "Retrieve detailed information about a specific coupon by coupon number. Returns complete coupon details including name and validity.",
-      inputSchema: CouponDetailParamsSchema,
+        "Retrieve detailed information about a specific promotion by promotion number. Returns complete promotion details including name and validity.",
+      inputSchema: PromotionDetailParamsSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -164,16 +139,16 @@ export function registerTools(server: McpServer): void {
         openWorldHint: true,
       },
     },
-    cafe24_get_coupon,
+    cafe24_get_promotion,
   );
 
   server.registerTool(
-    "cafe24_create_coupon",
+    "cafe24_create_promotion",
     {
-      title: "Create Cafe24 Coupon",
+      title: "Create Cafe24 Promotion",
       description:
-        "Create a new coupon/benefit in Cafe24. Requires benefit number, coupon number, type, name, validity period, discount value, and optionally issuance limit.",
-      inputSchema: CouponCreateParamsSchema,
+        "Create a new promotion in Cafe24. Requires promotion number, name, apply method, start/end dates, and discount details.",
+      inputSchema: PromotionCreateParamsSchema,
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
@@ -181,6 +156,6 @@ export function registerTools(server: McpServer): void {
         openWorldHint: false,
       },
     },
-    cafe24_create_coupon,
+    cafe24_create_promotion,
   );
 }

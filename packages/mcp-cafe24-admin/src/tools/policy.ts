@@ -1,38 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import {
+  type PolicyParams,
+  PolicyParamsSchema,
+  type PolicyUpdateParams,
+  PolicyUpdateParamsSchema,
+} from "@/schemas/policy.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
 
-const PolicyParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-  })
-  .strict();
-
-const PolicyUpdateParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-    save_type: z
-      .enum(["S", "C"])
-      .optional()
-      .default("S")
-      .describe("Save type: S=Standard, C=Custom (Default: S)"),
-    privacy_all: z.string().optional().describe("Privacy policy full text"),
-    terms_using_mall: z.string().optional().describe("Terms of use"),
-    use_privacy_join: z
-      .enum(["T", "F"])
-      .optional()
-      .describe("Enable privacy policy display at signup: T=Yes, F=No"),
-    privacy_join: z.string().optional().describe("Privacy policy text for signup"),
-    use_withdrawal: z.enum(["T", "F"]).optional().describe("Enable withdrawal policy: T=Yes, F=No"),
-    required_withdrawal: z
-      .enum(["T", "F"])
-      .optional()
-      .describe("Require withdrawal policy agreement: T=Yes, F=No"),
-    withdrawal: z.string().optional().describe("Withdrawal policy text"),
-  })
-  .strict();
-
-async function cafe24_get_policy(params: z.infer<typeof PolicyParamsSchema>) {
+async function cafe24_get_policy(params: PolicyParams) {
   try {
     const queryParams: Record<string, any> = {};
     if (params.shop_no) {
@@ -75,7 +50,7 @@ async function cafe24_get_policy(params: z.infer<typeof PolicyParamsSchema>) {
   }
 }
 
-async function cafe24_update_policy(params: z.infer<typeof PolicyUpdateParamsSchema>) {
+async function cafe24_update_policy(params: PolicyUpdateParams) {
   try {
     const { shop_no, ...settings } = params;
 

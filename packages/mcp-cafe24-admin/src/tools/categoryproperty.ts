@@ -1,7 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
-  type CategoryProperty,
-  CategoryPropertySchema,
   type CreateCategoryProperty,
   CreateCategoryPropertySchema,
   type ListCategoryProperties,
@@ -10,87 +8,6 @@ import {
   UpdateCategoryPropertiesSchema,
 } from "@/schemas/categoryproperty.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
-
-const CategoryPropertySchema = z.object({
-  key: z.string().describe("Property key (e.g., product_name)"),
-  name: z.string().optional().describe("Property name text"),
-  display: z.enum(["T", "F"]).optional().describe("Display property"),
-  display_name: z.enum(["T", "F"]).optional().describe("Display property name"),
-  font_type: z
-    .enum(["N", "B", "I", "D"])
-    .optional()
-    .describe("Font type (N: Normal, B: Bold, I: Italic, D: Bold Italic)"),
-  font_size: z.number().int().optional().describe("Font size"),
-  font_color: z.string().optional().describe("Font color"),
-});
-
-const ListCategoryPropertiesSchema = z
-  .object({
-    shop_no: z.number().int().optional().default(1).describe("Shop number"),
-    display_group: z
-      .number()
-      .int()
-      .min(1)
-      .max(3)
-      .optional()
-      .default(1)
-      .describe("Display group (1: Normal, 2: Recommendation, 3: New)"),
-    separated_category: z
-      .enum(["T", "F"])
-      .optional()
-      .default("F")
-      .describe("Start separately by category"),
-    category_no: z.number().int().optional().describe("Category number"),
-  })
-  .strict();
-
-const CreateCategoryPropertySchema = z
-  .object({
-    shop_no: z.number().int().optional().default(1).describe("Shop number"),
-    multishop_display_names: z
-      .array(
-        z.object({
-          shop_no: z.number().int(),
-          name: z.string(),
-        }),
-      )
-      .min(1)
-      .describe("Display names for multiple shops"),
-    display: z.enum(["T", "F"]).optional().default("F").describe("Display property"),
-    display_name: z.enum(["T", "F"]).optional().default("T").describe("Display property name"),
-    font_type: z
-      .enum(["N", "B", "I", "D"])
-      .optional()
-      .default("N")
-      .describe("Font type (N: Normal, B: Bold, I: Italic, D: Bold Italic)"),
-    font_size: z.number().int().optional().default(12).describe("Font size"),
-    font_color: z.string().optional().default("#555555").describe("Font color"),
-    exposure_group_type: z
-      .enum(["A", "M"])
-      .optional()
-      .default("A")
-      .describe("Exposure group type (A: All, M: Member)"),
-  })
-  .strict();
-
-const UpdateCategoryPropertiesSchema = z
-  .object({
-    shop_no: z.number().int().optional().default(1).describe("Shop number"),
-    display_group: z
-      .number()
-      .int()
-      .min(1)
-      .max(3)
-      .describe("Display group (1: Normal, 2: Recommendation, 3: New)"),
-    separated_category: z
-      .enum(["T", "F"])
-      .optional()
-      .default("F")
-      .describe("Start separately by category"),
-    category_no: z.number().int().optional().describe("Category number"),
-    properties: z.array(CategoryPropertySchema).describe("List of properties to update"),
-  })
-  .strict();
 
 async function cafe24_list_category_properties(params: ListCategoryProperties) {
   try {
@@ -142,9 +59,7 @@ async function cafe24_list_category_properties(params: ListCategoryProperties) {
   }
 }
 
-async function cafe24_create_category_property(
-  params: z.infer<typeof CreateCategoryPropertySchema>,
-) {
+async function cafe24_create_category_property(params: CreateCategoryProperty) {
   try {
     const { shop_no, ...requestBody } = params;
     const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
@@ -179,9 +94,7 @@ async function cafe24_create_category_property(
   }
 }
 
-async function cafe24_update_category_properties(
-  params: z.infer<typeof UpdateCategoryPropertiesSchema>,
-) {
+async function cafe24_update_category_properties(params: UpdateCategoryProperties) {
   try {
     const { shop_no, ...requestBody } = params;
     const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;

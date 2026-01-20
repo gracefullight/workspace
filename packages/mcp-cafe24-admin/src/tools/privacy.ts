@@ -1,39 +1,22 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import {
+  type PrivacyBoardsParams,
+  PrivacyBoardsParamsSchema,
+  type PrivacyBoardsUpdateParams,
+  PrivacyBoardsUpdateParamsSchema,
+  type PrivacyJoinParams,
+  PrivacyJoinParamsSchema,
+  type PrivacyJoinUpdateParams,
+  PrivacyJoinUpdateParamsSchema,
+  type PrivacyOrdersParams,
+  PrivacyOrdersParamsSchema,
+  type PrivacyOrdersUpdateParams,
+  PrivacyOrdersUpdateParamsSchema,
+} from "@/schemas/privacy.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
 import type { PrivacyAgreement } from "../types.js";
 
-// --- JOIN ---
-const PrivacyJoinParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-  })
-  .strict();
-
-const PrivacyJoinUpdateItemSchema = z
-  .object({
-    no: z.number().int().min(1).describe("Agreement ID number"),
-    use: z.enum(["T", "F"]).optional().describe("Enable agreement: T=Yes, F=No"),
-    required: z.enum(["T", "F"]).optional().describe("Is required: T=Yes, F=No"),
-    display: z
-      .array(z.enum(["JOIN", "SIMPLE_ORDER_JOIN", "SHOPPING_PAY_EASY_JOIN"]))
-      .optional()
-      .describe(
-        "Display screens: JOIN=Signup, SIMPLE_ORDER_JOIN=Order Simple Signup, SHOPPING_PAY_EASY_JOIN=Shopping Pay Easy Signup",
-      ),
-    save_type: z.enum(["S", "C"]).optional().describe("Save type: S=Standard, C=Custom"),
-    content: z.string().optional().describe("Agreement content"),
-  })
-  .strict();
-
-const PrivacyJoinUpdateParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-    requests: z.array(PrivacyJoinUpdateItemSchema).min(1).describe("List of agreements to update"),
-  })
-  .strict();
-
-async function cafe24_get_privacy_join_setting(params: z.infer<typeof PrivacyJoinParamsSchema>) {
+async function cafe24_get_privacy_join_setting(params: PrivacyJoinParams) {
   try {
     const queryParams: Record<string, unknown> = {};
     if (params.shop_no) {
@@ -98,9 +81,7 @@ async function cafe24_get_privacy_join_setting(params: z.infer<typeof PrivacyJoi
   }
 }
 
-async function cafe24_update_privacy_join_setting(
-  params: z.infer<typeof PrivacyJoinUpdateParamsSchema>,
-) {
+async function cafe24_update_privacy_join_setting(params: PrivacyJoinUpdateParams) {
   try {
     const { shop_no, requests } = params;
 
@@ -140,28 +121,7 @@ async function cafe24_update_privacy_join_setting(
   }
 }
 
-// --- BOARDS ---
-const PrivacyBoardsParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-  })
-  .strict();
-
-const PrivacyBoardRequestSchema = z.object({
-  no: z.number().int().min(1).describe("Agreement number"),
-  use: z.enum(["T", "F"]).optional().describe("Use status: T=Yes, F=No"),
-  save_type: z.enum(["S", "C"]).optional().describe("Save type: S=Standard terms, C=Custom terms"),
-  content: z.string().optional().describe("Agreement content"),
-});
-
-const PrivacyBoardsUpdateParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
-    requests: z.array(PrivacyBoardRequestSchema).describe("List of privacy board updates"),
-  })
-  .strict();
-
-async function cafe24_list_privacy_boards(params: z.infer<typeof PrivacyBoardsParamsSchema>) {
+async function cafe24_list_privacy_boards(params: PrivacyBoardsParams) {
   try {
     const queryParams: Record<string, unknown> = {};
     if (params.shop_no) {
@@ -210,9 +170,7 @@ async function cafe24_list_privacy_boards(params: z.infer<typeof PrivacyBoardsPa
   }
 }
 
-async function cafe24_update_privacy_boards(
-  params: z.infer<typeof PrivacyBoardsUpdateParamsSchema>,
-) {
+async function cafe24_update_privacy_boards(params: PrivacyBoardsUpdateParams) {
   try {
     const { shop_no, requests } = params;
 
@@ -243,30 +201,7 @@ async function cafe24_update_privacy_boards(
   }
 }
 
-// --- ORDERS ---
-const PrivacyOrdersParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number (default: 1)"),
-  })
-  .strict();
-
-const PrivacyOrderRequestSchema = z.object({
-  no: z.number().int().min(1).describe("Agreement number"),
-  use: z.enum(["T", "F"]).optional().describe("Use status: T=Yes, F=No"),
-  use_member: z.enum(["T", "F"]).optional().describe("Use for members: T=Yes, F=No"),
-  use_non_member: z.enum(["T", "F"]).optional().describe("Use for non-members: T=Yes, F=No"),
-  save_type: z.enum(["S", "C"]).optional().describe("Save type: S=Standard, C=Custom"),
-  content: z.string().optional().describe("Agreement content"),
-});
-
-const PrivacyOrdersUpdateParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
-    requests: z.array(PrivacyOrderRequestSchema).describe("List of privacy order updates"),
-  })
-  .strict();
-
-async function cafe24_list_privacy_orders(params: z.infer<typeof PrivacyOrdersParamsSchema>) {
+async function cafe24_list_privacy_orders(params: PrivacyOrdersParams) {
   try {
     const queryParams: Record<string, unknown> = {};
     if (params.shop_no) {
@@ -323,11 +258,10 @@ async function cafe24_list_privacy_orders(params: z.infer<typeof PrivacyOrdersPa
   }
 }
 
-async function cafe24_update_privacy_orders(
-  params: z.infer<typeof PrivacyOrdersUpdateParamsSchema>,
-) {
+async function cafe24_update_privacy_orders(params: PrivacyOrdersUpdateParams) {
   try {
     const { shop_no, requests } = params;
+
     const data = await makeApiRequest<{ orders: PrivacyAgreement[] }>(
       "/admin/privacy/orders",
       "PUT",
@@ -379,7 +313,7 @@ export function registerTools(server: McpServer): void {
     {
       title: "Update Cafe24 Privacy Join Settings",
       description:
-        "Update privacy agreement settings. Configuration includes enabling/disabling specific agreements, setting them as required or optional, defining where they are displayed (signup, order, Shopping Pay), and updating the agreement content.",
+        "Update privacy agreement settings. Configuration includes enabling/disabling specific agreements, setting them as required or optional, defining where they are displayed (signup, order, Shopping Pay), and updating agreement content.",
       inputSchema: PrivacyJoinUpdateParamsSchema,
       annotations: {
         readOnlyHint: false,

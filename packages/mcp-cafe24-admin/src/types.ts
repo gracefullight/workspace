@@ -77,6 +77,11 @@ export interface Benefit {
   benefit_name: string;
 }
 
+export interface Promotion {
+  promotion_no: number;
+  promotion_name: string;
+}
+
 export interface Coupon {
   coupon_no: string;
   coupon_name: string;
@@ -249,8 +254,8 @@ export interface Product {
   summary_description?: string;
   detail_description?: string;
   price: number;
-  selling: boolean;
-  display: boolean;
+  selling: boolean | string;
+  display: boolean | string;
   stock: number;
   created_date: string;
   updated_date: string;

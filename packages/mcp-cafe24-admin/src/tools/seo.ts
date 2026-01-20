@@ -2,8 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import {
   type SeoSettingsParams,
-  type SeoSettingsUpdateParams,
   SeoSettingsParamsSchema,
+  type SeoSettingsUpdateParams,
   SeoSettingsUpdateParamsSchema,
 } from "@/schemas/seo.js";
 

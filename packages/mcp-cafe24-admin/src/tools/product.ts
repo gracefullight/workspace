@@ -38,7 +38,9 @@ const ProductsSearchParamsSchema = z
     product_condition: z
       .string()
       .optional()
-      .describe("Product condition (N:New, B:Return, R:Stock, U:Used, E:Display, F:Refurb, S:Scratch)"),
+      .describe(
+        "Product condition (N:New, B:Return, R:Stock, U:Used, E:Display, F:Refurb, S:Scratch)",
+      ),
     display: z.enum(["T", "F"]).optional().describe("Display status (T: displayed, F: hidden)"),
     selling: z.enum(["T", "F"]).optional().describe("Selling status (T: selling, F: not selling)"),
     product_bundle: z.enum(["T", "F"]).optional().describe("Bundle product (T: yes, F: no)"),
@@ -110,7 +112,9 @@ const ProductCountParamsSchema = z
     product_condition: z
       .string()
       .optional()
-      .describe("Product condition (N:New, B:Return, R:Stock, U:Used, E:Display, F:Refurb, S:Scratch)"),
+      .describe(
+        "Product condition (N:New, B:Return, R:Stock, U:Used, E:Display, F:Refurb, S:Scratch)",
+      ),
     display: z.enum(["T", "F"]).optional().describe("Display status (T: displayed, F: hidden)"),
     selling: z.enum(["T", "F"]).optional().describe("Selling status (T: selling, F: not selling)"),
     product_bundle: z.enum(["T", "F"]).optional().describe("Bundle product (T: yes, F: no)"),
@@ -194,7 +198,8 @@ async function cafe24_count_products(params: z.infer<typeof ProductCountParamsSc
     if (queryParams.custom_variant_code)
       apiQueryParams.custom_variant_code = queryParams.custom_variant_code;
     if (queryParams.product_name) apiQueryParams.product_name = queryParams.product_name;
-    if (queryParams.eng_product_name) apiQueryParams.eng_product_name = queryParams.eng_product_name;
+    if (queryParams.eng_product_name)
+      apiQueryParams.eng_product_name = queryParams.eng_product_name;
     if (queryParams.supply_product_name)
       apiQueryParams.supply_product_name = queryParams.supply_product_name;
     if (queryParams.internal_product_name)
@@ -270,27 +275,54 @@ async function cafe24_count_products(params: z.infer<typeof ProductCountParamsSc
       content: [
         {
           type: "text" as const,
-          text: `Product count: ${data.count}`,
+          text: `Found ${data.count} products`,
         },
       ],
-      structuredContent: { count: data.count } as unknown as Record<string, unknown>,
+      structuredContent: { count: data.count },
     };
   } catch (error) {
     return { content: [{ type: "text" as const, text: handleApiError(error) }] };
   }
 }
 
+const ProductCategorySchema = z.object({
+  category_no: z.number().describe("Category number"),
+  category_name: z.string().describe("Category name"),
+});
+
+const ProductCreateParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().describe("Multi-shop number"),
+    supply_price: z.number().min(0).max(2147483647).optional().describe("Supply price"),
+    add_category_no: z.array(ProductCategorySchema).optional().describe("Categories to add"),
+  })
+  .strict();
+
+const ProductUpdateParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().describe("Multi-shop number"),
+    product_no: z.number().describe("Product number (required)"),
+    supply_price: z.number().min(0).max(2147483647).optional().describe("Supply price"),
+    add_category_no: z.array(ProductCategorySchema).optional().describe("Categories to add"),
+    delete_category_no: z.array(z.number().int()).optional().describe("Category numbers to delete"),
+    translated_additional_description: z
+      .string()
+      .optional()
+      .describe("Translated additional description"),
+    use_icon_exposure_term: z.enum(["T", "F"]).optional().describe("Use icon exposure term"),
+    icon_exposure_begin_datetime: z.string().optional().describe("Icon exposure start datetime"),
+    icon_exposure_end_datetime: z.string().optional().describe("Icon exposure end datetime"),
+  })
+  .strict();
+
 async function cafe24_list_products(params: z.infer<typeof ProductsSearchParamsSchema>) {
   try {
-    const { shop_no, embed, ...queryParams } = params;
+    const { shop_no, ...queryParams } = params;
     const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
 
-    const apiQueryParams: Record<string, unknown> = {
-      limit: queryParams.limit,
-      offset: queryParams.offset,
-    };
+    const apiQueryParams: Record<string, unknown> = {};
 
-    if (embed?.length) apiQueryParams.embed = embed.join(",");
+    if (queryParams.embed?.length) apiQueryParams.embed = queryParams.embed.join(",");
     if (queryParams.product_no) apiQueryParams.product_no = queryParams.product_no;
     if (queryParams.product_code) apiQueryParams.product_code = queryParams.product_code;
     if (queryParams.custom_product_code)
@@ -298,7 +330,8 @@ async function cafe24_list_products(params: z.infer<typeof ProductsSearchParamsS
     if (queryParams.custom_variant_code)
       apiQueryParams.custom_variant_code = queryParams.custom_variant_code;
     if (queryParams.product_name) apiQueryParams.product_name = queryParams.product_name;
-    if (queryParams.eng_product_name) apiQueryParams.eng_product_name = queryParams.eng_product_name;
+    if (queryParams.eng_product_name)
+      apiQueryParams.eng_product_name = queryParams.eng_product_name;
     if (queryParams.supply_product_name)
       apiQueryParams.supply_product_name = queryParams.supply_product_name;
     if (queryParams.internal_product_name)
@@ -364,25 +397,25 @@ async function cafe24_list_products(params: z.infer<typeof ProductsSearchParamsS
     if (queryParams.sort) apiQueryParams.sort = queryParams.sort;
     if (queryParams.order) apiQueryParams.order = queryParams.order;
 
-    const data = await makeApiRequest<{ products: Product[] }>(
+    const data = await makeApiRequest<{ products: Product[]; total: number }>(
       "/admin/products",
       "GET",
       undefined,
       apiQueryParams,
       requestHeaders,
     );
-
     const products = data.products || [];
+    const total = data.total || 0;
 
     return {
       content: [
         {
           type: "text" as const,
           text:
-            `Found ${products.length} products\n\n` +
+            `Found ${total} products (showing ${products.length})\n\n` +
             products
               .map(
-                (p: Record<string, unknown>) =>
+                (p: Product) =>
                   `## ${p.product_name} (${p.product_no})\n` +
                   `- **Code**: ${p.product_code}\n` +
                   `- **Price**: ${p.price}\n` +
@@ -422,7 +455,7 @@ async function cafe24_get_product(params: z.infer<typeof ProductDetailParamsSche
       queryParams,
       requestHeaders,
     );
-    const product = (data.product || {}) as Record<string, unknown>;
+    const product = (data.product || {}) as unknown as Record<string, unknown>;
 
     return {
       content: [
@@ -448,188 +481,6 @@ async function cafe24_get_product(params: z.infer<typeof ProductDetailParamsSche
   }
 }
 
-const ProductCategorySchema = z.object({
-  category_no: z.number().int().describe("Category number"),
-  recommend: z.enum(["T", "F"]).optional().default("F").describe("Recommend product"),
-  new: z.enum(["T", "F"]).optional().default("F").describe("New product"),
-});
-
-const ProductOptionSchema = z.object({
-  name: z.string().describe("Option name"),
-  value: z.array(z.string()).describe("Option values"),
-});
-
-const ShippingRateSchema = z.object({
-  shipping_rates_min: z.string().optional().describe("Shipping rate min"),
-  shipping_rates_max: z.string().optional().describe("Shipping rate max"),
-  shipping_fee: z.string().describe("Shipping fee"),
-});
-
-const RelationalProductSchema = z.object({
-  product_no: z.number().int().describe("Related product number"),
-  interrelated: z.enum(["T", "F"]).describe("Mutual registration (T: mutual, F: one-way)"),
-});
-
-const PointsAmountSchema = z.object({
-  payment_method: z.string().describe("Payment method"),
-  points_rate: z.string().describe("Points rate"),
-  points_unit_by_payment: z.enum(["P", "W"]).optional().describe("Points unit (P: percent, W: won)"),
-});
-
-const ProductVolumeSchema = z.object({
-  use_product_volume: z.enum(["T", "F"]).optional().describe("Use product volume"),
-  product_width: z.number().optional().describe("Width"),
-  product_height: z.number().optional().describe("Height"),
-  product_length: z.number().optional().describe("Length"),
-});
-
-const SizeGuideSchema = z.object({
-  use: z.enum(["T", "F"]).optional().default("F").describe("Use size guide"),
-  type: z.enum(["default", "custom"]).optional().default("default").describe("Guide type"),
-  default: z
-    .enum(["Male", "Female", "Child", "Infant"])
-    .optional()
-    .describe("Default guide type"),
-  description: z.string().optional().describe("Custom size guide description"),
-});
-
-const ProductCreateParamsSchema = z
-  .object({
-    shop_no: z.number().int().min(1).optional().default(1).describe("Multi-shop number"),
-    product_name: z.string().min(1).max(250).describe("Product name (required)"),
-    supply_price: z.number().min(0).max(2147483647).describe("Supply price (required)"),
-    price: z.number().min(0).max(2147483647).optional().describe("Selling price"),
-    price_excluding_tax: z
-      .number()
-      .min(0)
-      .max(2147483647)
-      .optional()
-      .describe("Price excluding tax"),
-    retail_price: z.number().min(0).max(2147483647).optional().describe("Retail price"),
-    display: z.enum(["T", "F"]).optional().default("F").describe("Display status"),
-    selling: z.enum(["T", "F"]).optional().default("F").describe("Selling status"),
-    product_condition: z
-      .enum(["N", "B", "R", "U", "E", "F", "S"])
-      .optional()
-      .default("N")
-      .describe("Product condition"),
-    product_used_month: z.number().int().optional().describe("Used months for used products"),
-    add_category_no: z.array(ProductCategorySchema).optional().describe("Categories to add"),
-    custom_product_code: z.string().max(40).optional().describe("Custom product code"),
-    eng_product_name: z.string().max(250).optional().describe("English product name"),
-    supply_product_name: z.string().max(250).optional().describe("Supplier product name"),
-    internal_product_name: z.string().max(50).optional().describe("Internal product name"),
-    model_name: z.string().max(100).optional().describe("Model name"),
-    has_option: z.enum(["T", "F"]).optional().default("F").describe("Has options"),
-    soldout_message: z.string().max(250).optional().describe("Soldout message"),
-    options: z.array(ProductOptionSchema).optional().describe("Product options"),
-    use_naverpay: z.enum(["T", "F"]).optional().describe("Use Naver Pay"),
-    naverpay_type: z.enum(["C", "O"]).optional().describe("Naver Pay type"),
-    use_kakaopay: z.enum(["T", "F"]).optional().describe("Use Kakao Pay"),
-    manufacturer_code: z.string().length(8).optional().describe("Manufacturer code"),
-    supplier_code: z.string().length(8).optional().describe("Supplier code"),
-    brand_code: z.string().length(8).optional().describe("Brand code"),
-    trend_code: z.string().length(8).optional().describe("Trend code"),
-    product_weight: z.number().min(0).max(999999.99).optional().describe("Product weight (kg)"),
-    made_date: z.string().optional().describe("Made date (YYYY-MM-DD)"),
-    release_date: z.string().optional().describe("Release date (YYYY-MM-DD)"),
-    expiration_date: z
-      .object({
-        start_date: z.string().optional(),
-        end_date: z.string().optional(),
-      })
-      .optional()
-      .describe("Expiration date range"),
-    description: z.string().optional().describe("Product description (HTML)"),
-    mobile_description: z.string().optional().describe("Mobile description (HTML)"),
-    summary_description: z.string().max(255).optional().describe("Summary description"),
-    simple_description: z.string().optional().describe("Simple description"),
-    translated_description: z.string().optional().describe("Translated description"),
-    product_tag: z.array(z.string()).max(100).optional().describe("Product tags"),
-    payment_info: z.string().optional().describe("Payment info"),
-    shipping_info: z.string().optional().describe("Shipping info"),
-    exchange_info: z.string().optional().describe("Exchange/return info"),
-    service_info: z.string().optional().describe("Service info"),
-    icon: z.array(z.string()).max(5).optional().describe("Product icons"),
-    hscode: z.string().max(20).optional().describe("HS code"),
-    country_hscode: z.record(z.string()).optional().describe("Country-specific HS codes"),
-    shipping_scope: z.enum(["A", "C", "B"]).optional().describe("Shipping scope"),
-    shipping_method: z
-      .enum(["01", "02", "03", "04", "05", "06", "07", "08", "09"])
-      .optional()
-      .describe("Shipping method"),
-    shipping_fee_by_product: z.enum(["T", "F"]).optional().default("F").describe("Individual shipping"),
-    shipping_area: z.string().max(255).optional().describe("Shipping area"),
-    shipping_period: z
-      .object({
-        minimum: z.number().int().optional().default(1),
-        maximum: z.number().int().optional().default(7),
-      })
-      .optional()
-      .describe("Shipping period"),
-    shipping_fee_type: z
-      .enum(["T", "R", "M", "D", "W", "C", "N"])
-      .optional()
-      .describe("Shipping fee type"),
-    shipping_rates: z.array(ShippingRateSchema).max(200).optional().describe("Shipping rates"),
-    prepaid_shipping_fee: z.enum(["C", "P", "B"]).optional().describe("Prepaid shipping fee"),
-    clearance_category_code: z.string().length(8).optional().describe("Clearance category code"),
-    product_shipping_type: z.enum(["D", "C", "E"]).optional().describe("Product shipping type"),
-    detail_image: z.string().optional().describe("Detail image path"),
-    list_image: z.string().optional().describe("List image path"),
-    tiny_image: z.string().optional().describe("Tiny image path"),
-    small_image: z.string().optional().describe("Small image path"),
-    image_upload_type: z.enum(["A", "B", "C"]).optional().default("A").describe("Image upload type"),
-    additional_information: z
-      .array(z.object({ key: z.string(), value: z.string().optional() }))
-      .optional()
-      .describe("Additional information"),
-    price_content: z.string().max(20).optional().describe("Price replacement text"),
-    buy_limit_by_product: z.enum(["T", "F"]).optional().default("F").describe("Individual buy limit"),
-    buy_limit_type: z
-      .enum(["N", "M", "F", "O", "D"])
-      .optional()
-      .default("F")
-      .describe("Buy limit type"),
-    buy_group_list: z.array(z.number().int()).optional().describe("Buy group list"),
-    buy_member_id_list: z.array(z.string()).optional().describe("Buy member ID list"),
-    repurchase_restriction: z.enum(["T", "F"]).optional().default("F").describe("Repurchase restriction"),
-    single_purchase_restriction: z.enum(["T", "F"]).optional().default("F").describe("Single purchase restriction"),
-    single_purchase: z.enum(["T", "F", "O"]).optional().describe("Single purchase setting"),
-    buy_unit_type: z.enum(["P", "O"]).optional().default("O").describe("Buy unit type"),
-    buy_unit: z.number().int().optional().default(1).describe("Buy unit"),
-    order_quantity_limit_type: z.enum(["P", "O"]).optional().default("O").describe("Order quantity limit type"),
-    minimum_quantity: z.number().int().optional().default(1).describe("Minimum quantity"),
-    maximum_quantity: z.number().int().optional().default(0).describe("Maximum quantity (0: unlimited)"),
-    points_by_product: z.enum(["T", "F"]).optional().default("F").describe("Individual points setting"),
-    points_setting_by_payment: z.enum(["B", "C"]).optional().describe("Points by payment method"),
-    points_amount: z.array(PointsAmountSchema).optional().describe("Points amount settings"),
-    except_member_points: z.enum(["T", "F"]).optional().default("F").describe("Exclude member points"),
-    product_volume: ProductVolumeSchema.optional().describe("Product volume"),
-    origin_classification: z.enum(["F", "T", "E"]).optional().describe("Origin classification"),
-    origin_place_no: z.number().int().optional().describe("Origin place number"),
-    origin_place_value: z.string().max(30).optional().describe("Origin place value"),
-    made_in_code: z.string().length(2).optional().describe("Made in country code"),
-    main: z.array(z.number().int()).optional().describe("Main display numbers"),
-    relational_product: z.array(RelationalProductSchema).max(200).optional().describe("Related products"),
-    product_material: z.string().optional().describe("Product material"),
-    translate_product_material: z.enum(["T", "F"]).optional().describe("Translate material"),
-    english_product_material: z.string().optional().describe("English product material"),
-    cloth_fabric: z.enum(["woven", "knit"]).optional().describe("Cloth fabric type"),
-    classification_code: z.string().length(8).optional().describe("Classification code"),
-    additional_price: z.number().optional().describe("Additional price"),
-    margin_rate: z.number().min(-999.99).max(999.99).optional().describe("Margin rate"),
-    tax_type: z.enum(["A", "B", "C"]).optional().describe("Tax type"),
-    tax_rate: z.number().min(1).max(100).optional().describe("Tax rate"),
-    additional_image: z.array(z.string()).max(20).optional().describe("Additional images"),
-    adult_certification: z.enum(["T", "F"]).optional().default("F").describe("Adult certification"),
-    exposure_limit_type: z.enum(["A", "M"]).optional().default("A").describe("Exposure limit type"),
-    exposure_group_list: z.array(z.number().int()).optional().describe("Exposure group list"),
-    cultural_tax_deduction: z.enum(["T", "F"]).optional().describe("Cultural tax deduction"),
-    size_guide: SizeGuideSchema.optional().describe("Size guide"),
-  })
-  .strict();
-
 async function cafe24_create_product(params: z.infer<typeof ProductCreateParamsSchema>) {
   try {
     const { shop_no, ...requestBody } = params;
@@ -647,7 +498,7 @@ async function cafe24_create_product(params: z.infer<typeof ProductCreateParamsS
       undefined,
       requestHeaders,
     );
-    const product = (data.product || {}) as Record<string, unknown>;
+    const product = (data.product || {}) as unknown as Record<string, unknown>;
 
     return {
       content: [
@@ -662,27 +513,6 @@ async function cafe24_create_product(params: z.infer<typeof ProductCreateParamsS
     return { content: [{ type: "text" as const, text: handleApiError(error) }] };
   }
 }
-
-const ProductUpdateParamsSchema = ProductCreateParamsSchema.omit({
-  supply_price: true,
-  add_category_no: true,
-})
-  .partial()
-  .extend({
-    shop_no: z.number().int().min(1).optional().describe("Multi-shop number"),
-    product_no: z.number().describe("Product number (required)"),
-    supply_price: z.number().min(0).max(2147483647).optional().describe("Supply price"),
-    add_category_no: z.array(ProductCategorySchema).optional().describe("Categories to add"),
-    delete_category_no: z.array(z.number().int()).optional().describe("Category numbers to delete"),
-    translated_additional_description: z
-      .string()
-      .optional()
-      .describe("Translated additional description"),
-    use_icon_exposure_term: z.enum(["T", "F"]).optional().describe("Use icon exposure term"),
-    icon_exposure_begin_datetime: z.string().optional().describe("Icon exposure start datetime"),
-    icon_exposure_end_datetime: z.string().optional().describe("Icon exposure end datetime"),
-  })
-  .strict();
 
 async function cafe24_update_product(params: z.infer<typeof ProductUpdateParamsSchema>) {
   try {
@@ -701,7 +531,7 @@ async function cafe24_update_product(params: z.infer<typeof ProductUpdateParamsS
       undefined,
       requestHeaders,
     );
-    const product = (data.product || {}) as Record<string, unknown>;
+    const product = (data.product || {}) as unknown as Record<string, unknown>;
 
     return {
       content: [
@@ -786,9 +616,16 @@ async function cafe24_create_product_additional_images(
 
     const data = await makeApiRequest<{
       additionalimage: { shop_no: number; additional_image: Record<string, string>[] };
-    }>(`/admin/products/${product_no}/additionalimages`, "POST", payload, undefined, requestHeaders);
+    }>(
+      `/admin/products/${product_no}/additionalimages`,
+      "POST",
+      payload,
+      undefined,
+      requestHeaders,
+    );
 
-    const result = data.additionalimage || {};
+    const result =
+      data.additionalimage || ({ additional_image: [] } as { additional_image?: string[] });
 
     return {
       content: [
@@ -822,7 +659,7 @@ async function cafe24_update_product_additional_images(
       additionalimage: { shop_no: number; additional_image: Record<string, string>[] };
     }>(`/admin/products/${product_no}/additionalimages`, "PUT", payload, undefined, requestHeaders);
 
-    const result = data.additionalimage || {};
+    const result = data.additionalimage || ({} as { additional_image?: string[] });
 
     return {
       content: [
@@ -895,6 +732,15 @@ const ProductApproveUpdateParamsSchema = z
   })
   .strict();
 
+const statusMap: Record<string, string> = {
+  N: "Approval Request (New)",
+  E: "Approval Request (Edit)",
+  C: "Approved",
+  R: "Rejected",
+  I: "Inspecting",
+  "": "Never requested",
+};
+
 async function cafe24_get_product_approve(params: z.infer<typeof ProductApproveGetParamsSchema>) {
   try {
     const { shop_no, product_no } = params;
@@ -904,15 +750,8 @@ async function cafe24_get_product_approve(params: z.infer<typeof ProductApproveG
       approve: { shop_no: number; status: string; product_no: number };
     }>(`/admin/products/${product_no}/approve`, "GET", undefined, { shop_no }, requestHeaders);
 
-    const result = data.approve || {};
-    const statusMap: Record<string, string> = {
-      N: "Approval Request (New)",
-      E: "Approval Request (Edit)",
-      C: "Approved",
-      R: "Rejected",
-      I: "Inspecting",
-      "": "Never requested",
-    };
+    const result =
+      data.approve || ({} as { shop_no?: number; status?: string; product_no?: number });
 
     return {
       content: [
@@ -944,7 +783,8 @@ async function cafe24_request_product_approve(
       approve: { shop_no: number; status: string; product_no: number };
     }>(`/admin/products/${product_no}/approve`, "POST", payload, undefined, requestHeaders);
 
-    const result = data.approve || {};
+    const result =
+      data.approve || ({} as { shop_no?: number; status?: string; product_no?: number });
 
     return {
       content: [
@@ -976,7 +816,8 @@ async function cafe24_update_product_approve(
       approve: { shop_no: number; status: string; product_no: number };
     }>(`/admin/products/${product_no}/approve`, "PUT", payload, undefined, requestHeaders);
 
-    const result = data.approve || {};
+    const result =
+      data.approve || ({} as { shop_no?: number; status?: string; product_no?: number });
     const statusMap: Record<string, string> = {
       C: "Approved",
       R: "Rejected",
@@ -1033,9 +874,23 @@ async function cafe24_get_product_custom_properties(
         shop_no: number;
         custom_properties: { property_no: number; property_name: string; property_value: string }[];
       };
-    }>(`/admin/products/${product_no}/customproperties`, "GET", undefined, { shop_no }, requestHeaders);
+    }>(
+      `/admin/products/${product_no}/customproperties`,
+      "GET",
+      undefined,
+      { shop_no },
+      requestHeaders,
+    );
 
-    const result = data.products || {};
+    const result =
+      data.products ||
+      ({} as {
+        custom_properties?: {
+          property_no: number;
+          property_name: string;
+          property_value: string;
+        }[];
+      });
     const properties = result.custom_properties || [];
 
     return {
@@ -1044,7 +899,9 @@ async function cafe24_get_product_custom_properties(
           type: "text" as const,
           text:
             `Found ${properties.length} custom properties for product ${product_no}\n\n` +
-            properties.map((p) => `- [${p.property_no}] ${p.property_name}: ${p.property_value}`).join("\n"),
+            properties
+              .map((p) => `- [${p.property_no}] ${p.property_name}: ${p.property_value}`)
+              .join("\n"),
         },
       ],
       structuredContent: result as unknown as Record<string, unknown>,
@@ -1192,7 +1049,14 @@ async function cafe24_get_decoration_images(
       requestHeaders,
     );
 
-    const result = data.decorationimage || {};
+    const result =
+      data.decorationimage ||
+      ({} as {
+        show_start_date?: string;
+        show_end_date: string;
+        image_list: Record<string, string>[];
+        use_show_date?: string;
+      });
     const images = result.image_list || [];
 
     return {
@@ -1232,7 +1096,13 @@ async function cafe24_create_decoration_images(
 
     const data = await makeApiRequest<{
       decorationimage: Record<string, unknown>;
-    }>(`/admin/products/${product_no}/decorationimages`, "POST", payload, undefined, requestHeaders);
+    }>(
+      `/admin/products/${product_no}/decorationimages`,
+      "POST",
+      payload,
+      undefined,
+      requestHeaders,
+    );
 
     const result = data.decorationimage || {};
 
@@ -1299,7 +1169,7 @@ async function cafe24_delete_decoration_image(
       requestHeaders,
     );
 
-    const result = data.decorationimage || {};
+    const result = data.decorationimage || ({} as { code?: string });
 
     return {
       content: [

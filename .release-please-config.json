@@ -26,6 +26,10 @@
     "packages/ng-daum-address": {
       "release-type": "node",
       "component": "@gracefullight/ng-daum-address"
+    },
+    "packages/mcp-cafe24-admin": {
+      "release-type": "node",
+      "component": "@gracefullight/mcp-cafe24-admin"
     }
   }
 }

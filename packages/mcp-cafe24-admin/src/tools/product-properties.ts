@@ -2,6 +2,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   type ProductFieldPropertiesParams,
   ProductFieldPropertiesParamsSchema,
+  type ProductFieldPropertiesUpdateParams,
+  ProductFieldPropertiesUpdateParamsSchema,
+  type ProductFieldPropertyCreateParams,
+  ProductFieldPropertyCreateParamsSchema,
   type ProductPropertiesParams,
   ProductPropertiesParamsSchema,
   type ProductPropertiesUpdateParams,
@@ -147,6 +151,93 @@ async function cafe24_list_product_field_properties(params: ProductFieldProperti
   }
 }
 
+interface CreatedPropertyResponse {
+  product: {
+    property: {
+      key: string;
+      multishop_display_names: Array<{ shop_no: number; name: string }>;
+      display: string;
+      display_name: string;
+      font_type: string;
+      font_size: number;
+      font_color: string;
+      exposure_group_type: string;
+    };
+  };
+}
+
+async function cafe24_create_product_field_property(params: ProductFieldPropertyCreateParams) {
+  try {
+    const payload = {
+      request: {
+        property: params,
+      },
+    };
+
+    const data = await makeApiRequest<CreatedPropertyResponse>(
+      "/admin/products/properties",
+      "POST",
+      payload,
+    );
+
+    const property = data.product?.property;
+
+    const shopNames =
+      property?.multishop_display_names?.map((s) => `Shop #${s.shop_no}: ${s.name}`).join(", ") ||
+      "N/A";
+
+    const content =
+      `**Created Product Field Property**\n\n` +
+      `- **Key**: ${property?.key}\n` +
+      `- **Display Names**: ${shopNames}\n` +
+      `- **Display**: ${property?.display === "T" ? "Yes" : "No"}\n` +
+      `- **Display Name**: ${property?.display_name === "T" ? "Yes" : "No"}\n` +
+      `- **Font**: ${property?.font_type} / ${property?.font_size}px / ${property?.font_color}\n` +
+      `- **Exposure Group**: ${property?.exposure_group_type === "A" ? "All" : "Customer accounts"}`;
+
+    return {
+      content: [{ type: "text" as const, text: content }],
+      structuredContent: { product: data.product } as unknown as Record<string, unknown>,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_update_product_field_properties(params: ProductFieldPropertiesUpdateParams) {
+  try {
+    const { shop_no, properties } = params;
+
+    const payload = {
+      shop_no: shop_no ?? 1,
+      request: { properties },
+    };
+
+    const data = await makeApiRequest<ProductFieldPropertiesResponse>(
+      "/admin/products/properties",
+      "PUT",
+      payload,
+    );
+
+    const product = data.product;
+    const updatedProperties = product?.properties || [];
+
+    let content = `**Updated Product Field Properties (Shop #${product?.shop_no || 1}):**\n\n`;
+    content += `| Key | Name | Display | Font Type | Size | Color |\n`;
+    content += `|-----|------|---------|-----------|------|-------|\n`;
+    for (const prop of updatedProperties) {
+      content += `| ${prop.key} | ${prop.name} | ${prop.display === "T" ? "Yes" : "No"} | ${prop.font_type} | ${prop.font_size} | ${prop.font_color} |\n`;
+    }
+
+    return {
+      content: [{ type: "text" as const, text: content }],
+      structuredContent: { product } as unknown as Record<string, unknown>,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
 export function registerTools(server: McpServer): void {
   server.registerTool(
     "cafe24_get_product_properties_setting",
@@ -197,5 +288,39 @@ export function registerTools(server: McpServer): void {
       },
     },
     cafe24_list_product_field_properties,
+  );
+
+  server.registerTool(
+    "cafe24_create_product_field_property",
+    {
+      title: "Create Product Field Property",
+      description:
+        "Create a new custom product field property with multishop display names, font settings, and exposure options.",
+      inputSchema: ProductFieldPropertyCreateParamsSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+    },
+    cafe24_create_product_field_property,
+  );
+
+  server.registerTool(
+    "cafe24_update_product_field_properties",
+    {
+      title: "Update Product Field Properties",
+      description:
+        "Update multiple product field properties including name, display status, and font settings.",
+      inputSchema: ProductFieldPropertiesUpdateParamsSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    cafe24_update_product_field_properties,
   );
 }

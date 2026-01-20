@@ -51,3 +51,78 @@ export const ProductFieldPropertiesParamsSchema = z
   .strict();
 
 export type ProductFieldPropertiesParams = z.infer<typeof ProductFieldPropertiesParamsSchema>;
+
+/**
+ * Schema for multishop display name
+ */
+const MultishopDisplayNameSchema = z.object({
+  shop_no: z.number().int().min(1).describe("Shop number"),
+  name: z.string().describe("Display name for this shop"),
+});
+
+/**
+ * Schema for creating a product field property
+ */
+export const ProductFieldPropertyCreateParamsSchema = z
+  .object({
+    multishop_display_names: z
+      .array(MultishopDisplayNameSchema)
+      .min(1)
+      .describe("Display names for each shop"),
+    display: z
+      .enum(["T", "F"])
+      .optional()
+      .default("F")
+      .describe("Whether to display the field (T: Display, F: Do not display)"),
+    display_name: z
+      .enum(["T", "F"])
+      .optional()
+      .default("T")
+      .describe("Display field name (T: Used, F: Not used)"),
+    font_type: z
+      .enum(["N", "B", "I", "D"])
+      .optional()
+      .default("N")
+      .describe("Font type (N: Normal, B: Bold, I: Italic, D: Bold Italic)"),
+    font_size: z.number().int().optional().default(12).describe("Font size"),
+    font_color: z.string().optional().default("#555555").describe("Font color (Hex code)"),
+    exposure_group_type: z
+      .enum(["A", "M"])
+      .optional()
+      .default("A")
+      .describe("Display target (A: All, M: Customer accounts)"),
+  })
+  .strict();
+
+export type ProductFieldPropertyCreateParams = z.infer<
+  typeof ProductFieldPropertyCreateParamsSchema
+>;
+
+/**
+ * Schema for a single property in bulk update
+ */
+const FieldPropertyItemSchema = z.object({
+  key: z.string().describe("Field code (required)"),
+  name: z.string().optional().describe("Field name (text)"),
+  display: z.enum(["T", "F"]).optional().describe("Whether to display the field"),
+  font_type: z
+    .enum(["N", "B", "I", "D"])
+    .optional()
+    .describe("Font type (N: Normal, B: Bold, I: Italic, D: Bold Italic)"),
+  font_size: z.number().int().optional().describe("Font size"),
+  font_color: z.string().optional().describe("Font color (Hex code)"),
+});
+
+/**
+ * Schema for updating product field properties
+ */
+export const ProductFieldPropertiesUpdateParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().describe("Shop number (default: 1)"),
+    properties: z.array(FieldPropertyItemSchema).min(1).describe("Array of properties to update"),
+  })
+  .strict();
+
+export type ProductFieldPropertiesUpdateParams = z.infer<
+  typeof ProductFieldPropertiesUpdateParamsSchema
+>;

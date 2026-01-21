@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/gracefullight/pkgs/compare/@gracefullight/mcp-cafe24-admin@0.1.1...@gracefullight/mcp-cafe24-admin@0.1.2) (2026-01-21)
+
+
+### Features
+
+* add Cafe24 customer group setting and customer privacy listing tools ([d6e9d18](https://github.com/gracefullight/pkgs/commit/d6e9d18835a1788c99f2b1334020249c768ca132))
+* adjust API client test expectations for `resource` key wrapping ([70694a3](https://github.com/gracefullight/pkgs/commit/70694a31f85a53faea669fcf9ca7aff8b4796f04))
+* introduce customer memo management tools and customer auto-update status retrieval for Cafe24 ([7b8fcf5](https://github.com/gracefullight/pkgs/commit/7b8fcf566ce54deed356d542f4b187483c0d84ff))
+
 ## [0.1.1](https://github.com/gracefullight/pkgs/compare/@gracefullight/mcp-cafe24-admin@0.1.0...@gracefullight/mcp-cafe24-admin@0.1.1) (2026-01-21)
 
 

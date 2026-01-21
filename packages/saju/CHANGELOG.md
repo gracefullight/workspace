@@ -1,5 +1,12 @@
 # @gracefullight/saju
 
+## [1.1.1](https://github.com/gracefullight/pkgs/compare/@gracefullight/saju@1.1.0...@gracefullight/saju@1.1.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* **saju:** hour pillar calculation regression ([7f72fe7](https://github.com/gracefullight/pkgs/commit/7f72fe71e502e6a1643f2c74b23656e94d6aee54))
+
 ## [1.1.0](https://github.com/gracefullight/pkgs/compare/@gracefullight/saju@1.0.1...@gracefullight/saju@1.1.0) (2026-01-14)
 
 

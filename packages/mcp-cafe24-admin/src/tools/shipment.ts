@@ -1,5 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
+  type BulkCreateShipmentInput,
+  BulkCreateShipmentInputSchema,
+  type BulkUpdateShipmentInput,
+  BulkUpdateShipmentInputSchema,
   type CreateShipmentParams,
   CreateShipmentParamsSchema,
   type DeleteShipmentParams,
@@ -11,6 +15,8 @@ import {
 } from "../schemas/shipment.js";
 import { handleApiError, makeApiRequest } from "../services/api-client.js";
 import type {
+  BulkCreateShipmentResponse,
+  BulkUpdateShipmentResponse,
   CreateShipmentResponse,
   DeleteShipmentResponse,
   ListShipmentsResponse,
@@ -136,6 +142,58 @@ async function cafe24_delete_shipment(params: DeleteShipmentParams) {
   }
 }
 
+async function cafe24_bulk_create_shipments(params: BulkCreateShipmentInput) {
+  try {
+    const { shop_no, requests } = params;
+    const data = (await makeApiRequest<BulkCreateShipmentResponse>("/admin/shipments", "POST", {
+      shop_no,
+      requests,
+    })) as unknown as Record<string, unknown>;
+
+    const shipments = (data.shipments as any[]) || [];
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Successfully created ${shipments.length} shipment(s).`,
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return {
+      content: [{ type: "text" as const, text: handleApiError(error) }],
+    };
+  }
+}
+
+async function cafe24_bulk_update_shipments(params: BulkUpdateShipmentInput) {
+  try {
+    const { shop_no, requests } = params;
+    const data = (await makeApiRequest<BulkUpdateShipmentResponse>("/admin/shipments", "PUT", {
+      shop_no,
+      requests,
+    })) as unknown as Record<string, unknown>;
+
+    const shipments = (data.shipments as any[]) || [];
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Successfully updated ${shipments.length} shipment(s).`,
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return {
+      content: [{ type: "text" as const, text: handleApiError(error) }],
+    };
+  }
+}
+
 export function registerTools(server: McpServer): void {
   server.registerTool(
     "cafe24_list_shipments",
@@ -175,5 +233,25 @@ export function registerTools(server: McpServer): void {
       inputSchema: DeleteShipmentParamsSchema,
     },
     cafe24_delete_shipment,
+  );
+
+  server.registerTool(
+    "cafe24_bulk_create_shipments",
+    {
+      title: "Bulk Create Cafe24 Shipments",
+      description: "Create multiple shipments across different orders in a single request.",
+      inputSchema: BulkCreateShipmentInputSchema,
+    },
+    cafe24_bulk_create_shipments,
+  );
+
+  server.registerTool(
+    "cafe24_bulk_update_shipments",
+    {
+      title: "Bulk Update Cafe24 Shipments",
+      description: "Update multiple shipments across different orders in a single request.",
+      inputSchema: BulkUpdateShipmentInputSchema,
+    },
+    cafe24_bulk_update_shipments,
   );
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/gracefullight/pkgs/compare/@gracefullight/mcp-cafe24-admin@0.1.2...@gracefullight/mcp-cafe24-admin@0.1.3) (2026-01-21)
+
+
+### Features
+
+* add common event and benefit schemas/types, and capture linting output ([70bad54](https://github.com/gracefullight/pkgs/commit/70bad5420b5bc8f7d2fee7c90b7005e747eeb294))
+* introduce new schemas, types, and tools for article icons, board articles, comments, SEO, customer data, and urgent inquiries ([7abdccb](https://github.com/gracefullight/pkgs/commit/7abdccb3772995abdd56bcd03ed88fbd182c93a5))
+
 ## [0.1.2](https://github.com/gracefullight/pkgs/compare/@gracefullight/mcp-cafe24-admin@0.1.1...@gracefullight/mcp-cafe24-admin@0.1.2) (2026-01-21)
 
 

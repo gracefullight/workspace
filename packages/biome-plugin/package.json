@@ -1,6 +1,6 @@
 {
   "name": "@gracefullight/biome-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Biome GritQL plugins for code quality",
   "type": "module",
   "files": [

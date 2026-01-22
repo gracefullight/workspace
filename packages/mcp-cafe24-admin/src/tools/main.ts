@@ -1,18 +1,26 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
+  type CreateMain,
   type CreateMainProperty,
   CreateMainPropertySchema,
+  CreateMainSchema,
+  type DeleteMain,
+  DeleteMainSchema,
   type ListMainProperties,
   ListMainPropertiesSchema,
+  type ListMains,
+  ListMainsSchema,
   type MainSettingParams,
   MainSettingParamsSchema,
   type MainSettingUpdateParams,
   MainSettingUpdateParamsSchema,
+  type UpdateMain,
   type UpdateMainProperties,
   UpdateMainPropertiesSchema,
+  UpdateMainSchema,
 } from "@/schemas/main.js";
 import { handleApiError, makeApiRequest } from "@/services/api-client.js";
-import type { DisplaySetting, TextStyle } from "@/types/index.js";
+import type { DisplaySetting, Main, TextStyle } from "@/types/index.js";
 
 async function cafe24_list_main_properties(params: ListMainProperties) {
   try {
@@ -233,6 +241,129 @@ async function cafe24_update_main_setting(params: MainSettingUpdateParams) {
   }
 }
 
+async function cafe24_list_mains(params: ListMains) {
+  try {
+    const { shop_no } = params;
+    const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
+
+    const data = await makeApiRequest(
+      "/admin/mains",
+      "GET",
+      undefined,
+      { shop_no },
+      requestHeaders,
+    );
+
+    const { mains = [] } = data as { mains: Main[] };
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text:
+            `Found ${mains.length} main display groups.\n\n` +
+            mains
+              .map(
+                (m) =>
+                  `- [${m.display_group}] ${m.group_name} (${m.module_code})\n  Sold-out: ${m.soldout_sort_type === "B" ? "Back" : "Normal"}, Auto Display: ${m.use_autodisplay === "T" ? "Yes" : "No"}`,
+              )
+              .join("\n"),
+        },
+      ],
+      structuredContent: { mains },
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_create_main(params: CreateMain) {
+  try {
+    const { shop_no, ...request } = params;
+    const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
+
+    const data = await makeApiRequest(
+      "/admin/mains",
+      "POST",
+      { shop_no, request },
+      undefined,
+      requestHeaders,
+    );
+
+    const { mains } = data as { mains: Main };
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Created main display group: ${mains.group_name} (Display Group: ${mains.display_group})`,
+        },
+      ],
+      structuredContent: mains,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_update_main(params: UpdateMain) {
+  try {
+    const { shop_no, display_group, ...request } = params;
+    const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
+
+    const data = await makeApiRequest(
+      `/admin/mains/${display_group}`,
+      "PUT",
+      { shop_no, request },
+      undefined,
+      requestHeaders,
+    );
+
+    const { mains } = data as { mains: Main };
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Updated main display group: ${mains.group_name} (Display Group: ${mains.display_group})`,
+        },
+      ],
+      structuredContent: mains,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_delete_main(params: DeleteMain) {
+  try {
+    const { shop_no, display_group } = params;
+    const requestHeaders = shop_no ? { "X-Cafe24-Shop-No": shop_no.toString() } : undefined;
+
+    const data = await makeApiRequest(
+      `/admin/mains/${display_group}`,
+      "DELETE",
+      { shop_no },
+      undefined,
+      requestHeaders,
+    );
+
+    const { mains } = data as { mains: { display_group: number } };
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Deleted main display group: ${mains.display_group}`,
+        },
+      ],
+      structuredContent: mains,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
 export function registerTools(server: McpServer): void {
   server.registerTool(
     "cafe24_list_main_properties",
@@ -314,5 +445,69 @@ export function registerTools(server: McpServer): void {
       },
     },
     cafe24_update_main_setting,
+  );
+
+  server.registerTool(
+    "cafe24_list_mains",
+    {
+      title: "List Main Display Groups",
+      description: "Retrieve a list of all main display groups",
+      inputSchema: ListMainsSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    cafe24_list_mains,
+  );
+
+  server.registerTool(
+    "cafe24_create_main",
+    {
+      title: "Create Main Display Group",
+      description: "Create a new main display group",
+      inputSchema: CreateMainSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+    },
+    cafe24_create_main,
+  );
+
+  server.registerTool(
+    "cafe24_update_main",
+    {
+      title: "Update Main Display Group",
+      description: "Update an existing main display group",
+      inputSchema: UpdateMainSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+    },
+    cafe24_update_main,
+  );
+
+  server.registerTool(
+    "cafe24_delete_main",
+    {
+      title: "Delete Main Display Group",
+      description: "Delete an existing main display group",
+      inputSchema: DeleteMainSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+    },
+    cafe24_delete_main,
   );
 }

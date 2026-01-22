@@ -93,6 +93,43 @@ export const MainSettingUpdateParamsSchema = z
   })
   .strict();
 
+export const ListMainsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().default(1).describe("Shop Number"),
+  })
+  .strict();
+
+export const CreateMainSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().default(1).describe("Shop Number"),
+    group_name: z.string().max(50).describe("Group Name"),
+    soldout_sort_type: z
+      .enum(["B", "N"])
+      .optional()
+      .default("N")
+      .describe("Sold-out product display status (B: Move to back, N: Normal)"),
+  })
+  .strict();
+
+export const UpdateMainSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().default(1).describe("Shop Number"),
+    display_group: z.number().int().describe("Main category number"),
+    group_name: z.string().max(50).optional().describe("Group Name"),
+    soldout_sort_type: z
+      .enum(["B", "N"])
+      .optional()
+      .describe("Sold-out product display status (B: Move to back, N: Normal)"),
+  })
+  .strict();
+
+export const DeleteMainSchema = z
+  .object({
+    shop_no: z.number().int().min(1).optional().default(1).describe("Shop Number"),
+    display_group: z.number().int().describe("Main category number"),
+  })
+  .strict();
+
 export type MainProperty = z.infer<typeof MainPropertySchema>;
 export type ListMainProperties = z.infer<typeof ListMainPropertiesSchema>;
 export type CreateMainProperty = z.infer<typeof CreateMainPropertySchema>;
@@ -100,3 +137,7 @@ export type UpdateMainProperties = z.infer<typeof UpdateMainPropertiesSchema>;
 export type MainSettingParams = z.infer<typeof MainSettingParamsSchema>;
 export type TextStyle = z.infer<typeof TextStyleSchema>;
 export type MainSettingUpdateParams = z.infer<typeof MainSettingUpdateParamsSchema>;
+export type ListMains = z.infer<typeof ListMainsSchema>;
+export type CreateMain = z.infer<typeof CreateMainSchema>;
+export type UpdateMain = z.infer<typeof UpdateMainSchema>;
+export type DeleteMain = z.infer<typeof DeleteMainSchema>;

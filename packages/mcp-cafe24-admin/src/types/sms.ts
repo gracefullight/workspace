@@ -21,3 +21,48 @@ export interface SMSSendResponse {
   };
   [key: string]: unknown;
 }
+
+export interface SMSBalance {
+  balance: string;
+  sms_count: number;
+  lms_count: number;
+}
+
+export interface SMSBalanceResponse {
+  sms: SMSBalance;
+  [key: string]: unknown;
+}
+export interface SMSReceiver {
+  no: number;
+  recipient_type: "All" | "S" | "A";
+  supplier_name: string | null;
+  supplier_id: string | null;
+  user_name: string | null;
+  user_id: string | null;
+  manager_name: string | null;
+  cellphone: string;
+}
+
+export interface SMSReceiverListResponse {
+  receivers: SMSReceiver[];
+  links?: {
+    rel: string;
+    href: string;
+  }[];
+  [key: string]: unknown;
+}
+
+export interface SMSSender {
+  sender_no: number;
+  sender: string;
+  auth_status: "00" | "10" | "20" | "30" | "40";
+  memo: {
+    request_reason: string;
+    reject_reason: string;
+  };
+}
+
+export interface SMSSenderListResponse {
+  senders: SMSSender[];
+  [key: string]: unknown;
+}

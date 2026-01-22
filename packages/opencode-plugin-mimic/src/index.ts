@@ -8,11 +8,11 @@ import { StateManager } from "@/state";
 import { createTools } from "@/tools";
 import type { ToolCall } from "@/types";
 
-export const mimic: Plugin = async ({ directory }) => {
+export const mimic: Plugin = async ({ directory, client }) => {
   const stateManager = new StateManager(directory);
   await stateManager.initialize();
   const i18n = createI18n(resolveLanguage(await loadMimicConfig()));
-  const ctx: MimicContext = { stateManager, directory, i18n };
+  const ctx: MimicContext = { stateManager, directory, i18n, client };
 
   const sessionId = crypto.randomUUID();
   const sessionStartTime = Date.now();
@@ -34,12 +34,15 @@ export const mimic: Plugin = async ({ directory }) => {
       await stateManager.addObservation(i18n.t("obs.returned_after_long_break"));
     }
 
-    console.log(
-      i18n.t("log.session_started", {
-        sessions: state.journey.sessionCount,
-        patterns: state.patterns.length,
-      }),
-    );
+    await client.tui.showToast({
+      body: {
+        message: i18n.t("log.session_started", {
+          sessions: state.journey.sessionCount,
+          patterns: state.patterns.length,
+        }),
+        variant: "info",
+      },
+    });
   };
 
   const handleSessionIdle = async () => {
@@ -52,7 +55,13 @@ export const mimic: Plugin = async ({ directory }) => {
 
     const suggestions = await surfacePatterns(ctx);
     for (const suggestion of suggestions) {
-      console.log(`[Mimic] ${suggestion}`);
+      await client.tui.showToast({
+        body: {
+          title: "[Mimic]",
+          message: suggestion,
+          variant: "info",
+        },
+      });
     }
   };
 
@@ -146,13 +155,16 @@ export const mimic: Plugin = async ({ directory }) => {
         );
       }
 
-      console.log(
-        i18n.t("log.session_ended", {
-          duration: formatDuration(sessionDuration),
-          tools: toolCalls.length,
-          files: filesEdited.size,
-        }),
-      );
+      await client.tui.showToast({
+        body: {
+          message: i18n.t("log.session_ended", {
+            duration: formatDuration(sessionDuration),
+            tools: toolCalls.length,
+            files: filesEdited.size,
+          }),
+          variant: "info",
+        },
+      });
     },
 
     tool: createTools(stateManager, directory, toolCalls, i18n),

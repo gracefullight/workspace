@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.5](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.4...opencode-plugin-mimic@0.1.5) (2026-01-22)
+
+
+### Features
+
+* auto-add state.json to gitignore on initialization ([e7d4700](https://github.com/gracefullight/pkgs/commit/e7d4700e549d8fd94a537a628e34d319963a3adf))
+
+
+### Bug Fixes
+
+* prevent evolution of builtin OpenCode tools to shortcuts ([58908ee](https://github.com/gracefullight/pkgs/commit/58908ee84726b57ecb85a8ca9fbb8b2667b377ea))
+
 ## [0.1.4](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.3...opencode-plugin-mimic@0.1.4) (2026-01-22)
 
 

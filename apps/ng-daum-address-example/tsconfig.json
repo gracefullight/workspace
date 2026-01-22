@@ -20,6 +20,7 @@
     "baseUrl": ".",
     "paths": {
       "@gracefullight/ng-daum-address": ["../../packages/ng-daum-address/src/index.ts"],
+      "@/lib/*": ["../../packages/ng-daum-address/src/lib/*"],
       "@/*": ["src/*"]
     },
     "types": []

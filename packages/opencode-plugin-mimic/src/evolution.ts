@@ -1,6 +1,8 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { MimicContext } from "@/context";
+import { formatCapabilityType } from "@/i18n";
 import type { StateManager } from "@/state";
 import type { CapabilityType, EvolvedCapability, Pattern } from "@/types";
 
@@ -143,15 +145,15 @@ async function readOpencodeConfig(configPath: string): Promise<Record<string, un
 }
 
 async function buildMcpEvolution(
+  ctx: MimicContext,
   suggestion: EvolutionSuggestion,
-  directory: string,
 ): Promise<EvolutionOutput> {
-  const opencodeDir = join(directory, ".opencode");
+  const opencodeDir = join(ctx.directory, ".opencode");
   if (!existsSync(opencodeDir)) {
     await mkdir(opencodeDir, { recursive: true });
   }
 
-  const configPath = join(directory, "opencode.json");
+  const configPath = join(ctx.directory, "opencode.json");
   const config = await readOpencodeConfig(configPath);
   const mcpConfig = generateMcpConfig(
     suggestion.name,
@@ -166,10 +168,10 @@ async function buildMcpEvolution(
 }
 
 async function buildAgentEvolution(
+  ctx: MimicContext,
   suggestion: EvolutionSuggestion,
-  directory: string,
 ): Promise<EvolutionOutput> {
-  const agentsDir = join(directory, ".opencode", "agents");
+  const agentsDir = join(ctx.directory, ".opencode", "agents");
   if (!existsSync(agentsDir)) {
     await mkdir(agentsDir, { recursive: true });
   }
@@ -195,10 +197,10 @@ function buildPluginContent(suggestion: EvolutionSuggestion): string {
 }
 
 async function buildPluginEvolution(
+  ctx: MimicContext,
   suggestion: EvolutionSuggestion,
-  directory: string,
 ): Promise<EvolutionOutput> {
-  const pluginsDir = join(directory, ".opencode", "plugins");
+  const pluginsDir = join(ctx.directory, ".opencode", "plugins");
   if (!existsSync(pluginsDir)) {
     await mkdir(pluginsDir, { recursive: true });
   }
@@ -210,18 +212,18 @@ async function buildPluginEvolution(
 }
 
 async function buildEvolutionOutput(
+  ctx: MimicContext,
   suggestion: EvolutionSuggestion,
-  directory: string,
 ): Promise<EvolutionOutput> {
   if (suggestion.type === "mcp") {
-    return buildMcpEvolution(suggestion, directory);
+    return buildMcpEvolution(ctx, suggestion);
   }
 
   if (suggestion.type === "agent") {
-    return buildAgentEvolution(suggestion, directory);
+    return buildAgentEvolution(ctx, suggestion);
   }
 
-  return buildPluginEvolution(suggestion, directory);
+  return buildPluginEvolution(ctx, suggestion);
 }
 
 function createCapabilityFromSuggestion(suggestion: EvolutionSuggestion): EvolvedCapability {
@@ -249,15 +251,17 @@ function updateEvolutionState(
   }
 }
 
-export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
+export function suggestEvolution(pattern: Pattern, ctx: MimicContext): EvolutionSuggestion | null {
   switch (pattern.type) {
     case "tool":
       if (pattern.count >= 10) {
         return {
           type: "shortcut",
           name: `quick-${pattern.description.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
-          description: `Shortcut for frequent ${pattern.description} usage`,
-          reason: `Used ${pattern.count} times`,
+          description: ctx.i18n.t("evolution.suggest.tool.description", {
+            pattern: pattern.description,
+          }),
+          reason: ctx.i18n.t("evolution.suggest.tool.reason", { count: pattern.count }),
           pattern,
         };
       }
@@ -268,8 +272,10 @@ export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
         return {
           type: "hook",
           name: `watch-${pattern.description.split("/").pop()?.replace(/\./g, "-") || "file"}`,
-          description: `Auto-track changes to ${pattern.description}`,
-          reason: `Modified ${pattern.count} times`,
+          description: ctx.i18n.t("evolution.suggest.file.description", {
+            pattern: pattern.description,
+          }),
+          reason: ctx.i18n.t("evolution.suggest.file.reason", { count: pattern.count }),
           pattern,
         };
       }
@@ -280,8 +286,10 @@ export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
         return {
           type: "command",
           name: `commit-${pattern.description.slice(0, 20).replace(/\s+/g, "-").toLowerCase()}`,
-          description: `Quick commit: "${pattern.description}"`,
-          reason: `Committed ${pattern.count} times with same message`,
+          description: ctx.i18n.t("evolution.suggest.commit.description", {
+            pattern: pattern.description,
+          }),
+          reason: ctx.i18n.t("evolution.suggest.commit.reason", { count: pattern.count }),
           pattern,
         };
       }
@@ -292,8 +300,10 @@ export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
         return {
           type: "agent",
           name: `${pattern.description.slice(0, 15).replace(/\s+/g, "-").toLowerCase()}-specialist`,
-          description: `Specialist agent for: ${pattern.description}`,
-          reason: `Complex sequence repeated ${pattern.count} times - needs dedicated agent`,
+          description: ctx.i18n.t("evolution.suggest.sequence.agent.description", {
+            pattern: pattern.description,
+          }),
+          reason: ctx.i18n.t("evolution.suggest.sequence.agent.reason", { count: pattern.count }),
           pattern,
         };
       }
@@ -301,8 +311,10 @@ export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
         return {
           type: "skill",
           name: `auto-${pattern.description.slice(0, 15).replace(/\s+/g, "-").toLowerCase()}`,
-          description: `Automate: ${pattern.description}`,
-          reason: `Repeated sequence ${pattern.count} times`,
+          description: ctx.i18n.t("evolution.suggest.sequence.skill.description", {
+            pattern: pattern.description,
+          }),
+          reason: ctx.i18n.t("evolution.suggest.sequence.skill.reason", { count: pattern.count }),
           pattern,
         };
       }
@@ -313,15 +325,15 @@ export function suggestEvolution(pattern: Pattern): EvolutionSuggestion | null {
 }
 
 export async function getEvolutionSuggestions(
-  stateManager: StateManager,
+  ctx: MimicContext,
 ): Promise<EvolutionSuggestion[]> {
-  const state = await stateManager.read();
+  const state = await ctx.stateManager.read();
   const suggestions: EvolutionSuggestion[] = [];
 
   for (const pattern of state.patterns) {
     if (pattern.surfaced) continue;
 
-    const suggestion = suggestEvolution(pattern);
+    const suggestion = suggestEvolution(pattern, ctx);
     if (suggestion) {
       suggestions.push(suggestion);
     }
@@ -331,57 +343,59 @@ export async function getEvolutionSuggestions(
 }
 
 export async function evolveCapability(
-  stateManager: StateManager,
+  ctx: MimicContext,
   suggestion: EvolutionSuggestion,
-  directory: string,
 ): Promise<{ capability: EvolvedCapability; filePath: string }> {
-  const state = await stateManager.read();
-  const { filePath, content } = await buildEvolutionOutput(suggestion, directory);
+  const state = await ctx.stateManager.read();
+  const { filePath, content } = await buildEvolutionOutput(ctx, suggestion);
   await writeFile(filePath, content, "utf-8");
 
   const capability = createCapabilityFromSuggestion(suggestion);
   updateEvolutionState(state, capability, suggestion);
 
-  await stateManager.save(state);
-  await stateManager.addMilestone(`Evolved: ${capability.name} (${capability.type})`);
+  await ctx.stateManager.save(state);
+  await ctx.stateManager.addMilestone(
+    ctx.i18n.t("milestone.evolved", {
+      name: capability.name,
+      type: formatCapabilityType(ctx.i18n, capability.type),
+    }),
+  );
 
   return { capability, filePath };
 }
 
-export function formatEvolutionResult(capability: EvolvedCapability, filePath: string): string {
+export function formatEvolutionResult(
+  ctx: MimicContext,
+  capability: EvolvedCapability,
+  filePath: string,
+): string {
+  const typeLabel = formatCapabilityType(ctx.i18n, capability.type);
   let result = `### ✨ ${capability.name}\n\n`;
-  result += `**Type**: ${capability.type}\n`;
-  result += `**Description**: ${capability.description}\n`;
-  result += `**File created**: \`${filePath}\`\n\n`;
-  result += `*Restart OpenCode to load the new ${capability.type}.*\n\n`;
+  result += `**${ctx.i18n.t("evolution.result.type")}**: ${typeLabel}\n`;
+  result += `**${ctx.i18n.t("evolution.result.description")}**: ${capability.description}\n`;
+  result += `**${ctx.i18n.t("evolution.result.file")}**: \`${filePath}\`\n\n`;
+  result += `*${ctx.i18n.t("evolution.result.restart", { type: typeLabel })}*\n\n`;
 
   switch (capability.type) {
     case "command":
     case "shortcut":
-      result += `The tool \`${capability.name}\` will be available after restart.\n`;
-      result += `Edit the file to customize its behavior.\n`;
+      result += `${ctx.i18n.t("evolution.result.command", { name: capability.name })}\n`;
       break;
 
     case "hook":
-      result += `The hook will automatically watch for file changes after restart.\n`;
-      result += `Edit the file to customize the trigger conditions.\n`;
+      result += `${ctx.i18n.t("evolution.result.hook")}\n`;
       break;
 
     case "skill":
-      result += `The skill will activate on session start after restart.\n`;
-      result += `Edit the file to customize when and how it triggers.\n`;
+      result += `${ctx.i18n.t("evolution.result.skill")}\n`;
       break;
 
     case "agent":
-      result += `The agent \`@${capability.name}\` will be available after restart.\n`;
-      result += `You can invoke it with \`@${capability.name}\` or let other agents delegate to it.\n`;
-      result += `Edit the markdown file to customize its prompt, tools, and permissions.\n`;
+      result += `${ctx.i18n.t("evolution.result.agent", { name: capability.name })}\n`;
       break;
 
     case "mcp":
-      result += `MCP server \`${capability.name}\` has been added to \`opencode.json\`.\n`;
-      result += `It's currently disabled. Edit the config to enable it and configure the command.\n`;
-      result += `See https://opencode.ai/docs/mcp-servers/ for MCP configuration options.\n`;
+      result += `${ctx.i18n.t("evolution.result.mcp", { name: capability.name })}\n`;
       break;
   }
 

@@ -1,4 +1,7 @@
 import { differenceInHours, format, formatDistanceToNow } from "date-fns";
+import { enUS, ko } from "date-fns/locale";
+import type { MimicContext } from "@/context";
+import { formatCapabilityType } from "@/i18n";
 import type { State } from "@/types";
 
 export type SessionStatus =
@@ -19,35 +22,48 @@ export function analyzeTimeSinceLastSession(lastSession: string | null): Session
   return "long-break";
 }
 
-export function formatJourney(state: State, gitHistory: string[]): string {
+export function formatJourney(
+  ctx: MimicContext,
+  state: State,
+  gitHistory: string[],
+): string {
   const milestones = state.journey.milestones.slice(-10);
   const observations = state.journey.observations.slice(-5);
+  const locale = ctx.i18n.language === "ko-KR" ? ko : enUS;
 
-  let output = `## 📦 ${state.project.name}'s Journey\n\n`;
-  output += `*The mimic opens its lid, revealing ancient scrolls within...*\n\n`;
-  output += `**Sessions survived**: ${state.journey.sessionCount}\n`;
-  output += `**First encounter**: ${format(state.project.firstSession, "yyyy-MM-dd")}\n`;
-  output += `**Abilities gained**: ${state.evolution.capabilities.length}\n\n`;
+  let output = `${ctx.i18n.t("journey.title", { project: state.project.name })}\n\n`;
+  output += `${ctx.i18n.t("journey.subtitle")}\n\n`;
+  output += `${ctx.i18n.t("journey.sessions_survived", {
+    count: state.journey.sessionCount,
+  })}\n`;
+  output += `${ctx.i18n.t("journey.first_encounter", {
+    date: format(state.project.firstSession, "yyyy-MM-dd"),
+  })}\n`;
+  output += `${ctx.i18n.t("journey.abilities_gained", {
+    count: state.evolution.capabilities.length,
+  })}\n\n`;
 
   if (state.project.stack && state.project.stack.length > 0) {
-    output += `**Treasures inside**: ${state.project.stack.join(", ")}\n`;
+    output += `${ctx.i18n.t("journey.treasures", {
+      stack: state.project.stack.join(", "),
+    })}\n`;
   }
   if (state.project.focus) {
-    output += `**Current hunt**: ${state.project.focus}\n`;
+    output += `${ctx.i18n.t("journey.current_hunt", { focus: state.project.focus })}\n`;
   }
   output += "\n";
 
   if (milestones.length > 0) {
-    output += `### 🏆 Victories\n`;
+    output += `${ctx.i18n.t("journey.victories")}\n`;
     for (const m of milestones) {
-      const timeAgo = formatDistanceToNow(new Date(m.timestamp), { addSuffix: true });
+      const timeAgo = formatDistanceToNow(new Date(m.timestamp), { addSuffix: true, locale });
       output += `- ${m.milestone} (${timeAgo})\n`;
     }
     output += "\n";
   }
 
   if (observations.length > 0) {
-    output += `### 👁️ What I've Witnessed\n`;
+    output += `${ctx.i18n.t("journey.witnessed")}\n`;
     for (const o of observations) {
       output += `- ${o.observation}\n`;
     }
@@ -55,15 +71,18 @@ export function formatJourney(state: State, gitHistory: string[]): string {
   }
 
   if (state.evolution.capabilities.length > 0) {
-    output += `### ✨ Powers Absorbed\n`;
+    output += `${ctx.i18n.t("journey.powers")}\n`;
     for (const cap of state.evolution.capabilities.slice(-5)) {
-      output += `- **${cap.name}** (${cap.type}): ${cap.description}\n`;
+      output += `- **${cap.name}** (${formatCapabilityType(
+        ctx.i18n,
+        cap.type,
+      )}): ${cap.description}\n`;
     }
     output += "\n";
   }
 
   if (gitHistory.length > 0) {
-    output += `### 📜 Recent Scrolls\n`;
+    output += `${ctx.i18n.t("journey.scrolls")}\n`;
     for (const commit of gitHistory.slice(0, 5)) {
       output += `- ${commit}\n`;
     }
@@ -81,21 +100,22 @@ export function formatDuration(ms: number): string {
 }
 
 export function formatGrowAnalysis(
+  ctx: MimicContext,
   state: State,
   _gitHistory: string[],
   recentFiles: string[],
 ): string {
-  let output = `## 📦 ${state.project.name} - Territory Analysis\n\n`;
-  output += `*The mimic surveys the dungeon, noting paths most traveled...*\n\n`;
+  let output = `${ctx.i18n.t("grow.title", { project: state.project.name })}\n\n`;
+  output += `${ctx.i18n.t("grow.subtitle")}\n\n`;
 
   const fileFrequency = Object.entries(state.statistics.filesModified)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
 
   if (fileFrequency.length > 0) {
-    output += `### 🔥 Feeding Grounds (Most Modified)\n`;
+    output += `${ctx.i18n.t("grow.feeding_grounds")}\n`;
     for (const [file, count] of fileFrequency) {
-      output += `- \`${file}\` (${count}x)\n`;
+      output += `- \`${file}\` ${ctx.i18n.t("grow.files_modified", { count })}\n`;
     }
     output += "\n";
   }
@@ -104,9 +124,9 @@ export function formatGrowAnalysis(
     .filter((p) => p.type === "tool")
     .sort((a, b) => b.count - a.count);
   if (toolPatterns.length > 0) {
-    output += `### 🦷 Favorite Prey (Tool Patterns)\n`;
+    output += `${ctx.i18n.t("grow.favorite_prey")}\n`;
     for (const p of toolPatterns.slice(0, 5)) {
-      output += `- ${p.description}: ${p.count} bites\n`;
+      output += `- ${p.description}: ${p.count}\n`;
     }
     output += "\n";
   }
@@ -119,20 +139,20 @@ export function formatGrowAnalysis(
     }
     const sortedDirs = [...dirCount.entries()].sort((a, b) => b[1] - a[1]);
 
-    output += `### 🗺️ Hunting Grounds\n`;
+    output += `${ctx.i18n.t("grow.hunting_grounds")}\n`;
     for (const [dir, count] of sortedDirs.slice(0, 5)) {
-      output += `- \`${dir}/\` (${count} prey)\n`;
+      output += `- \`${dir}/\` ${ctx.i18n.t("grow.prey", { count })}\n`;
     }
     output += "\n";
   }
 
-  output += `### 🤔 The Chest Wonders...\n`;
-  output += `- What treasure shall we hunt next?\n`;
-  output += `- Are there forgotten corners of the dungeon?\n`;
-  output += `- Does the current path lead to glory?\n`;
+  output += `${ctx.i18n.t("grow.questions")}\n`;
+  output += `${ctx.i18n.t("grow.question1")}\n`;
+  output += `${ctx.i18n.t("grow.question2")}\n`;
+  output += `${ctx.i18n.t("grow.question3")}\n`;
 
   if (state.project.focus) {
-    output += `\n**Current hunt**: ${state.project.focus}\n`;
+    output += `\n${ctx.i18n.t("grow.current_hunt", { focus: state.project.focus })}\n`;
   }
 
   return output;

@@ -3,26 +3,29 @@
 [![npm version](https://img.shields.io/npm/v/opencode-plugin-mimic)](https://www.npmjs.com/package/opencode-plugin-mimic)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**English** | [한국어](./README.ko.md)
+
 > An OpenCode plugin that learns from your patterns and adapts to your workflow.
 
 Mimic watches how you work, remembers across sessions, and suggests actions based on what you do repeatedly.
 
 ## Features
 
-- **Pattern Detection**: Automatically detects repeated tool usage, file edits, and git commit patterns
+- **Pattern Detection**: Automatically detects repeated tool usage, file edits, and git commit messages
 - **Session Memory**: Remembers observations and milestones across sessions
 - **Journey Tracking**: Narrative storytelling of your project's evolution
 - **Git History Analysis**: Analyzes commit messages and file modifications
 - **Smart Suggestions**: Offers to create shortcuts for repeated actions
 - **Per-Project State**: Each project gets its own learned patterns
 - **Configurable**: Enable/disable learning and suggestions, adjust thresholds
+- **Internationalization**: English or Korean UI based on user config
 
 ## How It Works
 
 1. **Track**: Mimic tracks tool calls, file edits, and analyzes git history
-2. **Detect**: Patterns are categorized by type (tool, file, commit, sequence)
+2. **Detect**: Patterns are categorized by type (tool, file, commit)
 3. **Remember**: Observations and milestones are recorded for your project's journey
-4. **Suggest**: When patterns reach threshold, Mimic suggests creating shortcuts
+4. **Suggest**: When patterns reach thresholds, Mimic surfaces suggestions and can evolve them into tools/hooks
 5. **Persist**: All state persists in `.opencode/mimic/`
 
 ## Installation
@@ -42,11 +45,36 @@ Then add to your `~/.config/opencode/opencode.json`:
 }
 ```
 
+## Configuration
+
+Mimic reads `~/.config/opencode/mimic.json` for user-level settings.
+
+```json
+{
+  "language": "ko-KR"
+}
+```
+
+Default language is `en-US`.
+
+Project preferences live in `.opencode/mimic/state.json` and can be adjusted via `mimic:configure`:
+
+```
+mimic:configure({ learningEnabled: false })
+mimic:configure({ suggestionEnabled: false })
+mimic:configure({ minPatternCount: 5 })
+```
+
+## Flow Diagram (draw.io)
+
+- Diagram file: `docs/mimic-flow.drawio`
+- Open it in diagrams.net (draw.io) to view or edit.
+
 ## Usage
 
 ### Custom Tools
 
-Mimic adds 10 tools to OpenCode:
+Mimic adds the following tools to OpenCode:
 
 #### `mimic:init`
 
@@ -76,7 +104,7 @@ View all detected patterns organized by type:
 - **Tool patterns**: Frequently used tools
 - **File patterns**: Frequently modified files
 - **Commit patterns**: Repeated commit messages
-- **Sequence patterns**: Repeated action sequences
+- **Sequence patterns**: Reserved for future detection
 
 #### `mimic:observe`
 
@@ -129,6 +157,39 @@ Clear all learned data:
 mimic:reset({ confirm: true })
 ```
 
+#### `mimic:grow`
+
+Analyze project direction and growth opportunities.
+
+#### `mimic:evolve`
+
+Suggest and create new capabilities based on detected patterns.
+
+> When you accept a suggestion, Mimic writes files into your project:
+> - `shortcut` / `command` / `hook` / `skill`: `.opencode/plugins/<name>.js`
+> - `agent`: `.opencode/agents/<name>.md`
+> - `mcp`: updates `opencode.json`
+
+#### `mimic:level`
+
+Set your technical level (technical, semi-technical, non-technical, chaotic). This is stored in state and used for personalization.
+
+#### `mimic:focus`
+
+Set current project focus or tech stack.
+
+#### `mimic:mcp-search`
+
+Returns a search link to mcpmarket.com and a list of popular MCP servers.
+
+#### `mimic:mcp`
+
+Add an MCP server configuration to the **project-level** `opencode.json`.
+
+#### `mimic:capabilities`
+
+List all evolved capabilities.
+
 ## State Structure
 
 ```
@@ -145,11 +206,13 @@ your-project/
 
 ```json
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "project": {
     "name": "your-project",
     "creatorLevel": null,
-    "firstSession": 1705940400000
+    "firstSession": 1705940400000,
+    "stack": ["node", "typescript"],
+    "focus": "auth refactor"
   },
   "journey": {
     "observations": [
@@ -167,12 +230,16 @@ your-project/
       "type": "tool",
       "description": "Read",
       "count": 50,
-      "surfaced": false
+      "firstSeen": 1705940400000,
+      "lastSeen": 1706026800000,
+      "surfaced": false,
+      "examples": [{ "tool": "read", "callID": "abc", "timestamp": 1706026800000 }]
     }
   ],
   "evolution": {
-    "evolvedCapabilities": [],
-    "lastEvolution": null
+    "capabilities": [],
+    "lastEvolution": null,
+    "pendingSuggestions": []
   },
   "preferences": {
     "learningEnabled": true,
@@ -182,26 +249,32 @@ your-project/
   "statistics": {
     "totalSessions": 10,
     "totalToolCalls": 250,
-    "filesModified": { "src/index.ts": 15 }
+    "filesModified": { "src/index.ts": 15 },
+    "lastSessionId": null
   }
 }
 ```
 
-## Pattern Detection Thresholds
+## Pattern Thresholds
 
-| Pattern Type | Threshold | Suggestion |
-|--------------|-----------|------------|
-| Tool usage | 3+ times | Create shortcut |
-| File modified | 5+ times | Track closely |
-| Commit message | 3+ identical | Create command |
+| Pattern Type | Threshold | Result |
+|--------------|-----------|--------|
+| Tool usage | 3+ times (default) | Suggest action |
+| Tool usage | 10+ times | Offer shortcut evolution |
+| File modified | 5+ times | Offer hook evolution |
+| Commit message | 3+ identical | Offer command evolution |
+
+> Note: File/commit patterns are only created after their thresholds. Tool patterns accumulate from the first use.
 
 ## Automatic Behaviors
 
 - **Session Start**: Increments session count, detects long breaks
 - **Tool Execution**: Tracks every tool call for pattern detection
 - **File Edit**: Tracks file modification frequency
-- **Session Idle**: Analyzes patterns and surfaces suggestions
+- **Session Idle**: Analyzes commit/file patterns and surfaces suggestions
 - **Session End**: Records intensive sessions, major refactoring milestones
+
+> Git-based insights require a git repository. If none is available, git sections will be empty.
 
 ## Development
 

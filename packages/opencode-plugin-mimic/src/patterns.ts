@@ -1,15 +1,12 @@
+import type { MimicContext } from "@/context";
 import { detectCommitPatterns, getCommitMessages } from "@/git";
-import type { StateManager } from "@/state";
 import type { Pattern } from "@/types";
 
-export async function detectPatterns(
-  stateManager: StateManager,
-  directory: string,
-): Promise<Pattern[]> {
-  const state = await stateManager.read();
+export async function detectPatterns(ctx: MimicContext): Promise<Pattern[]> {
+  const state = await ctx.stateManager.read();
   const newPatterns: Pattern[] = [];
 
-  const commitMessages = getCommitMessages(directory);
+  const commitMessages = getCommitMessages(ctx.directory);
   const commitPatterns = detectCommitPatterns(commitMessages);
   for (const [msg, count] of commitPatterns) {
     if (count >= 3) {
@@ -51,8 +48,8 @@ export async function detectPatterns(
   return newPatterns;
 }
 
-export async function surfacePatterns(stateManager: StateManager): Promise<string[]> {
-  const state = await stateManager.read();
+export async function surfacePatterns(ctx: MimicContext): Promise<string[]> {
+  const state = await ctx.stateManager.read();
   const suggestions: string[] = [];
 
   for (const pattern of state.patterns) {
@@ -62,16 +59,28 @@ export async function surfacePatterns(stateManager: StateManager): Promise<strin
     let suggestion = "";
     switch (pattern.type) {
       case "commit":
-        suggestion = `📦 *munch munch* I've digested "${pattern.description}" ${pattern.count}+ times. Want me to spit out a shortcut?`;
+        suggestion = ctx.i18n.t("suggest.commit", {
+          pattern: pattern.description,
+          count: pattern.count,
+        });
         break;
       case "file":
-        suggestion = `📦 *peers at file* You keep poking "${pattern.description}" (${pattern.count}x). Should I keep an eye on it?`;
+        suggestion = ctx.i18n.t("suggest.file", {
+          pattern: pattern.description,
+          count: pattern.count,
+        });
         break;
       case "tool":
-        suggestion = `📦 *teeth click* "${pattern.description}" is tasty... you use it often. Custom tool, perhaps?`;
+        suggestion = ctx.i18n.t("suggest.tool", {
+          pattern: pattern.description,
+          count: pattern.count,
+        });
         break;
       case "sequence":
-        suggestion = `📦 *lid rattles* I sense a pattern in your movements... Let me automate this for you?`;
+        suggestion = ctx.i18n.t("suggest.sequence", {
+          pattern: pattern.description,
+          count: pattern.count,
+        });
         break;
     }
     suggestions.push(suggestion);

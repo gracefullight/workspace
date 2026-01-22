@@ -1,6 +1,8 @@
 import type { Plugin } from "@opencode-ai/plugin";
 import type { Event } from "@opencode-ai/sdk";
+import type { MimicContext } from "@/context";
 import { analyzeTimeSinceLastSession, formatDuration } from "@/format";
+import { createI18n, loadMimicConfig, resolveLanguage } from "@/i18n";
 import { detectPatterns, surfacePatterns } from "@/patterns";
 import { StateManager } from "@/state";
 import { createTools } from "@/tools";
@@ -9,6 +11,8 @@ import type { ToolCall } from "@/types";
 export const mimic: Plugin = async ({ directory }) => {
   const stateManager = new StateManager(directory);
   await stateManager.initialize();
+  const i18n = createI18n(resolveLanguage(await loadMimicConfig()));
+  const ctx: MimicContext = { stateManager, directory, i18n };
 
   const sessionId = crypto.randomUUID();
   const sessionStartTime = Date.now();
@@ -27,23 +31,26 @@ export const mimic: Plugin = async ({ directory }) => {
     await stateManager.save(state);
 
     if (timeSince === "long-break") {
-      await stateManager.addObservation("Returned after a long break");
+      await stateManager.addObservation(i18n.t("obs.returned_after_long_break"));
     }
 
     console.log(
-      `[Mimic] Session started. Sessions: ${state.journey.sessionCount}, Patterns: ${state.patterns.length}`,
+      i18n.t("log.session_started", {
+        sessions: state.journey.sessionCount,
+        patterns: state.patterns.length,
+      }),
     );
   };
 
   const handleSessionIdle = async () => {
-    const newPatterns = await detectPatterns(stateManager, directory);
+    const newPatterns = await detectPatterns(ctx);
     if (newPatterns.length > 0) {
       const state = await stateManager.read();
       state.patterns.push(...newPatterns);
       await stateManager.save(state);
     }
 
-    const suggestions = await surfacePatterns(stateManager);
+    const suggestions = await surfacePatterns(ctx);
     for (const suggestion of suggestions) {
       console.log(`[Mimic] ${suggestion}`);
     }
@@ -92,7 +99,9 @@ export const mimic: Plugin = async ({ directory }) => {
       state.statistics.totalToolCalls += 1;
 
       const toolPattern = input.tool;
-      const existing = state.patterns.find((p) => p.type === "tool" && p.description === toolPattern);
+      const existing = state.patterns.find(
+        (p) => p.type === "tool" && p.description === toolPattern,
+      );
       if (existing) {
         existing.count += 1;
         existing.lastSeen = Date.now();
@@ -127,16 +136,26 @@ export const mimic: Plugin = async ({ directory }) => {
       await stateManager.saveSession(sessionId, sessionData);
 
       if (toolCalls.length > 20) {
-        await stateManager.addObservation(`Intensive session with ${toolCalls.length} tool calls`);
+        await stateManager.addObservation(
+          i18n.t("obs.intensive_session", { tools: toolCalls.length }),
+        );
       }
       if (filesEdited.size > 10) {
-        await stateManager.addMilestone(`Major refactoring session: ${filesEdited.size} files edited`);
+        await stateManager.addMilestone(
+          i18n.t("milestone.major_refactor", { files: filesEdited.size }),
+        );
       }
 
-      console.log(`[Mimic] Session ended. Duration: ${formatDuration(sessionDuration)}, Tools: ${toolCalls.length}, Files: ${filesEdited.size}`);
+      console.log(
+        i18n.t("log.session_ended", {
+          duration: formatDuration(sessionDuration),
+          tools: toolCalls.length,
+          files: filesEdited.size,
+        }),
+      );
     },
 
-    tool: createTools(stateManager, directory, toolCalls),
+    tool: createTools(stateManager, directory, toolCalls, i18n),
   };
 };
 

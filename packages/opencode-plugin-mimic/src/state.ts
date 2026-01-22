@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { State } from "@/types";
 
 export const createDefaultState = (projectName: string): State => ({
-  version: "0.3.0",
+  version: "0.1.0",
   project: {
     name: projectName,
     creatorLevel: null,

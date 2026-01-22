@@ -1,3 +1,4 @@
+import type { I18n } from "@/i18n";
 import type { CreatorLevel, State } from "@/types";
 
 interface LevelConfig {
@@ -54,33 +55,60 @@ export function adaptMessage(message: string, state: State): string {
   return message;
 }
 
-export function formatGreeting(state: State): string {
+export function formatGreeting(i18n: I18n, state: State): string {
   const config = getLevelConfig(state.project.creatorLevel);
   const name = state.project.name;
 
   switch (config.greetingStyle) {
     case "minimal":
-      return `📦 ${name} | s${state.journey.sessionCount} | p${state.patterns.length}`;
+      return i18n.t("level.greeting.minimal", {
+        project: name,
+        sessions: state.journey.sessionCount,
+        patterns: state.patterns.length,
+      });
     case "casual":
-      return `📦 *creak* Back to ${name}. I've been watching... Session ${state.journey.sessionCount}.`;
+      return i18n.t("level.greeting.casual", {
+        project: name,
+        sessions: state.journey.sessionCount,
+      });
     case "formal":
-      return `📦 The chest opens... Welcome back to ${name}. Session ${state.journey.sessionCount}.`;
+      return i18n.t("level.greeting.formal", {
+        project: name,
+        sessions: state.journey.sessionCount,
+      });
     case "chaotic": {
-      const greetings = ["*CHOMP*", "*lid creaks*", "*teeth gleam*", "*tongue flicks*"];
+      const greetings = [
+        i18n.t("level.greeting.chaotic.chomp"),
+        i18n.t("level.greeting.chaotic.lid_creaks"),
+        i18n.t("level.greeting.chaotic.teeth_gleam"),
+        i18n.t("level.greeting.chaotic.tongue_flicks"),
+      ];
       const g = greetings[Math.floor(Math.random() * greetings.length)];
-      return `📦 ${g} ${name}! #${state.journey.sessionCount}`;
+      return i18n.t("level.greeting.chaotic.template", {
+        tag: g,
+        project: name,
+        sessions: state.journey.sessionCount,
+      });
     }
   }
 }
 
-export function formatSuggestion(suggestion: string, state: State): string {
+export function formatSuggestion(i18n: I18n, suggestion: string, state: State): string {
   const config = getLevelConfig(state.project.creatorLevel);
 
   if (!config.technicalTerms) {
-    return suggestion
-      .replace(/tool/gi, "shortcut")
-      .replace(/pattern/gi, "habit")
-      .replace(/hook/gi, "automation");
+    const replacements: Array<[string, string]> = [
+      [i18n.t("level.term.tool"), i18n.t("level.term.shortcut")],
+      [i18n.t("level.term.pattern"), i18n.t("level.term.habit")],
+      [i18n.t("level.term.hook"), i18n.t("level.term.automation")],
+    ];
+    let result = suggestion;
+    for (const [from, to] of replacements) {
+      if (!from || from === to) continue;
+      const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      result = result.replace(new RegExp(escaped, "gi"), to);
+    }
+    return result;
   }
 
   return suggestion;

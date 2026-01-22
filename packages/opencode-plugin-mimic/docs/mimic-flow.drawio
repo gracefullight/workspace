@@ -1,0 +1,39 @@
+<mxGraphModel>
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="2" value="Session Start" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DFF3FF;strokeColor=#6AAFE6;" vertex="1" parent="1">
+      <mxGeometry x="40" y="80" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="3" value="Track Events&#xa;(tools/files/git)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F7E5;strokeColor=#7BC67B;" vertex="1" parent="1">
+      <mxGeometry x="240" y="80" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" value="Detect Patterns" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5D6;strokeColor=#E6C26A;" vertex="1" parent="1">
+      <mxGeometry x="460" y="80" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="5" value="Suggest Actions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#B08AD6;" vertex="1" parent="1">
+      <mxGeometry x="40" y="200" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="6" value="Evolve Capability&#xa;(optional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE7E7;strokeColor=#E88B8B;" vertex="1" parent="1">
+      <mxGeometry x="240" y="200" width="180" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="7" value="Persist State" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F0FF;strokeColor=#7FA7E6;" vertex="1" parent="1">
+      <mxGeometry x="460" y="200" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="8" style="endArrow=classic;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="2" target="3">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="9" style="endArrow=classic;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="3" target="4">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="10" style="endArrow=classic;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="4" target="5">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="11" style="endArrow=classic;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="5" target="6">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" style="endArrow=classic;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="6" target="7">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

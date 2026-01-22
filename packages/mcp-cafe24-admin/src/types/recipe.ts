@@ -1,12 +1,12 @@
 export type RecipeActiveStatus = "T" | "F";
 
-export interface Recipe {
+export interface Recipe extends Record<string, unknown> {
   recipe_code: string;
   recipe_name?: string;
   active?: RecipeActiveStatus;
 }
 
-export interface RecipesListResponse {
+export interface RecipesListResponse extends Record<string, unknown> {
   recipes: Recipe[];
 }
 
@@ -34,14 +34,14 @@ export interface RecipesCreateRequest {
   requests: RecipeTriggerRequest[];
 }
 
-export interface RecipesCreateResponse {
+export interface RecipesCreateResponse extends Record<string, unknown> {
   recipes: Array<{
     recipe_code: string;
     active: RecipeActiveStatus;
   }>;
 }
 
-export interface RecipeDeleteResponse {
+export interface RecipeDeleteResponse extends Record<string, unknown> {
   recipe: {
     recipe_code: string;
   };

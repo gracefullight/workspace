@@ -1,6 +1,6 @@
 export type AppExtensionType = "section" | "embedded";
 
-export interface AppInfo {
+export interface AppInfo extends Record<string, unknown> {
   version: string | null;
   version_expiration_date: string | null;
   initial_version: string | null;
@@ -8,11 +8,11 @@ export interface AppInfo {
   extension_type: AppExtensionType | null;
 }
 
-export interface AppGetResponse {
+export interface AppGetResponse extends Record<string, unknown> {
   app: AppInfo;
 }
 
-export interface AppUpdateRequest {
+export interface AppUpdateRequest extends Record<string, unknown> {
   request: {
     version: string;
     extension_type: AppExtensionType;

@@ -1,9 +1,9 @@
-export interface Supplier {
+export interface StoreSupplier {
   supplier_no: number;
   supplier_name: string;
 }
 
-export interface StoreInformation {
+export interface StoreInformation extends Record<string, unknown> {
   shop_no?: number;
   type: string;
   display_mobile?: string;
@@ -19,7 +19,7 @@ export interface TextStyle {
   font_type?: string;
 }
 
-export interface DisplaySetting {
+export interface DisplaySetting extends Record<string, unknown> {
   shop_no?: number;
   strikethrough_retail_price?: string;
   strikethrough_price?: string;
@@ -28,7 +28,7 @@ export interface DisplaySetting {
   optimum_discount_price_text?: TextStyle;
 }
 
-export interface Store {
+export interface Store extends Record<string, unknown> {
   mall_id: string;
   mall_name: string;
   shop_no: number;
@@ -47,7 +47,7 @@ export interface Store {
   sales_product_categories?: string[] | string;
 }
 
-export interface AdminUser {
+export interface AdminUser extends Record<string, unknown> {
   user_id: string;
   user_name: string;
   email: string;
@@ -73,7 +73,7 @@ export interface StoreAccount {
   use_account: string;
 }
 
-export interface Shop {
+export interface Shop extends Record<string, unknown> {
   shop_no: number;
   shop_name: string;
   currency_code: string;
@@ -121,7 +121,7 @@ export interface SummaryStat {
   refunded_count: number;
 }
 
-export interface Dashboard {
+export interface Dashboard extends Record<string, unknown> {
   shop_no?: number;
   daily_sales_stats?: SalesStat[];
   weekly_sales_stats?: SummaryStat;
@@ -131,16 +131,16 @@ export interface Dashboard {
   new_members_count?: number;
 }
 
-export interface TaxManagerSetting {
+export interface TaxManagerSetting extends Record<string, unknown> {
   use: string;
 }
 
-export interface ShippingManagerStatus {
+export interface ShippingManagerStatus extends Record<string, unknown> {
   shop_no?: number;
   use: string;
 }
 
-export interface SeoSetting {
+export interface SeoSetting extends Record<string, unknown> {
   shop_no?: number;
   common_page_title?: string;
   common_page_meta_description?: string;
@@ -153,13 +153,13 @@ export interface SeoSetting {
   llms_text?: string;
 }
 
-export interface MobileSetting {
+export interface MobileSetting extends Record<string, unknown> {
   shop_no?: number;
   use_mobile_page?: string;
   use_mobile_domain_redirection?: string;
 }
 
-export interface PaymentSetting {
+export interface PaymentSetting extends Record<string, unknown> {
   shop_no?: number;
   use_escrow?: string;
   use_escrow_account_transfer?: string;
@@ -170,7 +170,7 @@ export interface PaymentSetting {
   payment_display_type?: string;
 }
 
-export interface CurrencySetting {
+export interface CurrencySetting extends Record<string, unknown> {
   shop_no?: number;
   exchange_rate: string;
   standard_currency_code: string;
@@ -180,14 +180,14 @@ export interface CurrencySetting {
   shop_currency_format: string;
 }
 
-export interface Redirect {
+export interface Redirect extends Record<string, unknown> {
   shop_no: number;
   id: number;
   path: string;
   target: string;
 }
 
-export interface CartSetting {
+export interface CartSetting extends Record<string, unknown> {
   shop_no?: number;
   use_basket_encryption?: string;
   wishlist_display?: string;
@@ -200,7 +200,7 @@ export interface CartSetting {
   discount_display?: string;
 }
 
-export interface Menu {
+export interface Menu extends Record<string, unknown> {
   menu_no: string;
   name: string;
   shop_no: number;

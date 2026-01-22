@@ -27,18 +27,64 @@ describe("StateManager", () => {
       vi.mocked(existsSync).mockReturnValue(false);
       await manager.initialize();
 
-      expect(mkdir).toHaveBeenCalledTimes(2); // mimicDir, sessionsDir
-      expect(writeFile).toHaveBeenCalledTimes(1); // state.json
+      expect(mkdir).toHaveBeenCalledTimes(2);
+      expect(writeFile).toHaveBeenCalledTimes(2);
 
-      const callArgs = vi.mocked(writeFile).mock.calls[0];
-      const writtenState = JSON.parse(callArgs[1] as string);
+      const gitIgnoreCall = vi.mocked(writeFile).mock.calls[0];
+      expect(gitIgnoreCall[0]).toContain(".gitignore");
+      expect(gitIgnoreCall[1]).toContain(".opencode/mimic/state.json");
+
+      const stateCall = vi.mocked(writeFile).mock.calls[1];
+      const writtenState = JSON.parse(stateCall[1] as string);
       expect(writtenState.project.name).toBe("test-project");
     });
 
     it("does not create if exists", async () => {
       vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/state.json\n");
       await manager.initialize();
       expect(mkdir).not.toHaveBeenCalled();
+      expect(writeFile).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("ensureGitIgnore", () => {
+    it("creates .gitignore with state.json line if file does not exist", async () => {
+      vi.mocked(existsSync).mockReturnValue(false);
+      await (manager as any).ensureGitIgnore();
+
+      expect(writeFile).toHaveBeenCalledWith(
+        expect.stringContaining(".gitignore"),
+        ".opencode/mimic/state.json\n",
+        "utf-8",
+      );
+    });
+
+    it("appends state.json line to existing .gitignore if not present", async () => {
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readFile).mockResolvedValue("node_modules/\n.env\n");
+      await (manager as any).ensureGitIgnore();
+
+      expect(writeFile).toHaveBeenCalledWith(
+        expect.stringContaining(".gitignore"),
+        "node_modules/\n.env\n\n.opencode/mimic/state.json\n",
+        "utf-8",
+      );
+    });
+
+    it("does not append if state.json line already exists", async () => {
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/state.json\n");
+      await (manager as any).ensureGitIgnore();
+
+      expect(writeFile).not.toHaveBeenCalled();
+    });
+
+    it("ignores whitespace when checking for existing entry", async () => {
+      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(readFile).mockResolvedValue("  .opencode/mimic/state.json  \n");
+      await (manager as any).ensureGitIgnore();
+
       expect(writeFile).not.toHaveBeenCalled();
     });
   });

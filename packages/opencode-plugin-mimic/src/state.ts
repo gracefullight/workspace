@@ -3,6 +3,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { State } from "@/types";
 
+const STATE_JSON_GITIGNORE_LINE = ".opencode/mimic/state.json";
+
 export const createDefaultState = (projectName: string): State => ({
   version: "0.1.0",
   project: {
@@ -50,7 +52,26 @@ export class StateManager {
     this.projectName = directory.split("/").pop() || "unknown";
   }
 
+  private async ensureGitIgnore(): Promise<void> {
+    const gitIgnorePath = join(this.mimicDir, "..", "..", ".gitignore");
+
+    if (!existsSync(gitIgnorePath)) {
+      await writeFile(gitIgnorePath, STATE_JSON_GITIGNORE_LINE + "\n", "utf-8");
+      return;
+    }
+
+    const content = await readFile(gitIgnorePath, "utf-8");
+    const lines = content.split(/\r?\n/);
+    const alreadyExists = lines.some((line) => line.trim() === STATE_JSON_GITIGNORE_LINE);
+
+    if (!alreadyExists) {
+      await writeFile(gitIgnorePath, content + "\n" + STATE_JSON_GITIGNORE_LINE + "\n", "utf-8");
+    }
+  }
+
   async initialize(): Promise<void> {
+    await this.ensureGitIgnore();
+
     if (!existsSync(this.mimicDir)) {
       await mkdir(this.mimicDir, { recursive: true });
     }

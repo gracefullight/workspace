@@ -13,3 +13,5 @@ pubspec.lock
 .env
 .vercel
 .tsconfig.tsbuildinfo
+
+.opencode/mimic/state.json

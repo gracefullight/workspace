@@ -179,7 +179,6 @@ export default function HomePage() {
                     hour={formData.hour}
                     minute={formData.minute}
                     onTimeChange={handleTimeChange}
-                    placeholder={t("form.select_time")}
                   />
                 </div>
               </div>

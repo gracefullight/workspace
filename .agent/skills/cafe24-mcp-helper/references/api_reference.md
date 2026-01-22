@@ -73,3 +73,33 @@ async function cafe24_create_resource(params: z.infer<typeof ResourceCreateParam
 - Schemas: `src/schemas/{feature}.ts`
 - Tools: `src/tools/{feature}.ts`
 - Registration: Update `src/tools/index.ts`
+
+## Tool Registration Pattern
+
+Use `server.registerTool()` with full metadata for proper tool registration:
+
+```typescript
+export function registerTools(server: McpServer): void {
+  server.registerTool(
+    "cafe24_get_resource",
+    {
+      title: "Get Resource",
+      description: "Retrieve resource from Cafe24",
+      inputSchema: ResourceParamsSchema,
+      annotations: {
+        readOnlyHint: true,      // true for GET operations
+        destructiveHint: false,  // true for DELETE operations
+        idempotentHint: true,    // true for GET/PUT, false for POST
+        openWorldHint: true,     // true for GET, false for mutations
+      },
+    },
+    cafe24_get_resource,
+  );
+}
+```
+
+Key points:
+- Use `server.registerTool()` (not `server.tool()`) for full metadata support
+- Cast `structuredContent` to `Record<string, unknown>` for type compatibility: `data as unknown as Record<string, unknown>`
+- Always include `annotations` object with appropriate hints
+- Define handler functions at module level, separate from registration

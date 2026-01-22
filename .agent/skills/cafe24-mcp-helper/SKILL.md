@@ -39,3 +39,4 @@ See [references/api_reference.md](references/api_reference.md) for code patterns
 - **File Names**: Always use kebab-case for filenames (e.g., `order-control.ts` instead of `orderControl.ts`).
 - **Imports**: Use relative imports for local files and `@/types/index.js` for types.
 - **Error Handling**: Always wrap tool logic in `try-catch` and use `handleApiError`.
+- **Tool Structure**: Separate handler functions from registration. Use `server.registerTool()` with `annotations`. See [references/api_reference.md](references/api_reference.md#tool-registration-pattern).

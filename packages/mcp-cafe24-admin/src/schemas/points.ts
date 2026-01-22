@@ -76,3 +76,76 @@ export const MileageSearchParamsSchema = z
 export type PointsSettingParams = z.infer<typeof PointsSettingParamsSchema>;
 export type PointsSettingUpdateParams = z.infer<typeof PointsSettingUpdateParamsSchema>;
 export type MileageSearchParams = z.infer<typeof MileageSearchParamsSchema>;
+
+export const PointsAutoExpirationParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
+  })
+  .strict();
+
+export const CreatePointsAutoExpirationParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
+    expiration_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD")
+      .describe("Expiration start date (YYYY-MM-DD)"),
+    interval_month: z
+      .union([z.literal(1), z.literal(3), z.literal(6), z.literal(12)])
+      .describe("Expiration frequency (months): 1, 3, 6, 12"),
+    target_period_month: z
+      .union([
+        z.literal(6),
+        z.literal(12),
+        z.literal(18),
+        z.literal(24),
+        z.literal(30),
+        z.literal(36),
+      ])
+      .describe("Points issued over the last N months to expire: 6, 12, 18, 24, 30, 36"),
+    group_no: z
+      .number()
+      .int()
+      .default(0)
+      .describe("Customer tier group number (0: All customer accounts)"),
+    standard_point: z.string().describe("Minimum number of points to expire (e.g., '10.00')"),
+    send_email: z.enum(["T", "F"]).default("F").describe("Send email notification: T=Yes, F=No"),
+    send_sms: z.enum(["T", "F"]).default("F").describe("Send SMS notification: T=Yes, F=No"),
+    notification_time_day: z
+      .array(z.number().int())
+      .optional()
+      .describe("Notification time (days before expiration): 3, 7, 15, 30"),
+  })
+  .strict();
+
+export const DeletePointsAutoExpirationParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
+  })
+  .strict();
+
+export type PointsAutoExpirationParams = z.infer<typeof PointsAutoExpirationParamsSchema>;
+export type CreatePointsAutoExpirationParams = z.infer<
+  typeof CreatePointsAutoExpirationParamsSchema
+>;
+export type DeletePointsAutoExpirationParams = z.infer<
+  typeof DeletePointsAutoExpirationParamsSchema
+>;
+export const PointsReportSearchParamsSchema = z
+  .object({
+    shop_no: z.number().int().min(1).default(1).describe("Multi-shop number (default: 1)"),
+    member_id: z.string().max(20).optional().describe("Member ID"),
+    email: z.string().email().optional().describe("Email"),
+    group_no: z.number().int().optional().describe("Group number"),
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, "YYYY-MM-DD HH:mm:ss")
+      .describe("Search Start Date (YYYY-MM-DD HH:mm:ss)"),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, "YYYY-MM-DD HH:mm:ss")
+      .describe("Search End Date (YYYY-MM-DD HH:mm:ss)"),
+  })
+  .strict();
+
+export type PointsReportSearchParams = z.infer<typeof PointsReportSearchParamsSchema>;

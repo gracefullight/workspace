@@ -6,6 +6,9 @@ import {
   CustomerPrivacyParamsSchema,
   CustomerSettingParamsSchema,
   CustomerSettingUpdateParamsSchema,
+  CustomersPrivacyDetailParamsSchema,
+  CustomersPrivacySearchParamsSchema,
+  CustomersPrivacyUpdateParamsSchema,
   CustomersSearchParamsSchema,
   CustomerWishlistParamsSchema,
 } from "@/schemas/customer.js";
@@ -14,9 +17,12 @@ import type {
   Customer,
   CustomerAutoUpdateParams,
   CustomerAutoUpdateResponse,
+  CustomerPrivacyDetailResponse,
   CustomerPrivacyParams,
   CustomerPrivacyResponse,
   CustomerSetting,
+  CustomersPrivacyCountResponse,
+  CustomersPrivacyResponse,
   CustomerWishlistCountResponse,
   CustomerWishlistResponse,
 } from "@/types/index.js";
@@ -309,6 +315,141 @@ async function cafe24_get_customer_auto_update(params: CustomerAutoUpdateParams)
   }
 }
 
+async function cafe24_list_customers_privacy_info(
+  params: z.infer<typeof CustomersPrivacySearchParamsSchema>,
+) {
+  try {
+    const data = await makeApiRequest<CustomersPrivacyResponse>(
+      "/admin/customersprivacy",
+      "GET",
+      undefined,
+      params,
+    );
+    const customers = data.customersprivacy || [];
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text:
+            `Found ${customers.length} customer privacy records\n\n` +
+            customers
+              .map(
+                (c) =>
+                  `## ${c.name} (${c.member_id})\n` +
+                  `- **Email**: ${c.email}\n` +
+                  `- **Phone**: ${c.cellphone || c.phone || "N/A"}\n` +
+                  `- **Group**: ${c.group_no}\n` +
+                  `- **Address**: ${c.address1} ${c.address2}\n` +
+                  `- **Points**: ${c.available_points} avail / ${c.total_points} total\n`,
+              )
+              .join("\n"),
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_count_customers_privacy_info(
+  params: z.infer<typeof CustomersPrivacySearchParamsSchema>,
+) {
+  try {
+    const data = await makeApiRequest<CustomersPrivacyCountResponse>(
+      "/admin/customersprivacy/count",
+      "GET",
+      undefined,
+      params,
+    );
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Found **${data.count}** customer privacy records matching filters.`,
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_get_customer_privacy_info(
+  params: z.infer<typeof CustomersPrivacyDetailParamsSchema>,
+) {
+  try {
+    const { member_id, ...queryParams } = params;
+    const data = await makeApiRequest<CustomerPrivacyDetailResponse>(
+      `/admin/customersprivacy/${member_id}`,
+      "GET",
+      undefined,
+      queryParams,
+    );
+    const c = data.customersprivacy;
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text:
+            `# Customer Privacy Details: ${c.name} (${c.member_id})\n\n` +
+            `## Basic Info\n` +
+            `- **English Name**: ${c.name_english || "N/A"}\n` +
+            `- **Gender**: ${c.gender}\n` +
+            `- **Birthday**: ${c.birthday} (${c.solar_calendar === "T" ? "Solar" : "Lunar"})\n` +
+            `- **Join Date**: ${c.created_date}\n\n` +
+            `## Contact Info\n` +
+            `- **Email**: ${c.email}\n` +
+            `- **Mobile**: ${c.cellphone}\n` +
+            `- **Phone**: ${c.phone}\n` +
+            `- **Address**: [${c.zipcode}] ${c.address1} ${c.address2}\n\n` +
+            `## Accounting\n` +
+            `- **Points**: Avail: ${c.available_points}, Total: ${c.total_points}, Used: ${c.used_points}\n` +
+            `- **Credits**: ${c.available_credits}\n\n` +
+            `## Settings\n` +
+            `- **Auth Status**: ${c.member_authentication}\n` +
+            `- **Authority**: ${c.member_authority}\n` +
+            `- **Fixed Group**: ${c.fixed_group}\n` +
+            `- **Blacklist**: ${c.use_blacklist === "T" ? `Yes (${c.blacklist_type})` : "No"}\n`,
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
+async function cafe24_update_customer_privacy_info(
+  params: z.infer<typeof CustomersPrivacyUpdateParamsSchema>,
+) {
+  try {
+    const { member_id, shop_no, request } = params;
+    const data = await makeApiRequest<CustomerPrivacyDetailResponse>(
+      `/admin/customersprivacy/${member_id}`,
+      "PUT",
+      { shop_no, request },
+    );
+    const _c = data.customersprivacy;
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: `Successfully updated privacy details for **${member_id}**.`,
+        },
+      ],
+      structuredContent: data,
+    };
+  } catch (error) {
+    return { content: [{ type: "text" as const, text: handleApiError(error) }] };
+  }
+}
+
 async function cafe24_list_customer_wishlist(params: z.infer<typeof CustomerWishlistParamsSchema>) {
   try {
     const { member_id, ...queryParams } = params;
@@ -505,5 +646,73 @@ export function registerTools(server: McpServer): void {
       },
     },
     cafe24_count_customer_wishlist,
+  );
+
+  server.registerTool(
+    "cafe24_list_customers_privacy_info",
+    {
+      title: "List Cafe24 Customers Privacy Info",
+      description:
+        "Retrieve a list of customers' privacy information from the /admin/customersprivacy endpoint. Returns extensive details including names, contact info, addresses, points, and more. Supports many filtering options.",
+      inputSchema: CustomersPrivacySearchParamsSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    cafe24_list_customers_privacy_info,
+  );
+
+  server.registerTool(
+    "cafe24_count_customers_privacy_info",
+    {
+      title: "Count Cafe24 Customers Privacy Info",
+      description:
+        "Retrieve the number of customer privacy records matching the specified filters.",
+      inputSchema: CustomersPrivacySearchParamsSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    cafe24_count_customers_privacy_info,
+  );
+
+  server.registerTool(
+    "cafe24_get_customer_privacy_info",
+    {
+      title: "Get Cafe24 Customer Privacy Info",
+      description:
+        "Retrieve detailed privacy information for a specific customer by member ID from the /admin/customersprivacy endpoint.",
+      inputSchema: CustomersPrivacyDetailParamsSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    cafe24_get_customer_privacy_info,
+  );
+
+  server.registerTool(
+    "cafe24_update_customer_privacy_info",
+    {
+      title: "Update Cafe24 Customer Privacy Info",
+      description:
+        "Update privacy information for a specific customer by member ID. Supports updating contact info, birthday, address, bank info, and more.",
+      inputSchema: CustomersPrivacyUpdateParamsSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    cafe24_update_customer_privacy_info,
   );
 }

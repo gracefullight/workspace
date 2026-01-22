@@ -161,6 +161,81 @@ export interface CustomerWishlistCountResponse extends Record<string, unknown> {
   count: number;
 }
 
+export interface CustomersPrivacyDetailParams {
+  member_id: string;
+  shop_no?: number;
+}
+
+export interface CustomerPrivacyItem {
+  shop_no: number;
+  member_id: string;
+  name: string;
+  name_english: string;
+  name_phonetic: string;
+  phone: string;
+  cellphone: string;
+  email: string;
+  wedding_anniversary: string | null;
+  birthday: string | null;
+  solar_calendar: "T" | "F";
+  total_points: string;
+  available_points: string;
+  used_points: string;
+  available_credits: string;
+  city: string;
+  state: string;
+  address1: string;
+  address2: string;
+  group_no: number;
+  job: string;
+  job_class: string;
+  zipcode: string;
+  created_date: string;
+  member_authentication: "T" | "F" | "B" | "J";
+  use_blacklist: "T" | "F";
+  blacklist_type: "P" | "L" | "A" | "";
+  last_login_date: string;
+  member_authority: "C" | "P" | "A" | "S";
+  nick_name: string;
+  recommend_id: string;
+  residence: string;
+  interest: string;
+  gender: "M" | "F";
+  member_type: "P" | "C" | "F" | "p" | "c" | "f";
+  company_type: "p" | "c" | null;
+  foreigner_type: "F" | "P" | "D" | "f" | "p" | "d" | null;
+  authentication_method: "i" | "m" | "e" | "d" | "a" | null;
+  lifetime_member: "T" | "F";
+  corporate_name: string;
+  nationality: string;
+  shop_name: string;
+  country_code: string;
+  use_mobile_app: "T" | "F";
+  join_path: "P" | "M";
+  fixed_group: "T" | "F";
+  thirdparty_agree: "T" | "F";
+  refund_bank_code: string | null;
+  refund_bank_account_no: string | null;
+  refund_bank_account_holder: string | null;
+  company_condition: string | null;
+  company_line: string | null;
+  sns_list: string[];
+  account_reactivation_date: string | null;
+  additional_information: Array<{ key: string; value: string }> | null;
+}
+
+export interface CustomersPrivacyResponse extends Record<string, unknown> {
+  customersprivacy: CustomerPrivacyItem[];
+}
+
+export interface CustomerPrivacyDetailResponse extends Record<string, unknown> {
+  customersprivacy: CustomerPrivacyItem;
+}
+
+export interface CustomersPrivacyCountResponse extends Record<string, unknown> {
+  count: number;
+}
+
 export interface CustomerWishlistParams {
   member_id: string;
   shop_no?: number;

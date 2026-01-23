@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.6...opencode-plugin-mimic@0.1.7) (2026-01-23)
+
+
+### Bug Fixes
+
+* **mimic:** skip tool suggestions for builtin tools in surfacePatterns ([0a26158](https://github.com/gracefullight/pkgs/commit/0a26158f16d28738a8e0d7affc26f2d28c697a6a))
+
 ## [0.1.6](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.5...opencode-plugin-mimic@0.1.6) (2026-01-23)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "opencode-plugin-mimic",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "An OpenCode plugin that learns from your patterns and adapts to your workflow. Mimic watches how you work, remembers across sessions, and suggests actions based on what you do repeatedly.",
   "type": "module",
   "main": "dist/index.js",

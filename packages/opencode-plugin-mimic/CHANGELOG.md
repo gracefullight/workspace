@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.8...opencode-plugin-mimic@0.1.9) (2026-01-23)
+
+
+### Bug Fixes
+
+* **opencode-plugin-mimic:** fix provider extraction from model ID ([48a3284](https://github.com/gracefullight/pkgs/commit/48a3284962fb66bce61d78fc9b135fccafa9be43))
+
 ## [0.1.8](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.7...opencode-plugin-mimic@0.1.8) (2026-01-23)
 
 

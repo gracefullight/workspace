@@ -6,5 +6,5 @@
   "packages/ng-daum-address": "1.0.1",
   "packages/mcp-cafe24-admin": "0.2.1",
   "packages/biome-plugin": "0.2.2",
-  "packages/opencode-plugin-mimic": "0.1.8"
+  "packages/opencode-plugin-mimic": "0.1.9"
 }

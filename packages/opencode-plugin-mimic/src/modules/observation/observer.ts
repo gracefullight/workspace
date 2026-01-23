@@ -8,7 +8,7 @@ import { generateDeterministicId } from "@/utils/id";
 const MAX_INSTINCTS_PER_RUN = 5;
 const OBSERVER_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
-const DEFAULT_OBSERVER_MODEL = "glm-4.7";
+const DEFAULT_OBSERVER_MODEL = "opencode/glm-4.7";
 const DEFAULT_OBSERVER_PROVIDER = "opencode";
 
 interface ObserverInput {
@@ -282,7 +282,9 @@ async function analyzePatternsWithLLM(
   const observerConfig = "observer" in config ? config.observer : undefined;
   const modelId = observerConfig?.model || DEFAULT_OBSERVER_MODEL;
   // Extract provider from model ID (e.g., "anthropic/claude-3-haiku" -> "anthropic")
-  const providerId = observerConfig?.provider || modelId.split("/")[0] || DEFAULT_OBSERVER_PROVIDER;
+  // If model doesn't contain "/", split returns the original string, so validate it
+  const extractedProvider = modelId.includes("/") ? modelId.split("/")[0] : undefined;
+  const providerId = observerConfig?.provider || extractedProvider || DEFAULT_OBSERVER_PROVIDER;
 
   try {
     const prompt = buildObserverPrompt(input);

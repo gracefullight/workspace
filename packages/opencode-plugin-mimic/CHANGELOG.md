@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.7...opencode-plugin-mimic@0.1.8) (2026-01-23)
+
+
+### Bug Fixes
+
+* **opencode-plugin-mimic:** correct default observer model ID to glm-4.7 ([0795578](https://github.com/gracefullight/pkgs/commit/07955781a677900fd7024bb80643b59ad1834f49))
+
 ## [0.1.7](https://github.com/gracefullight/pkgs/compare/opencode-plugin-mimic@0.1.6...opencode-plugin-mimic@0.1.7) (2026-01-23)
 
 

@@ -41,7 +41,7 @@ describe("StateManager", () => {
 
     it("does not create if exists", async () => {
       vi.mocked(existsSync).mockReturnValue(true);
-      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/\n");
+      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/");
       await manager.initialize();
       expect(mkdir).not.toHaveBeenCalled();
       expect(writeFile).not.toHaveBeenCalled();

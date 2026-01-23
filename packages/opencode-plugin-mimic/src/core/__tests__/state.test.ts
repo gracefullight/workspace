@@ -32,7 +32,7 @@ describe("StateManager", () => {
 
       const gitIgnoreCall = vi.mocked(writeFile).mock.calls[0];
       expect(gitIgnoreCall[0]).toContain(".gitignore");
-      expect(gitIgnoreCall[1]).toContain(".opencode/mimic/*");
+      expect(gitIgnoreCall[1]).toContain(".opencode/mimic/");
 
       const stateCall = vi.mocked(writeFile).mock.calls[1];
       const writtenState = JSON.parse(stateCall[1] as string);
@@ -55,7 +55,7 @@ describe("StateManager", () => {
 
       expect(writeFile).toHaveBeenCalledWith(
         expect.stringContaining(".gitignore"),
-        ".opencode/mimic/*\n",
+        ".opencode/mimic/\n",
         "utf-8",
       );
     });
@@ -67,14 +67,14 @@ describe("StateManager", () => {
 
       expect(writeFile).toHaveBeenCalledWith(
         expect.stringContaining(".gitignore"),
-        "node_modules/\n.env\n\n.opencode/mimic/*\n",
+        "node_modules/\n.env\n\n.opencode/mimic/\n",
         "utf-8",
       );
     });
 
     it("does not append if mimic wildcard line already exists", async () => {
       vi.mocked(existsSync).mockReturnValue(true);
-      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/*\n");
+      vi.mocked(readFile).mockResolvedValue(".opencode/mimic/\n");
       await manager["ensureGitIgnore"]();
 
       expect(writeFile).not.toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe("StateManager", () => {
 
     it("ignores whitespace when checking for existing entry", async () => {
       vi.mocked(existsSync).mockReturnValue(true);
-      vi.mocked(readFile).mockResolvedValue("  .opencode/mimic/*  \n");
+      vi.mocked(readFile).mockResolvedValue("  .opencode/mimic/  \n");
       await manager["ensureGitIgnore"]();
 
       expect(writeFile).not.toHaveBeenCalled();

@@ -3,7 +3,7 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Domain, Instinct, State } from "@/types";
 
-const STATE_JSON_GITIGNORE_LINE = ".opencode/mimic/*";
+const STATE_JSON_GITIGNORE_LINE = ".opencode/mimic/";
 
 export const createDefaultState = (projectName: string): State => ({
   version: "0.1.0",

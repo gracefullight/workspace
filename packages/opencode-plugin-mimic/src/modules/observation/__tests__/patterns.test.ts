@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { detectCommitPatterns, getCommitMessages } from "@/git";
-import { createI18n } from "@/i18n";
-import { detectPatterns, surfacePatterns } from "@/patterns";
-import { createDefaultState, StateManager } from "@/state";
+import { createDefaultState, StateManager } from "@/core/state";
+import { detectCommitPatterns, getCommitMessages } from "@/lib/git";
+import { createI18n } from "@/lib/i18n";
+import { detectPatterns, surfacePatterns } from "@/modules/observation/patterns";
 
-vi.mock("@/git", () => ({
+vi.mock("@/lib/git", () => ({
   getCommitMessages: vi.fn(),
   detectCommitPatterns: vi.fn(),
 }));
 
-vi.mock("@/state", async () => {
-  const actual = await vi.importActual<typeof import("@/state")>("@/state");
+vi.mock("@/core/state", async () => {
+  const actual = await vi.importActual<typeof import("@/core/state")>("@/core/state");
   return {
     ...actual,
     StateManager: vi.fn(),

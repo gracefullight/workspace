@@ -1,7 +1,7 @@
 import { differenceInHours, format, formatDistanceToNow } from "date-fns";
 import { enUS, ko } from "date-fns/locale";
-import type { MimicContext } from "@/context";
-import { formatCapabilityType } from "@/i18n";
+import type { MimicContext } from "@/core/context";
+import { formatCapabilityType } from "@/lib/i18n";
 import type { State } from "@/types";
 
 export type SessionStatus =

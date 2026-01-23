@@ -1,14 +1,14 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createDefaultState, StateManager } from "@/core/state";
+import { createI18n } from "@/lib/i18n";
 import {
   evolveCapability,
   formatEvolutionResult,
   getEvolutionSuggestions,
   suggestEvolution,
-} from "@/evolution";
-import { createI18n } from "@/i18n";
-import { createDefaultState, StateManager } from "@/state";
+} from "@/modules/evolution/engine";
 
 vi.mock("node:fs", () => ({
   existsSync: vi.fn(),
@@ -20,8 +20,8 @@ vi.mock("node:fs/promises", () => ({
   writeFile: vi.fn(),
 }));
 
-vi.mock("@/state", async () => {
-  const actual = await vi.importActual<typeof import("@/state")>("@/state");
+vi.mock("@/core/state", async () => {
+  const actual = await vi.importActual<typeof import("@/core/state")>("@/core/state");
   return {
     ...actual,
     StateManager: vi.fn(),

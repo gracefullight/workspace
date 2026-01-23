@@ -48,7 +48,8 @@
   "dependencies": {
     "@opencode-ai/plugin": "latest",
     "@opencode-ai/sdk": "latest",
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "nanoid": "^5.1.6"
   },
   "devDependencies": {
     "@types/node": "^24",
@@ -63,8 +64,10 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest",
+    "test": "vitest --run",
     "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run build"
   }
 }

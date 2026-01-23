@@ -10,7 +10,7 @@ import {
   formatPatternType,
   loadMimicConfig,
   resolveLanguage,
-} from "@/i18n";
+} from "@/lib/i18n";
 
 vi.mock("node:fs", () => ({
   existsSync: vi.fn(),

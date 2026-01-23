@@ -1,6 +1,7 @@
-import type { MimicContext } from "@/context";
-import { detectCommitPatterns, getCommitMessages } from "@/git";
+import type { MimicContext } from "@/core/context";
+import { detectCommitPatterns, getCommitMessages } from "@/lib/git";
 import type { Pattern } from "@/types";
+import { generateId } from "@/utils/id";
 
 export async function detectPatterns(ctx: MimicContext): Promise<Pattern[]> {
   const state = await ctx.stateManager.read();
@@ -13,7 +14,7 @@ export async function detectPatterns(ctx: MimicContext): Promise<Pattern[]> {
       const existing = state.patterns.find((p) => p.type === "commit" && p.description === msg);
       if (!existing) {
         newPatterns.push({
-          id: crypto.randomUUID(),
+          id: generateId(),
           type: "commit",
           description: msg,
           count,
@@ -32,7 +33,7 @@ export async function detectPatterns(ctx: MimicContext): Promise<Pattern[]> {
       const existing = state.patterns.find((p) => p.type === "file" && p.description === file);
       if (!existing) {
         newPatterns.push({
-          id: crypto.randomUUID(),
+          id: generateId(),
           type: "file",
           description: file,
           count,

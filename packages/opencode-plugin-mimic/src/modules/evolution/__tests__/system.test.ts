@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createI18n } from "@/i18n";
-import { adaptMessage, formatGreeting, formatSuggestion, getLevelConfig } from "@/level";
+import { createI18n } from "@/lib/i18n";
+import {
+  adaptMessage,
+  formatGreeting,
+  formatSuggestion,
+  getLevelConfig,
+} from "@/modules/evolution/system";
 import type { State } from "@/types";
 
 const i18n = createI18n("en-US");

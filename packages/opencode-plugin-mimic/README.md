@@ -11,22 +11,28 @@ Mimic watches how you work, remembers across sessions, and suggests actions base
 
 ## Features
 
-- **Pattern Detection**: Automatically detects repeated tool usage, file edits, and git commit messages
-- **Session Memory**: Remembers observations and milestones across sessions
+- **Pattern Detection**: Automatically detects repeated tool usage, file edits, git commit messages, and chat patterns
+- **Instinct Learning**: Learns behavioral "instincts" (rules of thumb) from your project history
+- **Identity Evolution**: The plugin develops its own personality and stats as it learns more about you
+- **Session Memory**: Remembers observations and milestones across sessions with long-term context
 - **Journey Tracking**: Narrative storytelling of your project's evolution
-- **Git History Analysis**: Analyzes commit messages and file modifications
-- **Smart Suggestions**: Offers to create shortcuts for repeated actions
-- **Per-Project State**: Each project gets its own learned patterns
+- **Skill Generation**: Automatically creates declarative skills based on project context
+- **Git & VCS Integration**: Analyzes branches, commit messages, and file modifications
+- **Smart Suggestions**: Offers to create shortcuts or evolve capabilities for repeated actions
+- **Per-Project State**: Each project gets its own learned patterns and instincts
 - **Configurable**: Enable/disable learning and suggestions, adjust thresholds
 - **Internationalization**: English or Korean UI based on user config
 
 ## How It Works
 
-1. **Track**: Mimic tracks tool calls, file edits, and analyzes git history
-2. **Detect**: Patterns are categorized by type (tool, file, commit)
-3. **Remember**: Observations and milestones are recorded for your project's journey
-4. **Suggest**: When patterns reach thresholds, Mimic surfaces suggestions and can evolve them into tools/hooks
-5. **Persist**: All state persists in `.opencode/mimic/`
+1. **Track**: Mimic tracks tool calls, file edits, git history, and even user prompts
+2. **Detect**: Patterns are categorized by type (tool, file, commit, prompt)
+3. **Observe**: Behavioral patterns are logged and analyzed by a background observer
+4. **Learn**: Recurring behaviors are distilled into **Instincts** - project-specific rules of thumb
+5. **Apply**: Instincts are automatically applied to new sessions to maintain continuity
+6. **Evolve**: When patterns reach thresholds, Mimic can evolve them into dedicated tools or skills
+7. **Identity**: As you work, Mimic's project identity matures, gaining personality and "awakening" over time
+
 
 ## Installation
 
@@ -78,33 +84,39 @@ Mimic adds the following tools to OpenCode:
 
 #### `mimic:init`
 
-Initialize or wake up Mimic for this project. Shows welcome message with session stats and recent observations.
+Initialize or wake up Mimic for this project. Shows welcome message with session stats, recent observations, and potential continuity hints.
 
 #### `mimic:status`
 
-Check current status including:
-
-- Session count and pattern stats
-- Recently modified files (from git)
-- Recent commits
-- Active suggestions
+Check current status including session count, pattern stats, recently modified files, and active suggestions.
 
 #### `mimic:journey`
 
-View the narrative story of your project's evolution:
-
-- Milestones achieved
-- Recent observations
-- Git activity timeline
+View the narrative story of your project's evolution, including milestones, recent observations, and git activity.
 
 #### `mimic:patterns`
 
-View all detected patterns organized by type:
+View all detected patterns (Tool, File, Commit, etc.) organized by type and frequency.
 
-- **Tool patterns**: Frequently used tools
-- **File patterns**: Frequently modified files
-- **Commit patterns**: Repeated commit messages
-- **Sequence patterns**: Reserved for future detection
+#### `mimic:instincts`
+
+View learned behavioral instincts. Instincts are "rules of thumb" that Mimic has learned from your work style.
+
+#### `mimic:apply`
+
+Manually check which instincts apply to the current context (recent tools, modified files, etc.).
+
+#### `mimic:identity`
+
+Check Mimic's project identity, including its personality trait, "awakened" date, and learning stats.
+
+#### `mimic:sequences`
+
+View frequently used tool sequences to understand your common cross-tool workflows.
+
+#### `mimic:observations`
+
+View low-level observation logs (tools, files, sessions) for the current project.
 
 #### `mimic:observe`
 
@@ -124,12 +136,7 @@ mimic:milestone({ milestone: "v1.0.0 released" })
 
 #### `mimic:stats`
 
-View detailed statistics:
-
-- Total sessions and tool calls
-- Pattern and milestone counts
-- Session records
-- Configuration status
+View detailed statistics: total sessions, tool calls, pattern/milestone counts, and learning status.
 
 #### `mimic:configure`
 
@@ -143,52 +150,48 @@ mimic:configure({ minPatternCount: 5 })         # Require 5 repetitions
 
 #### `mimic:surface`
 
-Mark a pattern as acknowledged:
-
-```
-mimic:surface({ patternId: "pattern-uuid" })
-```
+Mark a pattern as acknowledged/surfaced.
 
 #### `mimic:reset`
 
-Clear all learned data:
-
-```
-mimic:reset({ confirm: true })
-```
+Clear all learned data for the current project.
 
 #### `mimic:grow`
 
-Analyze project direction and growth opportunities.
+Analyze project direction and growth opportunities based on activity logs.
 
 #### `mimic:evolve`
 
-Suggest and create new capabilities based on detected patterns.
+Suggest and create new capabilities (Shortcuts, Hooks, Commands, Agents, MCP) based on repeated patterns.
 
-> When you accept a suggestion, Mimic writes files into your project:
-> - `shortcut` / `command` / `hook` / `skill`: `.opencode/plugins/<name>.js`
-> - `agent`: `.opencode/agents/<name>.md`
-> - `mcp`: updates `opencode.json`
+#### `mimic:generate-skills`
+
+Analyze project context and automatically generate `.agent/skills` to improve accuracy for future sessions.
+
+#### `mimic:export` / `mimic:import`
+
+Export your learned instincts to a JSON file or import them from another project.
+
+#### `mimic:session-context`
+
+View cross-session context summary and continuity hints.
 
 #### `mimic:level`
 
-Set your technical level (technical, semi-technical, non-technical, chaotic). This is stored in state and used for personalization.
+Set your technical level (technical, semi-technical, non-technical, chaotic) to personalize Mimic's feedback.
 
 #### `mimic:focus`
 
 Set current project focus or tech stack.
 
-#### `mimic:mcp-search`
+#### `mimic:mcp-search` / `mimic:mcp`
 
-Returns a search link to mcpmarket.com and a list of popular MCP servers.
-
-#### `mimic:mcp`
-
-Add an MCP server configuration to the **project-level** `opencode.json`.
+Search for MCP servers and add them to project configuration.
 
 #### `mimic:capabilities`
 
 List all evolved capabilities.
+
 
 ## Pattern Thresholds
 
@@ -203,11 +206,14 @@ List all evolved capabilities.
 
 ## Automatic Behaviors
 
-- **Session Start**: Increments session count, detects long breaks
-- **Tool Execution**: Tracks every tool call for pattern detection
-- **File Edit**: Tracks file modification frequency
-- **Session Idle**: Analyzes commit/file patterns and surfaces suggestions
-- **Session End**: Records intensive sessions, major refactoring milestones
+- **Session Start**: Increments session count, analyzes time since last session, and **automatically applies learned instincts** to set the context.
+- **Tool Execution**: Tracks every tool call for pattern and sequence detection.
+- **File Edit**: Tracks file modification frequency.
+- **Background Observation**: Periodically runs an observer to distill patterns into behavioral instincts.
+- **Automatic Evolution**: Automatically evolves capabilities when high-confidence patterns emerge in specific domains.
+- **Skill Generation**: Automatically generates new skills when new capabilities are evolved.
+- **Session Idle**: Analyzes patterns and surfaces suggestions via toasts.
+- **Session End**: Records session summary, records continuity memory for next session, and logs major milestones.
 
 > Git-based insights require a git repository. If none is available, git sections will be empty.
 

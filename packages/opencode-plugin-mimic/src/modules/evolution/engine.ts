@@ -1,50 +1,14 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { MimicContext } from "@/context";
-import { formatCapabilityType } from "@/i18n";
-import type { StateManager } from "@/state";
-import type { CapabilityType, EvolvedCapability, Pattern } from "@/types";
-
-const BUILTIN_TOOLS = new Set([
-  "read",
-  "write",
-  "edit",
-  "bash",
-  "grep",
-  "glob",
-  "serena_list_dir",
-  "serena_find_file",
-  "serena_search_for_pattern",
-  "serena_get_symbols_overview",
-  "serena_find_symbol",
-  "serena_find_referencing_symbols",
-  "serena_replace_symbol_body",
-  "serena_insert_after_symbol",
-  "serena_insert_before_symbol",
-  "serena_replace_content",
-  "serena_rename_symbol",
-  "lsp_diagnostics",
-  "lsp_goto_definition",
-  "lsp_find_references",
-  "lsp_prepare_rename",
-  "lsp_rename",
-  "lsp_symbols",
-  "delegate_task",
-  "task",
-  "question",
-  "background_cancel",
-  "background_output",
-  "skill",
-  "slashcommand",
-  "use_skill",
-  "find_skills",
-  "session_list",
-  "session_read",
-  "session_search",
-  "session_info",
-  "mimic:",
-]);
+import { OPENCODE_EVENTS } from "@/constants/opencode-events";
+import { BUILTIN_TOOLS } from "@/constants/tools";
+import type { MimicContext } from "@/core/context";
+import type { StateManager } from "@/core/state";
+import { formatCapabilityType } from "@/lib/i18n";
+import { findRepresentativePattern } from "@/modules/knowledge/instincts";
+import type { CapabilityType, Domain, EvolvedCapability, Pattern } from "@/types";
+import { generateId } from "@/utils/id";
 
 interface EvolutionSuggestion {
   type: CapabilityType;
@@ -86,7 +50,7 @@ function generateHookCode(name: string, _description: string, pattern: Pattern):
 
 export const ${name.replace(/-/g, "_")} = (plugin) => ({
   async event({ event }) {
-    if (event.type === "file.edited") {
+    if (event.type === "${OPENCODE_EVENTS.FILE_EDITED}") {
       const filename = event.properties?.filename;
       if (filename?.includes("${filename}")) {
         console.log("📦 [Mimic] Detected change in watched file: ${filename}");
@@ -108,7 +72,7 @@ function generateSkillCode(name: string, description: string, pattern: Pattern):
 export const ${name.replace(/-/g, "_")} = (plugin) => ({
   async event({ event }) {
     // Auto-triggered skill: ${description}
-    if (event.type === "session.created") {
+    if (event.type === "${OPENCODE_EVENTS.SESSION_CREATED}") {
       console.log("📦 [Mimic] Skill ${name} activated");
       // TODO: Implement automated behavior
     }
@@ -264,7 +228,7 @@ async function buildEvolutionOutput(
 
 function createCapabilityFromSuggestion(suggestion: EvolutionSuggestion): EvolvedCapability {
   return {
-    id: crypto.randomUUID(),
+    id: generateId(),
     type: suggestion.type,
     name: suggestion.name,
     description: suggestion.description,
@@ -436,6 +400,66 @@ export function formatEvolutionResult(
       result += `${ctx.i18n.t("evolution.result.mcp", { name: capability.name })}\n`;
       break;
   }
+
+  return result;
+}
+
+export async function suggestDomainEvolution(
+  ctx: MimicContext,
+  domain: Domain,
+): Promise<EvolutionSuggestion | null> {
+  const state = await ctx.stateManager.read();
+  const instincts = await ctx.stateManager.listInstincts();
+  const domainInstincts = instincts.filter(
+    (i) => i.domain === domain && i.status === "approved" && i.confidence >= 0.6,
+  );
+
+  if (domainInstincts.length < 5) {
+    return null;
+  }
+
+  const pattern = findRepresentativePattern(domainInstincts, state.patterns);
+  if (!pattern) {
+    return null;
+  }
+
+  const slug = domain.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  return {
+    type: "agent",
+    name: `${slug}-specialist`,
+    description: ctx.i18n.t("evolution.domain.description", { domain }),
+    reason: ctx.i18n.t("evolution.domain.reason", {
+      count: domainInstincts.length,
+      domain,
+    }),
+    pattern,
+  };
+}
+
+export async function evolveDomain(
+  ctx: MimicContext,
+  domain: Domain,
+): Promise<{ capability: EvolvedCapability; filePath: string } | null> {
+  const suggestion = await suggestDomainEvolution(ctx, domain);
+  if (!suggestion) {
+    return null;
+  }
+
+  const result = await evolveCapability(ctx, suggestion);
+
+  const state = await ctx.stateManager.read();
+  if (!state.evolution.evolvedDomains) {
+    state.evolution.evolvedDomains = {};
+  }
+  state.evolution.evolvedDomains[domain] = new Date().toISOString();
+
+  const pendingIndex = state.evolution.pendingSuggestions.indexOf(domain);
+  if (pendingIndex !== -1) {
+    state.evolution.pendingSuggestions.splice(pendingIndex, 1);
+  }
+
+  await ctx.stateManager.save(state);
 
   return result;
 }

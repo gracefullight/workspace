@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import type { MimicContext } from "@/context";
+import type { MimicContext } from "@/core/context";
+import { createDefaultState } from "@/core/state";
+import { createI18n } from "@/lib/i18n";
+import type { State } from "@/types";
 import {
   analyzeTimeSinceLastSession,
   formatDuration,
   formatGrowAnalysis,
   formatJourney,
-} from "@/format";
-import { createI18n } from "@/i18n";
-import { createDefaultState } from "@/state";
-import type { State } from "@/types";
+} from "@/utils/format";
 
 const i18n = createI18n("en-US");
 const ctx: MimicContext = { stateManager: {} as never, directory: "/tmp", i18n };

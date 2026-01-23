@@ -7,6 +7,14 @@ export type Language = "en-US" | "ko-KR";
 
 export interface MimicUserConfig {
   language?: string;
+  observer?: {
+    /** Model ID for LLM-based pattern analysis (e.g., "opencode/glm-4.7-free") */
+    model?: string;
+    /** Provider ID (e.g., "opencode") */
+    provider?: string;
+    /** Whether to use LLM-based analysis (default: true if model is set) */
+    enabled?: boolean;
+  };
 }
 
 const DEFAULT_LANGUAGE: Language = "en-US";
@@ -116,6 +124,13 @@ const MESSAGES: Record<Language, Record<string, string>> = {
       "Complex sequence repeated {count} times - needs dedicated agent",
     "evolution.suggest.sequence.skill.description": "Automate: {pattern}",
     "evolution.suggest.sequence.skill.reason": "Repeated sequence {count} times",
+
+    "evolution.domain.description":
+      "Specialist agent for the {domain} domain based on observed instincts",
+    "evolution.domain.reason": 'Detected {count} approved instincts in domain "{domain}"',
+
+    "observer.new_instincts": "Learned {count} new instinct(s) from your patterns",
+    "observer.evolved": "✨ Auto-evolved {name} for {domain} domain!",
 
     "level.set": 'Level set to "{level}". Responses will be {style} style with {detail} detail.',
     "level.label.technical": "technical",
@@ -236,6 +251,62 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "tool.mcp.args.url": "Remote MCP server URL",
     "tool.mcp.args.command": "Local MCP command (comma-separated)",
     "tool.capabilities.description": "List all evolved capabilities",
+
+    "tool.instincts.description": "List all learned instincts",
+    "tool.instincts.args.domain": "Filter by domain (optional)",
+    "instincts.empty": "📦 *yawns* No instincts learned yet. Keep working, I'm watching...",
+    "instincts.title": "## 📦 Learned Instincts",
+    "instincts.total": "Total: {count} instincts",
+    "instincts.auto_applied": "Learned behaviors loaded and auto-applied for this session",
+
+    "tool.export.description": "Export your instincts to share with other projects",
+    "export.empty": "📦 *rattles* Nothing to export yet. Learn some instincts first!",
+    "export.success": "📦 *proud clicking* Exported {count} instincts to:\n`{path}`",
+
+    "tool.import.description": "Import instincts from another project",
+    "tool.import.args.path": "Path to the exported instincts JSON file",
+    "import.not_found": "📦 *confused* File not found: {path}",
+    "import.success": "📦 *absorbs knowledge* Imported {count} instincts from {from}!",
+    "import.error": "📦 *spits out* Failed to parse instincts file. Invalid format.",
+
+    "tool.apply.description": "Show instincts relevant to your current work",
+    "apply.none": "📦 *peers around* No relevant instincts for current context.",
+    "apply.title": "## 📦 Applicable Instincts",
+
+    "tool.identity.description": "View Mimic's identity and personality",
+    "identity.title": "## 📦 Who Am I?",
+    "identity.personality": "Personality",
+    "identity.awakened": "Awakened",
+    "identity.days": "days ago",
+    "identity.instincts_learned": "Instincts learned",
+    "identity.evolutions": "Evolutions",
+    "identity.favorite_domains": "Favorite domains",
+    "identity.error": "📦 *confused* Could not initialize identity. Please try again.",
+
+    "tool.sequences.description": "Show detected tool usage sequences",
+    "sequences.empty": "📦 *listens* No sequences detected yet. Keep using tools...",
+    "sequences.title": "## 📦 Tool Sequences",
+
+    "observer.skill_generated": "Generated skill: {name}",
+    "skill.domain_description": "Specialist skill for the {domain} domain",
+
+    "tool.observations.description": "View observation logs for this session",
+    "tool.observations.args.limit": "Maximum number of observations to show",
+    "tool.observations.args.types": "Comma-separated list of observation types to filter",
+    "observations.title": "## 📦 Observation Log",
+    "observations.empty": "📦 *empty* No observations recorded yet.",
+    "observations.stats": "**Total**: {count} observations, **Size**: {size}",
+
+    "tool.session_context.description": "Get context from previous sessions",
+    "session_context.title": "## 📦 Session Context",
+    "session_context.empty": "📦 *yawns* No previous sessions to analyze.",
+    "session_context.patterns_title": "**Cross-session patterns:**",
+
+    "tool.generate_skills.description": "Generate declarative skills from learned instincts",
+    "generate_skills.title": "## 📦 Skill Generation",
+    "generate_skills.empty":
+      "📦 *shrugs* Not enough instincts to generate skills yet. Need 5+ per domain.",
+    "generate_skills.success": "Generated {count} skill(s):",
   },
   "ko-KR": {
     "log.session_started": "[Mimic] 세션 시작. 세션 {sessions}회, 패턴 {patterns}개",
@@ -325,6 +396,13 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "evolution.suggest.sequence.agent.reason": "복잡한 시퀀스 {count}회 반복 — 전담 에이전트 필요",
     "evolution.suggest.sequence.skill.description": "자동화: {pattern}",
     "evolution.suggest.sequence.skill.reason": "시퀀스 {count}회 반복",
+
+    "evolution.domain.description": "관찰된 본능을 기반으로 {domain} 도메인 전문 에이전트",
+    "evolution.domain.reason": '"{domain}" 도메인에서 승인된 본능 {count}개 감지',
+
+    "observer.new_instincts": "패턴에서 {count}개의 새로운 본능을 학습했습니다",
+    "observer.evolved": "✨ {domain} 도메인을 위해 {name}을(를) 자동 진화했습니다!",
+
     "level.set":
       '레벨을 "{level}"로 설정했습니다. 응답은 {style} 톤, {detail} 상세도로 제공합니다.',
     "level.label.technical": "기술적",
@@ -435,6 +513,62 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "tool.mcp.args.url": "원격 MCP 서버 URL",
     "tool.mcp.args.command": "로컬 MCP 명령(쉼표 구분)",
     "tool.capabilities.description": "진화한 능력 목록",
+
+    "tool.instincts.description": "학습된 모든 본능 보기",
+    "tool.instincts.args.domain": "도메인으로 필터 (선택)",
+    "instincts.empty": "📦 *하품* 아직 학습한 본능이 없어. 계속 작업해, 지켜보고 있을게...",
+    "instincts.title": "## 📦 학습된 본능",
+    "instincts.total": "총 {count}개 본능",
+    "instincts.auto_applied": "학습된 행동이 이 세션에 자동 적용되었습니다",
+
+    "tool.export.description": "다른 프로젝트와 공유하기 위해 본능 내보내기",
+    "export.empty": "📦 *덜컹* 내보낼 게 없어. 먼저 본능을 학습해!",
+    "export.success": "📦 *뿌듯한 딸깍* {count}개 본능을 내보냈어:\n`{path}`",
+
+    "tool.import.description": "다른 프로젝트에서 본능 가져오기",
+    "tool.import.args.path": "내보낸 본능 JSON 파일 경로",
+    "import.not_found": "📦 *갸우뚱* 파일을 찾을 수 없어: {path}",
+    "import.success": "📦 *지식 흡수* {from}에서 {count}개 본능을 가져왔어!",
+    "import.error": "📦 *퉤* 본능 파일 파싱 실패. 형식이 잘못됐어.",
+
+    "tool.apply.description": "현재 작업과 관련된 본능 표시",
+    "apply.none": "📦 *두리번* 현재 컨텍스트에 관련된 본능이 없어.",
+    "apply.title": "## 📦 적용 가능한 본능",
+
+    "tool.identity.description": "Mimic의 정체성과 성격 보기",
+    "identity.title": "## 📦 나는 누구인가?",
+    "identity.personality": "성격",
+    "identity.awakened": "깨어난 날",
+    "identity.days": "일 전",
+    "identity.instincts_learned": "학습한 본능",
+    "identity.evolutions": "진화 횟수",
+    "identity.favorite_domains": "선호 도메인",
+    "identity.error": "📦 *갸우뚱* 정체성을 초기화할 수 없어요. 다시 시도해주세요.",
+
+    "tool.sequences.description": "감지된 도구 사용 시퀀스 보기",
+    "sequences.empty": "📦 *귀 기울임* 아직 시퀀스가 감지되지 않았어. 계속 도구를 써봐...",
+    "sequences.title": "## 📦 도구 시퀀스",
+
+    "observer.skill_generated": "스킬 생성됨: {name}",
+    "skill.domain_description": "{domain} 도메인 전문 스킬",
+
+    "tool.observations.description": "이 세션의 관찰 로그 보기",
+    "tool.observations.args.limit": "표시할 최대 관찰 수",
+    "tool.observations.args.types": "필터할 관찰 유형(쉼표 구분)",
+    "observations.title": "## 📦 관찰 로그",
+    "observations.empty": "📦 *비어있음* 아직 기록된 관찰이 없어.",
+    "observations.stats": "**총**: {count}개 관찰, **크기**: {size}",
+
+    "tool.session_context.description": "이전 세션 컨텍스트 가져오기",
+    "session_context.title": "## 📦 세션 컨텍스트",
+    "session_context.empty": "📦 *하품* 분석할 이전 세션이 없어.",
+    "session_context.patterns_title": "**세션 간 패턴:**",
+
+    "tool.generate_skills.description": "학습된 본능으로 선언적 스킬 생성",
+    "generate_skills.title": "## 📦 스킬 생성",
+    "generate_skills.empty":
+      "📦 *어깨 으쓱* 스킬을 생성할 본능이 부족해. 도메인당 5개 이상 필요해.",
+    "generate_skills.success": "{count}개 스킬 생성됨:",
   },
 };
 

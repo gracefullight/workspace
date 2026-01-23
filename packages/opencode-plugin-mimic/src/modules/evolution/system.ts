@@ -1,4 +1,4 @@
-import type { I18n } from "@/i18n";
+import type { I18n } from "@/lib/i18n";
 import type { CreatorLevel, State } from "@/types";
 
 interface LevelConfig {

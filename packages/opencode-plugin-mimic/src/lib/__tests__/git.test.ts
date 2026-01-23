@@ -5,7 +5,7 @@ import {
   getCommitMessages,
   getGitHistory,
   getRecentlyModifiedFiles,
-} from "@/git";
+} from "@/lib/git";
 
 vi.mock("node:child_process", () => ({
   execSync: vi.fn(),

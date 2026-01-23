@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createDefaultState, StateManager } from "@/state";
+import { createDefaultState, StateManager } from "@/core/state";
 
 vi.mock("node:fs", () => ({
   existsSync: vi.fn(),
@@ -27,7 +27,7 @@ describe("StateManager", () => {
       vi.mocked(existsSync).mockReturnValue(false);
       await manager.initialize();
 
-      expect(mkdir).toHaveBeenCalledTimes(2);
+      expect(mkdir).toHaveBeenCalledTimes(3); // mimic, sessions, instincts
       expect(writeFile).toHaveBeenCalledTimes(2);
 
       const gitIgnoreCall = vi.mocked(writeFile).mock.calls[0];

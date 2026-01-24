@@ -280,10 +280,11 @@ async function analyzePatternsWithLLM(
   }
 
   const observerConfig = "observer" in config ? config.observer : undefined;
-  const modelId = observerConfig?.model || DEFAULT_OBSERVER_MODEL;
-  // Extract provider from model ID (e.g., "anthropic/claude-3-haiku" -> "anthropic")
-  // If model doesn't contain "/", split returns the original string, so validate it
-  const extractedProvider = modelId.includes("/") ? modelId.split("/")[0] : undefined;
+  const rawModelId = observerConfig?.model || DEFAULT_OBSERVER_MODEL;
+  // Extract provider and model from model ID (e.g., "anthropic/claude-3-haiku" -> provider: "anthropic", model: "claude-3-haiku")
+  const hasSlash = rawModelId.includes("/");
+  const extractedProvider = hasSlash ? rawModelId.split("/")[0] : undefined;
+  const modelId = hasSlash ? rawModelId.split("/").slice(1).join("/") : rawModelId;
   const providerId = observerConfig?.provider || extractedProvider || DEFAULT_OBSERVER_PROVIDER;
 
   try {

@@ -63,8 +63,28 @@ var ZoteroPluginUTS = (() => {
       removeFromWindow(win);
     }
   }
+  async function installStyle(rootURI) {
+    try {
+      const styleURI = rootURI + "uts-apa.csl";
+      const response = await fetch(styleURI);
+      if (!response.ok) {
+        Zotero.debug("UTS Copy: Failed to fetch style " + styleURI);
+        return;
+      }
+      const styleContent = await response.text();
+      const styleID = "http://www.zotero.org/styles/uts-apa-7th";
+      const existing = Zotero.Styles.get(styleID);
+      if (existing) {
+      }
+      await Zotero.Styles.install(styleContent, styleURI, false);
+      Zotero.debug("UTS Copy: Installed UTS APA 7th style");
+    } catch (e) {
+      Zotero.debug("UTS Copy: Error installing style: " + e);
+    }
+  }
   async function startup({ id, version, rootURI }) {
     Zotero.debug("UTS Copy: Index Startup");
+    await installStyle(rootURI);
     addToAllWindows();
   }
   function shutdown() {
@@ -77,7 +97,7 @@ var ZoteroPluginUTS = (() => {
       if (!pane) return;
       const items = pane.getSelectedItems();
       if (!items || !items.length) return;
-      const format = "bibliography=http://www.zotero.org/styles/apa";
+      const format = "bibliography=http://www.zotero.org/styles/uts-apa-7th";
       const qc = Zotero.QuickCopy;
       const biblio = qc.getContentFromItems(items, format);
       const text = biblio.text || biblio;
@@ -90,6 +110,9 @@ var ZoteroPluginUTS = (() => {
       Zotero.debug("UTS Copy: Copied to clipboard");
     } catch (e) {
       Zotero.debug("UTS Copy Error: " + e);
+      if (e.toString().includes("style not found") || e.toString().includes("NS_ERROR_INVALID_ARG")) {
+        Zotero.debug("UTS Copy: Fallback to standard APA");
+      }
     }
   }
   return __toCommonJS(src_exports);

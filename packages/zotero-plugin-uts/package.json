@@ -1,0 +1,14 @@
+{
+  "name": "zotero-plugin-uts",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "zotero-types": "^4.1.0-beta.4"
+  },
+  "dependencies": {}
+}

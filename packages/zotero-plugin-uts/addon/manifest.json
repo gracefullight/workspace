@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "UTS APA 7th Copy",
+  "version": "1.0.0",
+  "description": "Copy bibliography in UTS APA 7th format to clipboard",
+  "applications": {
+    "zotero": {
+      "id": "uts-copy@gracefullight.dev",
+      "strict_min_version": "7.0"
+    }
+  }
+}

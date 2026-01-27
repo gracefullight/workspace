@@ -329,7 +329,8 @@ const MESSAGES: Record<Language, Record<string, string>> = {
 
     "tool.error_suggest.description": "Suggest fixes for an error based on learned patterns",
     "tool.error_patterns.description": "List all learned error patterns",
-    "error.no_patterns": "📦 *peers around* No error patterns learned yet. I'll remember errors as you encounter them...",
+    "error.no_patterns":
+      "📦 *peers around* No error patterns learned yet. I'll remember errors as you encounter them...",
     "error.patterns_title": "## 📦 Learned Error Patterns ({count})",
     "error.suggest_title": "## 📦 Suggested Fixes",
     "error.fix_confidence": "- Confidence: {confidence}%",
@@ -380,8 +381,10 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "commit.type": "Type",
     "commit.scope": "Scope",
     "commit.confidence": "Confidence",
-    "commit.usage_hint": "Use `mimic-commit({ suggestion: 1 })` or `mimic-commit({ message: \"...\" })`",
-    "commit.no_message": "📦 *confused* No message provided. Use suggestion number or provide a message.",
+    "commit.usage_hint":
+      'Use `mimic-commit({ suggestion: 1 })` or `mimic-commit({ message: "..." })`',
+    "commit.no_message":
+      "📦 *confused* No message provided. Use suggestion number or provide a message.",
     "commit.dry_run": "📦 *preview* Would commit with: `{message}`",
     "commit.executed": "📦 ✅ Committed: `{message}`",
     "commit.failed": "📦 ❌ Commit failed. Check git status.",
@@ -448,7 +451,8 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "evolve.menu_instincts": "관련 본능",
     "evolve.menu_footer": '*패턴 ID를 먹여줘:* `mimic-evolve({ accept: "pattern-id" })`',
     "evolve.domain_title": "## 📦 도메인 진화 준비 완료!",
-    "evolve.domain_intro": "*눈이 빛난다* **{domain}**에 대해 충분히 배워서 전문가를 진화시킬 수 있어:",
+    "evolve.domain_intro":
+      "*눈이 빛난다* **{domain}**에 대해 충분히 배워서 전문가를 진화시킬 수 있어:",
     "evolve.domain_instincts_header": "### 🧠 클러스터된 본능 ({count}개)",
     "evolution.type.command": "명령",
     "evolution.type.shortcut": "단축키",
@@ -718,7 +722,8 @@ const MESSAGES: Record<Language, Record<string, string>> = {
     "commit.type": "유형",
     "commit.scope": "범위",
     "commit.confidence": "신뢰도",
-    "commit.usage_hint": "`mimic-commit({ suggestion: 1 })` 또는 `mimic-commit({ message: \"...\" })` 사용",
+    "commit.usage_hint":
+      '`mimic-commit({ suggestion: 1 })` 또는 `mimic-commit({ message: "..." })` 사용',
     "commit.no_message": "📦 *갸우뚱* 메시지가 없어. 제안 번호를 쓰거나 메시지를 입력해.",
     "commit.dry_run": "📦 *미리보기* 다음 메시지로 커밋됨: `{message}`",
     "commit.executed": "📦 ✅ 커밋 완료: `{message}`",

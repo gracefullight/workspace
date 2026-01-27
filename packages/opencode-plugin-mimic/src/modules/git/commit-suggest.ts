@@ -122,19 +122,28 @@ export function inferCommitType(filesChanged: string[]): CommitType {
 
 export function inferScope(filesChanged: string[]): string | null {
   if (filesChanged.length === 0) return null;
+
   if (filesChanged.length === 1) {
-    const parts = filesChanged[0].split("/");
-    if (parts.length > 1) {
-      return parts[parts.length > 2 ? 1 : 0];
-    }
-    return null;
+    return inferScopeFromPath(filesChanged[0]);
   }
 
+  return inferScopeFromStats(filesChanged);
+}
+
+function inferScopeFromPath(filePath: string): string | null {
+  const parts = filePath.split("/");
+  if (parts.length > 1) {
+    return parts[parts.length > 2 ? 1 : 0];
+  }
+  return null;
+}
+
+function inferScopeFromStats(filesChanged: string[]): string | null {
   const dirs = new Map<string, number>();
+
   for (const file of filesChanged) {
-    const parts = file.split("/");
-    if (parts.length > 1) {
-      const dir = parts[parts.length > 2 ? 1 : 0];
+    const dir = inferScopeFromPath(file);
+    if (dir) {
       dirs.set(dir, (dirs.get(dir) || 0) + 1);
     }
   }
@@ -153,7 +162,7 @@ export function inferScope(filesChanged: string[]): string | null {
 
 export function generateDescription(
   filesChanged: string[],
-  diffSummary: DiffSummary,
+  _diffSummary: DiffSummary,
   type: CommitType,
 ): string {
   const fileCount = filesChanged.length;
@@ -187,8 +196,8 @@ export function generateDescription(
 
 export function generateCommitSuggestions(
   directory: string,
-  sessionTools: string[],
-  sessionFiles: string[],
+  _sessionTools: string[],
+  _sessionFiles: string[],
 ): CommitSuggestion[] {
   const diff = getGitDiffSummary(directory);
   if (!diff || diff.filesChanged.length === 0) {
@@ -204,7 +213,12 @@ export function generateCommitSuggestions(
     type: primaryType,
     scope: scope || undefined,
     description,
-    message: formatConventionalCommit({ type: primaryType, scope, description, confidence: 0.8 }),
+    message: formatConventionalCommit({
+      type: primaryType,
+      scope: scope || undefined,
+      description,
+      confidence: 0.8,
+    }),
     confidence: 0.8,
   });
 
@@ -219,7 +233,7 @@ export function generateCommitSuggestions(
       description: altDescription,
       message: formatConventionalCommit({
         type: altType,
-        scope,
+        scope: scope || undefined,
         description: altDescription,
         confidence: 0.5,
       }),

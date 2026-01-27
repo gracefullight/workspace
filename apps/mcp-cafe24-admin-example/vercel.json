@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm build"
+  "installCommand": "bun install --frozen-lockfile",
+  "buildCommand": "bun run build"
 }

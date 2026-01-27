@@ -367,9 +367,7 @@ export class StateManager {
       }
     }
 
-    return macros.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+    return macros.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   async writeMacro(macro: Macro): Promise<void> {

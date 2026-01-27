@@ -41,7 +41,7 @@ jobs:
         run: |
           for app in apps/*; do
             if [ "$app" == "apps/mcp-cafe24-admin-example" ]; then continue; fi
-            if [ -d "$app" ]; then
+            if [ -d "$app" ] && [ -f "$app/package.json" ]; then
               echo "Building $app..."
               bun run --filter "./$app" build
             fi
@@ -50,7 +50,7 @@ jobs:
       - name: Merge all apps to deploy directory
         run: |
           mkdir -p deploy_dist
-          
+
           for app in apps/*; do
             if [ "$app" == "apps/mcp-cafe24-admin-example" ]; then continue; fi
             if [ -d "$app" ]; then
@@ -106,10 +106,10 @@ jobs:
               <h1>📦 TS Workspace Examples</h1>
               <ul class="app-list">
           EOF
-          
+
           for app in apps/*; do
             if [ "$app" == "apps/mcp-cafe24-admin-example" ]; then continue; fi
-            if [ -d "$app" ]; then
+            if [ -d "$app" ] && [ -f "$app/package.json" ]; then
               (
                 cd "$app"
                 app_name=$(basename $(pwd))
@@ -121,7 +121,7 @@ jobs:
               )
             fi
           done
-          
+
           cat >> deploy_dist/index.html << EOF
               </ul>
             </body>

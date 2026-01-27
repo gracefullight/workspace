@@ -1,7 +1,6 @@
 import { tool } from "@opencode-ai/plugin";
 import {
   executeCommit,
-  formatConventionalCommit,
   generateCommitSuggestions,
   getGitDiffSummary,
 } from "@/modules/git/commit-suggest";
@@ -41,7 +40,8 @@ export const createGitTools: ToolFactory = (ctx) => {
 
         for (let i = 0; i < suggestions.length; i++) {
           const s = suggestions[i];
-          const confidence = "●".repeat(Math.round(s.confidence * 5)) + "○".repeat(5 - Math.round(s.confidence * 5));
+          const confidence =
+            "●".repeat(Math.round(s.confidence * 5)) + "○".repeat(5 - Math.round(s.confidence * 5));
           output += `### ${i + 1}. \`${s.message}\`\n`;
           output += `- **${i18n.t("commit.type")}**: ${s.type}\n`;
           if (s.scope) {

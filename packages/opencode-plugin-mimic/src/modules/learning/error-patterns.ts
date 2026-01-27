@@ -64,7 +64,7 @@ export function detectErrorType(error: string): string {
 export async function recordError(
   ctx: MimicContext,
   error: string,
-  sessionId: string,
+  _sessionId: string,
 ): Promise<ErrorPattern> {
   const signature = normalizeErrorSignature(error);
   const errorType = detectErrorType(error);
@@ -107,7 +107,8 @@ export async function recordFix(
 
   if (existingFix) {
     existingFix.successCount += 1;
-    existingFix.confidence = existingFix.successCount / (existingFix.successCount + existingFix.failCount);
+    existingFix.confidence =
+      existingFix.successCount / (existingFix.successCount + existingFix.failCount);
     if (fix.filesChanged) {
       existingFix.filesChanged = [...new Set([...existingFix.filesChanged, ...fix.filesChanged])];
     }

@@ -42,11 +42,7 @@ export function inferDomainFromPath(filePath: string): Domain | null {
     return "git";
   }
 
-  if (
-    lowerPath.endsWith(".md") ||
-    lowerPath.endsWith("readme") ||
-    lowerPath.includes("readme")
-  ) {
+  if (lowerPath.endsWith(".md") || lowerPath.endsWith("readme") || lowerPath.includes("readme")) {
     return "documentation";
   }
 
@@ -80,7 +76,11 @@ export function inferDomainFromBranch(branch: string): Domain | null {
     return "testing";
   }
 
-  if (lowerBranch.startsWith("fix/") || lowerBranch.startsWith("bugfix/") || lowerBranch.startsWith("hotfix/")) {
+  if (
+    lowerBranch.startsWith("fix/") ||
+    lowerBranch.startsWith("bugfix/") ||
+    lowerBranch.startsWith("hotfix/")
+  ) {
     return "debugging";
   }
 
@@ -92,7 +92,11 @@ export function inferDomainFromBranch(branch: string): Domain | null {
     return "refactoring";
   }
 
-  if (lowerBranch.startsWith("chore/") || lowerBranch.startsWith("tooling/") || lowerBranch.startsWith("config/")) {
+  if (
+    lowerBranch.startsWith("chore/") ||
+    lowerBranch.startsWith("tooling/") ||
+    lowerBranch.startsWith("config/")
+  ) {
     return "tooling";
   }
 
@@ -115,9 +119,7 @@ export async function getRelevantInstincts(
   context: CurrentContext,
 ): Promise<Instinct[]> {
   const instincts = await ctx.stateManager.listInstincts();
-  const approvedInstincts = instincts.filter(
-    (i) => i.status === "approved" && i.confidence >= 0.5,
-  );
+  const approvedInstincts = instincts.filter((i) => i.status === "approved" && i.confidence >= 0.5);
 
   if (approvedInstincts.length === 0) {
     return [];
@@ -160,32 +162,40 @@ export async function getRelevantInstincts(
   return relevant.sort((a, b) => b.confidence - a.confidence);
 }
 
+const TOOL_DOMAINS: Record<string, Domain> = {
+  test: "testing",
+  vitest: "testing",
+  jest: "testing",
+  git: "git",
+  commit: "git",
+  branch: "git",
+  debug: "debugging",
+  fix: "debugging",
+  error: "debugging",
+  lint: "code-style",
+  format: "code-style",
+  prettier: "code-style",
+  doc: "documentation",
+  readme: "documentation",
+  markdown: "documentation",
+  refactor: "refactoring",
+  rename: "refactoring",
+  extract: "refactoring",
+};
+
 function inferDomainsFromTools(tools: string[]): Domain[] {
-  const domains: Domain[] = [];
+  const domains: Set<Domain> = new Set();
   const toolsLower = tools.map((t) => t.toLowerCase());
 
   for (const tool of toolsLower) {
-    if (tool.includes("test") || tool.includes("vitest") || tool.includes("jest")) {
-      if (!domains.includes("testing")) domains.push("testing");
-    }
-    if (tool.includes("git") || tool.includes("commit") || tool.includes("branch")) {
-      if (!domains.includes("git")) domains.push("git");
-    }
-    if (tool.includes("debug") || tool.includes("fix") || tool.includes("error")) {
-      if (!domains.includes("debugging")) domains.push("debugging");
-    }
-    if (tool.includes("lint") || tool.includes("format") || tool.includes("prettier")) {
-      if (!domains.includes("code-style")) domains.push("code-style");
-    }
-    if (tool.includes("doc") || tool.includes("readme") || tool.includes("markdown")) {
-      if (!domains.includes("documentation")) domains.push("documentation");
-    }
-    if (tool.includes("refactor") || tool.includes("rename") || tool.includes("extract")) {
-      if (!domains.includes("refactoring")) domains.push("refactoring");
+    for (const [keyword, domain] of Object.entries(TOOL_DOMAINS)) {
+      if (tool.includes(keyword)) {
+        domains.add(domain);
+      }
     }
   }
 
-  return domains;
+  return Array.from(domains);
 }
 
 export function formatContextSummary(

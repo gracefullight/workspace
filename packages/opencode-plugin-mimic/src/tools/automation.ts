@@ -1,8 +1,5 @@
 import { tool } from "@opencode-ai/plugin";
-import {
-  createMacroFromSteps,
-  formatMacroForDisplay,
-} from "@/modules/automation/macros";
+import { createMacroFromSteps, formatMacroForDisplay } from "@/modules/automation/macros";
 import { SessionMemoryManager } from "@/modules/knowledge/memory";
 import { SkillGenerator } from "@/modules/knowledge/skills";
 import { ObservationLog, type ObservationType } from "@/modules/observation/log";

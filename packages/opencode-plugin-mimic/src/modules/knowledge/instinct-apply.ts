@@ -137,9 +137,12 @@ export async function buildInstinctContext(
     }
   }
 
-  // Group by domain for organized presentation
+  return formatInstinctsOutput(approvedInstincts);
+}
+
+function formatInstinctsOutput(instincts: Instinct[]): string {
   const byDomain: Record<string, Instinct[]> = {};
-  for (const instinct of approvedInstincts) {
+  for (const instinct of instincts) {
     if (!byDomain[instinct.domain]) {
       byDomain[instinct.domain] = [];
     }
@@ -167,41 +170,51 @@ export async function buildInstinctContext(
 }
 
 function detectContextDomains(options: BuildInstinctContextOptions, language: Language): Domain[] {
-  const domains: Domain[] = [];
+  const domains: Set<Domain> = new Set();
 
-  if (options.currentFile) {
-    const fileDomain = inferDomainFromFilePath(options.currentFile);
-    if (fileDomain && !domains.includes(fileDomain)) {
-      domains.push(fileDomain);
+  collectFileDomains(domains, options.currentFile);
+  collectBranchDomains(domains, options.currentBranch);
+  collectRecentFilesDomains(domains, options.recentFiles);
+  collectToolDomains(domains, options.recentTools, options.recentFiles, language);
+
+  return Array.from(domains);
+}
+
+function collectFileDomains(domains: Set<Domain>, file?: string) {
+  if (file) {
+    const d = inferDomainFromFilePath(file);
+    if (d) domains.add(d);
+  }
+}
+
+function collectBranchDomains(domains: Set<Domain>, branch?: string) {
+  if (branch) {
+    const d = inferDomainFromBranchName(branch);
+    if (d) domains.add(d);
+  }
+}
+
+function collectRecentFilesDomains(domains: Set<Domain>, files?: string[]) {
+  if (files) {
+    for (const file of files) {
+      const d = inferDomainFromFilePath(file);
+      if (d) domains.add(d);
     }
   }
+}
 
-  if (options.currentBranch) {
-    const branchDomain = inferDomainFromBranchName(options.currentBranch);
-    if (branchDomain && !domains.includes(branchDomain)) {
-      domains.push(branchDomain);
-    }
-  }
-
-  if (options.recentFiles) {
-    for (const file of options.recentFiles) {
-      const fileDomain = inferDomainFromFilePath(file);
-      if (fileDomain && !domains.includes(fileDomain)) {
-        domains.push(fileDomain);
-      }
-    }
-  }
-
-  if (options.recentTools) {
-    const toolDomains = detectCurrentDomain(options.recentTools, options.recentFiles || [], language);
+function collectToolDomains(
+  domains: Set<Domain>,
+  tools?: string[],
+  files: string[] = [],
+  language: Language = "en-US",
+) {
+  if (tools) {
+    const toolDomains = detectCurrentDomain(tools, files, language);
     for (const d of toolDomains) {
-      if (!domains.includes(d)) {
-        domains.push(d);
-      }
+      domains.add(d);
     }
   }
-
-  return domains;
 }
 
 function inferDomainFromFilePath(filePath: string): Domain | null {
@@ -237,7 +250,11 @@ function inferDomainFromBranchName(branch: string): Domain | null {
     return "testing";
   }
 
-  if (lowerBranch.startsWith("fix/") || lowerBranch.startsWith("bugfix/") || lowerBranch.startsWith("hotfix/")) {
+  if (
+    lowerBranch.startsWith("fix/") ||
+    lowerBranch.startsWith("bugfix/") ||
+    lowerBranch.startsWith("hotfix/")
+  ) {
     return "debugging";
   }
 

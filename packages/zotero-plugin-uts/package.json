@@ -1,6 +1,6 @@
 {
   "name": "zotero-plugin-uts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Zotero plugin to copy bibliography in UTS APA 7th format",
   "author": {

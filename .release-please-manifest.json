@@ -7,5 +7,5 @@
   "packages/mcp-cafe24-admin": "0.2.1",
   "packages/biome-plugin": "0.2.2",
   "packages/opencode-plugin-mimic": "0.1.11",
-  "packages/zotero-plugin-uts": "0.1.0"
+  "packages/zotero-plugin-uts": "0.1.1"
 }

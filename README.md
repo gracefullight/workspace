@@ -14,7 +14,7 @@
 | [@gracefullight/mcp-cafe24-admin](./packages/mcp-cafe24-admin) | MCP server for Cafe24 Admin API - comprehensive integration with all 19 API sections | [![npm](https://img.shields.io/npm/v/@gracefullight/mcp-cafe24-admin.svg)](https://www.npmjs.org/package/@gracefullight/mcp-cafe24-admin) |
 | [create-fullstack-starter](./packages/create-fullstack-starter) | Fullstack Starter template CLI | [![npm](https://img.shields.io/npm/v/create-fullstack-starter.svg)](https://www.npmjs.org/package/create-fullstack-starter) |
 | [saju](./packages/saju-dart) | Dart/Flutter Four Pillars (Saju) calculation library | [![pub](https://img.shields.io/pub/v/saju.svg)](https://pub.dev/packages/saju) |
-| [zotero-plugin-uts](./packages/zotero-plugin-uts) | Zotero 7/8 plugin to copy bibliography in UTS APA 7th format | [![npm](https://img.shields.io/npm/v/zotero-plugin-uts.svg)](https://www.npmjs.org/package/zotero-plugin-uts) |
+| [zotero-plugin-uts](./packages/zotero-plugin-uts) | Zotero 7/8 plugin to copy bibliography in UTS APA 7th format | [![GitHub Release](https://img.shields.io/github/v/release/gracefullight/pkgs?filter=zotero-plugin-uts*&label=release)](https://github.com/gracefullight/pkgs/releases) |
 
 ## Demo
 

@@ -14,7 +14,7 @@
 | [@gracefullight/mcp-cafe24-admin](./packages/mcp-cafe24-admin) | MCP server for Cafe24 Admin API - 모든 19개 API 섹션 포괄 통합 | [![npm](https://img.shields.io/npm/v/@gracefullight/mcp-cafe24-admin.svg)](https://www.npmjs.org/package/@gracefullight/mcp-cafe24-admin) |
 | [create-fullstack-starter](./packages/create-fullstack-starter) | Fullstack Starter 템플릿 CLI | [![npm](https://img.shields.io/npm/v/create-fullstack-starter.svg)](https://www.npmjs.org/package/create-fullstack-starter) |
 | [saju](./packages/saju-dart) | Dart/Flutter 사주명리 계산 라이브러리 | [![pub](https://img.shields.io/pub/v/saju.svg)](https://pub.dev/packages/saju) |
-| [zotero-plugin-uts](./packages/zotero-plugin-uts) | UTS APA 7th 형식으로 참고문헌을 복사하는 Zotero 7/8 플러그인 | [![npm](https://img.shields.io/npm/v/zotero-plugin-uts.svg)](https://www.npmjs.org/package/zotero-plugin-uts) |
+| [zotero-plugin-uts](./packages/zotero-plugin-uts) | UTS APA 7th 형식으로 참고문헌을 복사하는 Zotero 7/8 플러그인 | [![GitHub Release](https://img.shields.io/github/v/release/gracefullight/pkgs?filter=zotero-plugin-uts*&label=release)](https://github.com/gracefullight/pkgs/releases) |
 
 ## 데모
 

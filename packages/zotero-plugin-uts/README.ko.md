@@ -14,7 +14,7 @@ Zotero에서 UTS APA 7th 형식의 참고문헌을 클립보드에 복사하는 
 
 ## 설치 방법
 
-1. [Releases](https://github.com/gracefullight/pkgs/releases)에서 최신 `.xpi` 파일을 다운로드합니다
+1. [Releases](https://github.com/gracefullight/pkgs/releases?q=zotero-plugin-uts&expanded=true)에서 최신 `.xpi` 파일을 다운로드합니다
 2. Zotero에서 도구 → 부가 기능으로 이동합니다
 3. 톱니바퀴 아이콘을 클릭하고 → 파일에서 부가 기능 설치를 선택합니다
 

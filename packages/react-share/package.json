@@ -1,6 +1,6 @@
 {
   "name": "@gracefullight/react-share",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A lightweight, headless social sharing library for React",
   "type": "module",
   "main": "./dist/index.js",

@@ -36,7 +36,7 @@ export default function ShareDemo() {
                 type="button"
                 onClick={onClick}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -54,7 +54,7 @@ export default function ShareDemo() {
                 type="button"
                 onClick={onClick}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -72,7 +72,7 @@ export default function ShareDemo() {
                 type="button"
                 onClick={onClick}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-400 text-black rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-400 text-black rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -90,7 +90,7 @@ export default function ShareDemo() {
                 type="button"
                 onClick={onClick}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -122,7 +122,7 @@ export default function ShareDemo() {
                   type="button"
                   onClick={onClick}
                   disabled={isLoading}
-                  className={`w-full px-4 py-3 ${color} text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2`}
+                  className={`w-full px-4 py-3 ${color} text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer`}
                 >
                   {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>{isLoading ? "Loading..." : label}</span>
@@ -150,7 +150,7 @@ export default function ShareDemo() {
               type="button"
               onClick={onClick}
               disabled={isLoading}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -182,7 +182,7 @@ export default function ShareDemo() {
               type="button"
               onClick={onClick}
               disabled={isLoading}
-              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

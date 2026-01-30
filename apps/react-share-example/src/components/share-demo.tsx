@@ -1,7 +1,16 @@
 "use client";
 
 import { HeadlessShareButton } from "@gracefullight/react-share";
-import { Facebook, Link, Loader2, MessageCircle, Share2, Twitter } from "lucide-react";
+import { Loader2, Share2 } from "lucide-react";
+import {
+  SiFacebook,
+  SiKakao,
+  SiLine,
+  SiPinterest,
+  SiThreads,
+  SiWhatsapp,
+  SiX,
+} from "react-icons/si";
 
 const shareData = {
   id: "example-1",
@@ -41,9 +50,9 @@ export default function ShareDemo() {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Twitter className="w-5 h-5" />
+                  <SiX className="w-5 h-5" />
                 )}
-                <span>{isLoading ? "Loading..." : "Twitter"}</span>
+                <span>{isLoading ? "Loading..." : "X"}</span>
               </button>
             )}
           </HeadlessShareButton>
@@ -59,7 +68,7 @@ export default function ShareDemo() {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Facebook className="w-5 h-5" />
+                  <SiFacebook className="w-5 h-5" />
                 )}
                 <span>{isLoading ? "SDK Loading..." : "Facebook"}</span>
               </button>
@@ -77,7 +86,7 @@ export default function ShareDemo() {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <MessageCircle className="w-5 h-5" />
+                  <SiKakao className="w-5 h-5" />
                 )}
                 <span>{isLoading ? "SDK Loading..." : "Kakao"}</span>
               </button>
@@ -110,12 +119,22 @@ export default function ShareDemo() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { type: "twitter" as const, label: "Twitter", color: "bg-black" },
-            { type: "line" as const, label: "Line", color: "bg-green-500" },
-            { type: "whatsapp" as const, label: "WhatsApp", color: "bg-green-600" },
-            { type: "pinterest" as const, label: "Pinterest", color: "bg-red-600" },
-            { type: "threads" as const, label: "Threads", color: "bg-gray-900" },
-          ].map(({ type, label, color }) => (
+            { type: "twitter" as const, label: "X", color: "bg-black", Icon: SiX },
+            { type: "line" as const, label: "Line", color: "bg-green-500", Icon: SiLine },
+            {
+              type: "whatsapp" as const,
+              label: "WhatsApp",
+              color: "bg-green-600",
+              Icon: SiWhatsapp,
+            },
+            {
+              type: "pinterest" as const,
+              label: "Pinterest",
+              color: "bg-red-600",
+              Icon: SiPinterest,
+            },
+            { type: "threads" as const, label: "Threads", color: "bg-gray-900", Icon: SiThreads },
+          ].map(({ type, label, color, Icon }) => (
             <HeadlessShareButton key={type} type={type} data={shareData}>
               {({ onClick, isLoading }) => (
                 <button
@@ -125,6 +144,7 @@ export default function ShareDemo() {
                   className={`w-full px-4 py-3 ${color} text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer`}
                 >
                   {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {!isLoading && <Icon className="w-4 h-4" />}
                   <span>{isLoading ? "Loading..." : label}</span>
                 </button>
               )}
@@ -155,7 +175,7 @@ export default function ShareDemo() {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Link className="w-5 h-5" />
+                <Share2 className="w-5 h-5" />
               )}
               <span>{isLoading ? "Copying..." : "Copy Link"}</span>
             </button>
@@ -187,7 +207,7 @@ export default function ShareDemo() {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Twitter className="w-5 h-5" />
+                <SiX className="w-5 h-5" />
               )}
               <span>{isLoading ? "Resolving URL..." : "Share with Dynamic URL"}</span>
             </button>

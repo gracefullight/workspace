@@ -22,6 +22,7 @@
 
 - **[ng-daum-address Example](https://gracefullight.dev/pkgs/ng-daum-address-example/)** - Angular 21+ 예제 앱
 - **[Saju Example](https://gracefullight.dev/pkgs/saju-example/)** - Next.js 예제 앱
+- **[react-share Example](https://gracefullight.dev/pkgs/react-share-example/)** - 소셜 공유 전략 패턴 Next.js 예제 앱
 
 
 

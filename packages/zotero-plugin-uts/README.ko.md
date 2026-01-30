@@ -49,17 +49,17 @@ bun run test
 bun run build
 ```
 
-## 개발 지원
+## 후원
 
-이 플러그인이 도움이 되었다면 개발을 지원해 주세요:
+이 프로젝트가 도움이 되셨다면 커피 한 잔 부탁드립니다!
 
-- [♥ GitHub Sponsors](https://github.com/sponsors/gracefullight)
-- [☕ Buy Me a Coffee](https://buymeacoffee.com/gracefullight)
-- ⭐ 저장소에 Star 남기기:
+<a href="https://www.buymeacoffee.com/gracefullight" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-  ```bash
-  gh api --method PUT /user/starred/gracefullight/pkgs
-  ```
+또는 스타를 눌러주세요:
+
+```bash
+gh api --method PUT /user/starred/gracefullight/pkgs
+```
 
 ## 라이선스
 

@@ -166,17 +166,17 @@ If you need to fetch a shareable URL only when the user clicks the button:
 | **Customization** | Style props | Complete UI freedom |
 | **Design System** | Hard to integrate | Seamless integration |
 
-## Support Development
+## Sponsors
 
-If you find this library helpful, please consider supporting:
+If this project helped you, please consider buying me a coffee!
 
-- [♥ GitHub Sponsors](https://github.com/sponsors/gracefullight)
-- [☕ Buy Me a Coffee](https://buymeacoffee.com/gracefullight)
-- ⭐ Star this repository:
+<a href="https://www.buymeacoffee.com/gracefullight" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-  ```bash
-  gh api --method PUT /user/starred/gracefullight/pkgs
-  ```
+Or leave a star:
+
+```bash
+gh api --method PUT /user/starred/gracefullight/pkgs
+```
 
 ## License
 

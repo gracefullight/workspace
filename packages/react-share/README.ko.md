@@ -166,17 +166,17 @@ function CustomShare() {
 | **커스터마이징** | 스타일 props | 완전한 UI 자유도 |
 | **디자인 시스템** | 통합 어려움 | 원활한 통합 |
 
-## 개발 지원
+## 후원
 
-이 라이브러리가 도움이 되셨다면 다음 방법으로 지원해 주세요:
+이 프로젝트가 도움이 되셨다면 커피 한 잔 부탁드립니다!
 
-- [♥ GitHub Sponsors](https://github.com/sponsors/gracefullight)
-- [☕ Buy Me a Coffee](https://buymeacoffee.com/gracefullight)
-- ⭐ 이 저장소에 Star를 눌러주세요:
+<a href="https://www.buymeacoffee.com/gracefullight" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-  ```bash
-  gh api --method PUT /user/starred/gracefullight/pkgs
-  ```
+또는 스타를 눌러주세요:
+
+```bash
+gh api --method PUT /user/starred/gracefullight/pkgs
+```
 
 ## 라이선스
 

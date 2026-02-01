@@ -1,5 +1,12 @@
 # @gracefullight/saju
 
+## [1.2.0](https://github.com/gracefullight/pkgs/compare/@gracefullight/saju@1.1.3...@gracefullight/saju@1.2.0) (2026-02-01)
+
+
+### Features
+
+* **saju:** add getTenGodForStem function ([ba68298](https://github.com/gracefullight/pkgs/commit/ba68298700f94199a453be820b45d49bb4941086))
+
 ## [1.1.3](https://github.com/gracefullight/pkgs/compare/@gracefullight/saju@1.1.2...@gracefullight/saju@1.1.3) (2026-01-22)
 
 

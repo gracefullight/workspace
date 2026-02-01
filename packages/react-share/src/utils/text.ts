@@ -5,6 +5,8 @@ export function truncateText(text: string, maxLength: number): string {
   return `${text.slice(0, maxLength)}...`;
 }
 
+import type { FormatTextFunction } from "@/types";
+
 export function formatShareText(
   title: string | undefined,
   description: string | undefined | null,
@@ -12,9 +14,14 @@ export function formatShareText(
   options?: {
     descriptionMaxLength?: number;
     separator?: string;
+    formatText?: FormatTextFunction;
   },
 ): string {
-  const { descriptionMaxLength = 100, separator = "\n" } = options ?? {};
+  const { descriptionMaxLength = 100, separator = "\n", formatText } = options ?? {};
+
+  if (formatText) {
+    return formatText({ title, description, url });
+  }
 
   const truncatedDescription = description
     ? truncateText(description, descriptionMaxLength)
@@ -32,9 +39,14 @@ export function formatTweetText(
   description: string | undefined | null,
   options?: {
     descriptionMaxLength?: number;
+    formatText?: FormatTextFunction;
   },
 ): string {
-  const { descriptionMaxLength = 60 } = options ?? {};
+  const { descriptionMaxLength = 60, formatText } = options ?? {};
+
+  if (formatText) {
+    return formatText({ title, description, url: "" });
+  }
 
   const truncatedDescription = description
     ? truncateText(description, descriptionMaxLength)

@@ -14,6 +14,7 @@ export type {
 } from "./options";
 export type { SharePlatform } from "./platform";
 export type {
+  FormatTextFunction,
   HeadlessShareListeners,
   HeadlessShareOptions,
   HeadlessShareState,

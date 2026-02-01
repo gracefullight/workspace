@@ -46,10 +46,17 @@ export type PlatformConfig = {
   [K in SharePlatform]: { type: K; options: PlatformOptions[K] };
 }[SharePlatform];
 
+export type FormatTextFunction = (data: {
+  title?: string;
+  description?: string | null;
+  url: string;
+}) => string;
+
 export type HeadlessShareOptions = {
   [K in SharePlatform as `${K}`]?: PlatformOptionsRegistry[K];
 } & {
   textMaxLength?: number;
+  formatText?: FormatTextFunction;
 };
 
 export interface HeadlessShareListeners {

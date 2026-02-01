@@ -12,7 +12,9 @@ export const kakaoStrategy: ShareStrategy = {
     const { url, title, description, imageUrl } = data;
     const maxLength = options?.textMaxLength ?? 100;
 
-    kakao.Share?.sendDefault?.({
+    (
+      kakao as unknown as { Share?: { sendDefault?: (options: unknown) => void } }
+    ).Share?.sendDefault?.({
       buttons: [
         {
           link: {

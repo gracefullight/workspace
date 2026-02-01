@@ -35,12 +35,8 @@ export function ensureFacebookInitialized(appId?: string): typeof window.FB | nu
     return null;
   }
 
-  // Check if SDK is already initialized
-  if (
-    globalThis.window.FB.getAppId &&
-    typeof globalThis.window.FB.getAppId === "function" &&
-    globalThis.window.FB.getAppId() === appId
-  ) {
+  const fb = globalThis.window.FB as typeof globalThis.window.FB & { getAppId?: () => string };
+  if (fb.getAppId?.() === appId) {
     return globalThis.window.FB;
   }
 

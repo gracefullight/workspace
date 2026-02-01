@@ -7,6 +7,8 @@ import {
   getHiddenStems,
   getStemElement,
   getStemPolarity,
+  getTenGodForBranch,
+  getTenGodForStem,
   getTenGodKey,
   getTenGodLabel,
 } from "@/core/ten-gods";
@@ -161,6 +163,44 @@ describe("ten-gods", () => {
 
       expect(counts.wood).toBeGreaterThanOrEqual(3);
       expect(counts.fire).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe("getTenGodForStem", () => {
+    it("returns correct ten god label for stem", () => {
+      // 甲 (day master) -> 甲 (stem) = 비견 (companion)
+      const result1 = getTenGodForStem("甲", "甲");
+      expect(result1.key).toBe("companion");
+      expect(result1.korean).toBe("비견");
+
+      // 甲 (day master) -> 乙 (stem) = 겁재 (robWealth)
+      const result2 = getTenGodForStem("甲", "乙");
+      expect(result2.key).toBe("robWealth");
+      expect(result2.korean).toBe("겁재");
+
+      // 甲 (day master) -> 丙 (stem) = 식신 (eatingGod)
+      const result3 = getTenGodForStem("甲", "丙");
+      expect(result3.key).toBe("eatingGod");
+      expect(result3.korean).toBe("식신");
+
+      // 丙 (day master) -> 庚 (stem) = 편재 (indirectWealth)
+      const result4 = getTenGodForStem("丙", "庚");
+      expect(result4.key).toBe("indirectWealth");
+      expect(result4.korean).toBe("편재");
+    });
+  });
+
+  describe("getTenGodForBranch", () => {
+    it("returns correct ten god label for branch (first hidden stem)", () => {
+      // 甲 (day master) -> 子 (branch, hidden stem: 癸) = 정인 (directSeal)
+      const result1 = getTenGodForBranch("甲", "子");
+      expect(result1.key).toBe("directSeal");
+      expect(result1.korean).toBe("정인");
+
+      // 甲 (day master) -> 寅 (branch, hidden stem: 甲) = 비견 (companion)
+      const result2 = getTenGodForBranch("甲", "寅");
+      expect(result2.key).toBe("companion");
+      expect(result2.korean).toBe("비견");
     });
   });
 });

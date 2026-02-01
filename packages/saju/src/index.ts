@@ -106,6 +106,7 @@ export {
   getStemElement,
   getStemPolarity,
   getTenGodForBranch,
+  getTenGodForStem,
   getTenGodKey,
   getTenGodLabel,
   getTenGodsForBranch,

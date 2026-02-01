@@ -202,6 +202,10 @@ export function getTenGodKey(dayMaster: string, targetStem: string): TenGodKey {
   throw new Error(`Unable to determine ten god relationship: ${dayMaster} -> ${targetStem}`);
 }
 
+export function getTenGodForStem(dayMaster: string, stem: string): TenGodLabel {
+  return getTenGodLabel(getTenGodKey(dayMaster, stem));
+}
+
 export function getTenGodForBranch(dayMaster: string, branch: string): TenGodLabel {
   const hiddenStems = getHiddenStems(branch);
   return getTenGodLabel(getTenGodKey(dayMaster, hiddenStems[0]));

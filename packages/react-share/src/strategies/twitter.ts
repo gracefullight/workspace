@@ -10,6 +10,7 @@ export const twitterStrategy: ShareStrategy = {
 
     const tweetText = formatTweetText(title, description, {
       descriptionMaxLength: twitterLimit,
+      formatText: options?.formatText,
     });
 
     const params = new URLSearchParams();

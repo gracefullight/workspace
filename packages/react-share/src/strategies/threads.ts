@@ -10,6 +10,7 @@ export const threadsStrategy: ShareStrategy = {
 
     const shareText = formatShareText(title, description, url, {
       descriptionMaxLength: maxLength,
+      formatText: options?.formatText,
     });
 
     const shareUrl = `https://www.threads.net/intent/post?text=${encodeURIComponent(shareText)}`;

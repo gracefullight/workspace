@@ -10,6 +10,7 @@ export const lineStrategy: ShareStrategy = {
 
     const shareText = formatShareText(title, description, url, {
       descriptionMaxLength: maxLength,
+      formatText: options?.formatText,
     });
 
     const shareUrl = `https://line.me/R/share?text=${encodeURIComponent(shareText)}`;

@@ -11,6 +11,7 @@ export const whatsappStrategy: ShareStrategy = {
 
     const shareText = formatShareText(title, description, url, {
       descriptionMaxLength: maxLength,
+      formatText: options?.formatText,
     });
 
     const baseUrl = phone ? `https://wa.me/${phone}` : "https://wa.me/";
